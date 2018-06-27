@@ -4,19 +4,13 @@ return [
     // 数据库类型
     'type'            => 'mysql',
     // 服务器地址
-    'hostname'        => '47.106.153.107',
-//    'hostname'        => '120.77.201.74',
-//    'hostname'        => '127.0.0.1',
+    'hostname'        => '127.0.0.1',
     // 数据库名
-    'database'        => 'weblib',
+    'database'        => '',
     // 用户名
-    'username'        => 'tushuduan',
-//    'username'        => 'wanxiangtushu',
-//    'username'        => 'root',
+    'username'        => '',
     // 密码
-    'password'        => 'tushuduan',
-//    'password'        => 'wanxiangtushu',
-//    'password'        => 'root',
+    'password'        => '',
     // 端口
     'hostport'        => '',
     // 连接dsn
