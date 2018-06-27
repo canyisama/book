@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>{%$web_title%}</title>
+    <!--[if lt IE 8]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+    <!--<link rel="shortcut icon" href="favicon.ico">-->
+    <link href="__static__/css/bootstrap.min.css" rel="stylesheet">
+    <link href="__static__/css/font-awesome.min.css" rel="stylesheet">
+    <link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="__static__/css/animate.min.css" rel="stylesheet">
+    <link href="__static__/css/style.min.css" rel="stylesheet">
+
+    <script src="__static__/js/jquery.min.js"></script>
+    <script src="__static__/js/plugins/layer/layer.min.js"></script>
+    <script src="__static__/js/bootstrap.min.js?v=3.3.5"></script>
+</head>
+<body>
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="tabs-container">
+                <input type="hidden" id="report_param_data" name="report_param_data"
+                       value="{%:input('report_param_data')%}">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true"> 导出为Excel</a>
+                    </li>
+                    <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false"> 导出为PDF</a>
+                    </li>
+                    <li class=""><a data-toggle="tab" href="#tab-3" aria-expanded="false"> 导出为文本</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="panel-body">
+                            <p>导出数据为XML For Excel格式。</p>
+                            <p>可以直接用Excel2003-Excel最新版本打开。</p>
+                            <p>如需Excel原生格式可在Excel中打开后另存为。</p>
+                            <div class="text-center">
+                                <button onclick="export_excel()" class="btn btn-primary"><i
+                                        class="fa fa-file-excel-o"></i> 开始导出
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-2" class="tab-pane">
+                        <div class="panel-body">
+                            <div class="text-center">
+                                <button class="btn btn-primary" onclick="export_pdf(1)">在浏览器显示</button>
+                                <button class="btn btn-primary" onclick="export_pdf(0)"><i class="fa fa-file-pdf-o"></i>
+                                    PDF下载
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-3" class="tab-pane">
+                        <div class="panel-body" style="padding-top: 35px;">
+                            <div style="width: 30%; float: left; line-height: 35px; text-align: right;">
+                                导出格式：&nbsp;
+                            </div>
+                            <div style="width: 50%; float: left">
+                                <select class="form-control input-outline" id="txt_type" name="txt_type">
+                                    <option value="txt">文本</option>
+                                    <option value="csv">CSV</option>
+                                </select>
+                            </div>
+                            <div class="text-center" style="clear: both; margin-top: 65px;">
+                                <button class="btn btn-primary" onclick="export_txt()"><i
+                                        class="fa fa-file-excel-o"></i> 开始导出
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var report_gs_id = "{%:input('report_gs_id');%}";
+
+        function export_excel() {
+            if (!report_gs_id) {
+                layer.msg("无效的报表格式!");
+                return;
+            }
+            var report_param = $("#report_param_data").val();
+            var url = "{%:url('Report/export_excel')%}?report_gs_id=" + report_gs_id + "&report_param_data=" + report_param;
+            window.open(url, "");
+        }
+
+        function export_pdf(in_browse) {
+            if (!report_gs_id) {
+                layer.msg("无效的报表格式!");
+                return;
+            }
+            var report_param = $("#report_param_data").val();
+            var url = //"/admin/Report/export_pdf/report_gs_id/" + report_gs_id + "/report_param_data/" + report_param + "/in_browse/" + in_browse + ".html";
+                "{%:url('Report/export_pdf')%}?report_gs_id=" + report_gs_id + "&report_param_data=" + report_param + "&in_browse=" + in_browse;
+            window.open(url, "");
+        }
+
+        function export_txt() {
+            if (!report_gs_id) {
+                layer.msg("无效的报表格式!");
+                return;
+            }
+            var report_param = $("#report_param_data").val();
+            var txt_type = $("#txt_type").val();
+
+            var url = "{%:url('Report/export_txt')%}?report_gs_id=" + report_gs_id + "&report_param_data=" + report_param + "&txt_type=" + txt_type;
+            window.open(url, "");
+        }
+    </script>
+</div>
+</body>
+</html>

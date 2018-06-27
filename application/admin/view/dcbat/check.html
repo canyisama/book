@@ -1,0 +1,380 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<link href="__static__/css/plugins/iCheck/custom.css" rel="stylesheet">
+<script src="__static__/js/plugins/iCheck/icheck.min.js"></script>
+
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row ">
+        <div class="col-sm-12">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs">
+                    <li data-id="1" class="active"><a data-toggle="tab" aria-expanded="true"> 清点操作</a></li>
+                    <li data-id="2" class=""><a data-toggle="tab" aria-expanded="false">清点列表 </a></li>
+                </ul>
+                    <div class="tab-content">
+                        <div id="tab-1" class="tab-pane active">
+                            <div class="panel-body">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4>馆藏清点</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-sm-10">
+                                                <form action="javascript:void 0" class="form-horizontal" id="postForm" method="post">
+                                                    <div class="form-group">
+                                                        <div class="col-sm-5">
+                                                            <label class="col-sm-4 control-label">批次名称</label>
+                                                            <div class="col-sm-6">
+                                                                <input type="text" name="check_batch" id="check_batch"
+                                                                       class="form-control" value="{%:input('check_batch')%}">
+                                                            </div>
+
+                                                            <button type="button" class="btn btn-primary" id="add_batch"> 新增批次</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="col-sm-5">
+                                                            <label class="col-sm-4 control-label">选择清点批次</label>
+                                                            <div class="col-sm-6">
+                                                                <select name="batch" id="batch" class="form-control">
+                                                                    {%volist name='check_batch_list' id='vo'%}
+                                                                    <option value="{%$vo.batch%}">{%$vo.batch%}</option>
+                                                                    {%/volist%}
+                                                                </select>
+                                                            </div>
+                                                            <button type="button" class="btn btn-primary" id="del_batch"> 删除批次</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="col-sm-5">
+                                                            <label class="col-sm-4 control-label">图书条码</label>
+                                                            <div class="col-sm-6">
+                                                                <input type="text" name="barcode" id="barcode" class="form-control" value="{%:input('barcode')%}">
+                                                            </div>
+
+                                                            <button type="button" class="btn btn-primary" id="reg"> 图书清点</button>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <div class="col-sm-6  i-checks">
+                                                                <label class="control-label">
+                                                                    <input type="checkbox" name="is_confirm" id="is_confirm" class="form-control" value="1">
+                                                                    清点确认
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-sm-6 i-checks">
+                                                                <label class="control-label">
+                                                                    <input type="checkbox" name="only_self" id="only_self" class="form-control" value="1">
+                                                                    只显示本馆馆藏
+                                                                </label>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="col-sm-5">
+                                                            <label class="col-sm-4 control-label">图书条码列表</label>
+                                                            <div class="col-sm-6">
+                                                                <textarea class="form-control" name="barcode_list" id="barcode_list" style="height: 200px"></textarea>
+                                                            </div>
+                                                            <button type="button" class="btn btn-primary" id="batch_check"> 批量清点</button>
+                                                        </div>
+                                                    </div>
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="panel panel-default ">
+                                <div class="panel-heading">
+                                    <h4>书目信息</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="form-horizontal">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-2 control-label">题名</label>
+                                                        <div class="col-sm-6">
+                                                            <p class="form-control-static" id="title">-</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-2 control-label">ISBN</label>
+                                                        <div class="col-sm-6">
+                                                            <p class="form-control-static" id="isbn">-</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-2 control-label">著者</label>
+                                                        <div class="col-sm-6">
+                                                            <p class="form-control-static" id="firstauthor">-</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-2 control-label">出版社</label>
+                                                        <div class="col-sm-6">
+                                                            <p class="form-control-static" id="publisher">-</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <label class="col-sm-2 control-label">出版时间</label>
+                                                        <div class="col-sm-6">
+                                                            <p class="form-control-static" id="pubdate">-</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="panel-body" id="bookDckList" style="display: none">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4>馆藏信息</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <table id="Table" data-row-style="fnSetStyle">
+                                            <thead>
+                                            <tr>
+                                                <th data-field="barcode" data-sortable="true">图书条码</th>
+                                                <th data-field="login_no" data-sortable="true">登录号</th>
+                                                <th data-field="calino" data-sortable="true">索书号</th>
+                                                <th data-field="status" data-formatter="statusOp" data-sortable="true">状态</th>
+                                                <th data-field="tsg_code" data-sortable="true">所属馆</th>
+                                                <th data-field="tsg_site_code" data-sortable="true">馆藏地址</th>
+                                                <th data-field="lt_type" data-sortable="true">流通类型</th>
+                                                <th data-field="price" data-sortable="true">单价</th>
+                                                <th data-field="check_batch" data-sortable="true">清点批次</th>
+                                            </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4>查询条件</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-sm-10">
+                                                <form class="form-horizontal" id="searchForm" onsubmit="return false;">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-sm-4">
+                                                                <label class="col-sm-4 control-label">馆藏地址</label>
+                                                                <div class="col-sm-8">
+                                                                    <select name="tsg_site_code" id="tsg_site_code" class="form-control">
+                                                                        <option value="">请选择馆藏地址</option>>
+                                                                        {%volist name='tsg_site_map' id='vo'%}
+                                                                        <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                                                        {%/volist%}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <label class="col-sm-4 control-label">清点批次</label>
+                                                                <div class="col-sm-7">
+                                                                    <select name="check_batch" id="check_batch_list" class="form-control">
+                                                                        <option value="">请选择清点批次</option>>
+                                                                        {%volist name='check_batch_list' id='vo'%}
+                                                                        <option value="{%$vo.batch%}">{%$vo.batch%}</option>
+                                                                        {%/volist%}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <button type="button" class="btn btn-primary" id="searchBtn"> 预览</button>
+                                                                <button type="submit" class="btn btn-primary" id="export"> 导出为Excel</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-sm-4">
+                                                                <label class="col-sm-4 control-label">入库时间范围</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" placeholder="开始时间" name="start_time" id="start_time" value="" class="form-control"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" placeholder="结束时间" name="end_time" id="end_time" value="" class="form-control"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-sm-4">
+                                                                <label class="col-sm-4 control-label">馆藏状态</label>
+                                                                <div class="col-sm-8">
+                                                                    <select name="status" id="status" class="form-control" multiple style="height: 180px;">
+                                                                        {%volist name='dc_status_list' id='vo'%}
+                                                                        <option value="{%$key%}">{%$key%}</option>
+                                                                        {%/volist%}
+
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4>数据预览</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <table id="Table_check">
+                                                    <thead>
+                                                    <tr>
+                                                        <th data-field="barcode" data-sortable="true">图书条码</th>
+                                                        <th data-field="title" data-sortable="false">题名</th>
+                                                        <th data-field="isbn" data-sortable="false">ISBN</th>
+                                                        <th data-field="calino" data-sortable="true">索书号</th>
+                                                        <th data-field="status" data-formatter="statusOp" data-sortable="true">状态</th>
+                                                        <th data-field="publisher" data-sortable="false">出版社</th>
+                                                        <th data-field="pubdate" data-sortable="false">出版日期</th>
+                                                        <th data-field="price" data-sortable="true">单价</th>
+                                                    </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="__static__/js/logic/cf/common_table_op.js"></script>
+<script src="__static__/js/logic/status/status.js" ></script>
+<script src="__static__/js/logic/dc/dcbat.js" ></script>
+<script src="__static__/js/logic/dc/handle.js" ></script>
+<script>
+    var  is_list = 1;
+    $(function () {
+
+        // 内容块切换 - 借还操作
+        $('.nav-tabs li').click(function() {
+            // 当前添加类名并移除兄弟级
+            $(this).addClass('active').siblings().removeClass('active');
+            tab_id = $(this).attr('data-id');
+            layer.closeAll();
+            $('.tab-pane').removeClass('active');
+            switch (tab_id){
+                case '1' :
+                    $('#tab-1').addClass('active');
+                    break;
+                case '2' :
+                    $('#tab-2').addClass('active');
+                    break;
+            }
+        });
+
+        $("#check_batch").keydown(function (e) {
+            //回车
+            if (e.which == 13) {
+                $('#add_batch').click();
+                return false;
+            }
+        });
+
+        $('#add_batch').click(function () {
+           var batch = $('#check_batch').val();
+           if (!batch){
+               return layer.msg('新增批次不能为空');
+           }
+
+           $.get("{%:url('Dcbat/add_batch')%}",{batch:batch},function (result) {
+               if (result.code == 1){
+                   layer.msg(result.msg);
+                   location.reload();
+               }else{
+                   layer.alert(result.msg,{icon:2});
+               }
+           })
+        });
+
+        $('#del_batch').click(function () {
+           var batch = $('#batch option:selected').val();
+            if (!batch){
+                return layer.msg('删除批次不能为空');
+            }
+
+            $.get("{%:url('Dcbat/del_batch')%}",{batch:batch},function (result) {
+                layer.msg(result.msg);
+                location.reload();
+            })
+
+        });
+
+        $('#barcode_list').focus(function () {
+            layer.closeAll('tips'); //关闭所有的tips层
+        });
+
+        $('#batch_check').click(function () {
+            var barcode_list = $('#barcode_list').val();
+            var batch = $('#batch option:selected').val();
+            if (!barcode_list){
+                return layer.msg('图书清点条码不能为空');
+            }
+
+            $.post("{%:url('Dcbat/batch_check')%}",{barcode_list:barcode_list,batch:batch},function (result) {
+                if (result.code == 1){
+                    layer.msg(result.msg);
+                    $('#barcode_list').val('');
+                }else{
+                    layer.alert(result.msg);
+                }
+            })
+        });
+
+        $('#reg').click(function () {
+            var batch = $('#batch').val();
+            var barcode = $('#barcode').val();
+            var url = "{%:url('Dcbat/check')%}?barcode="+barcode+"&batch="+batch;
+            var is_confirm = $('#is_confirm:checked').val();
+
+            if (is_confirm){
+                myConfirm("确认清点条码"+barcode+"吗?", 3,function () {
+                    options(url);
+                    layer.closeAll();
+                });
+                return false;
+            }
+            options(url);
+        });
+    });
+
+
+</script>
+</body>

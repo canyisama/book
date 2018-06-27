@@ -1,0 +1,158 @@
+{%include file='public/header_form' %}
+<link href="__static__/css/plugins/switchery/switchery.css" rel="stylesheet">
+<script src="__static__/js/plugins/switchery/switchery.js"></script>
+<body>
+<!-- 编辑数据 -->
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-sm-offset-2 col-sm-6">
+            <div class="tab-content">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="text-center">配置短信参数</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form id="postForm" method="post" class="form-horizontal m-b">
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">短信账号:</label>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control input-sm" name="sms_user" value="{%$info.sms_user%}"/>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span style="color: red;font-size: large">*</span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <a href="http://wwww.sms.cn/zhuce.html?u=49299" target="_blank">购买账号</a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">账户密码:</label>
+                                <div class="col-sm-5">
+                                    <input type="password" class="form-control input-sm" name="sms_pwd" value=""/>
+                                    <span class="help-block">如不需修改密码则留空</span>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span style="color: red;font-size: large">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">账户余额:</label>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control input-sm" id="lave" disabled>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span style="color: red;font-size: large">*</span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <button class="btn btn-primary" type="button" id="getLave">获取账户余额</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">图书预约自动提醒:</label>
+                                <div class="col-sm-7">
+                                    <div class="col-sm-12">
+                                        <input class="js-switch" type="checkbox" {%$info.is_sms==1?"checked":""%}
+                                               id="is_sms" name="is_sms" value="{%$info.is_sms%}"/>
+                                        <label class="js-check-change-field control-label">{%$info.is_sms==1?"启用":"禁用"%}</label>
+                                    </div>
+                                    <span class="help-block" style="margin-top: 40px">在图书借还界面当书归还时如有预约自动提醒</span>
+                                </div>
+                                <div class="col-sm-2">
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">测试手机号码:</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control input-sm" name="test_sms" id="test_sms" value="{%$info.test_sms%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-6 text-right">
+                                    <button type="submit" id="btnSubmit" class="btn btn-primary">保存参数</button>
+                                </div>
+                                <div class="col-sm-6">
+                                    <button type="button" id="test" class="btn btn-success">测试短信</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        var elem = document.querySelector('.js-switch');
+
+        var init = new Switchery(elem);
+
+        elem.onchange = function () {
+            $('.js-check-change-field').html(elem.checked ? '启用' : '禁用');
+             $('#is_sms').val(elem.checked ? 1 : 0);
+        };
+        $('#postForm').validate({
+            rules:{
+                sms_user: {
+                    required : true
+                }
+            },
+            messages:{
+                sms_user : {
+                    required : '短信账号不能为空'
+                }
+            }
+        });
+
+        $('#test').click(function () {
+            var sms = $('#test_sms').val();
+            if (!sms){
+                return layer.msg('测试短信不能为空');
+            }
+            $.get("{%:url('Sms/test')%}",{to_sms:sms},function (result) {
+                if (result.code == 1){
+                    layer.msg(result.msg);
+                }else{
+                    layer.alert(result.msg,{icon:2});
+                }
+            })
+        });
+
+        $('#getLave').click(function () {
+            var index = layer.load(1,{
+                shade:[0.1,'#fff']
+            });
+            $.get("{%:url('Sms/get_lave')%}",function (ret) {
+                layer.close(index);
+                if (ret.code == 1){
+                    $('#lave').val(ret.data + '条');
+                    layer.msg(ret.msg);
+                }else{
+                    layer.alert(ret.msg);
+                }
+            })
+        });
+    });
+
+    function getFormOptions() {
+        var options = {
+            url:"{%:url('Sms/config')%}",
+            success : function (result) {
+                if (result.code == 1) {
+                    // 成功后刷新父级页面
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }
+        };
+        return options;
+    }
+
+</script>
+</body>
+
+</html>

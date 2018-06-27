@@ -1,0 +1,121 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit(1)"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            收费
+                                        </a>
+                                        <a href="javascript:void(0)" onclick="toEdit(2)"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-minus" aria-hidden="true"></i>
+                                            退费
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="dz_code" type="text"
+                                               placeholder="读者证号">
+                                        <select class="form-control" id="fin_type">
+                                            <option value="">= 财务类型 =</option>
+                                            <option value="1">收费</option>
+                                            <option value="2">退费</option>
+                                        </select>
+                                        <select class="form-control" id="fee_mode">
+                                            <option value="">= 收费方式 =</option>
+                                            <option value="1">读者证押金</option>
+                                            <option value="2">补交押金</option>
+                                            <option value="3">超期罚款</option>
+                                            <option value="4">丢失罚款</option>
+                                            <option value="5">污损罚款</option>
+                                            <option value="6">退还押金</option>
+                                            <option value="7">减少押金</option>
+                                            <option value="8">退款</option>
+                                            <option value="9">工本费</option>
+                                            <option value="10">服务费</option>
+                                            <option value="11">验证费</option>
+                                        </select>
+
+                                        <select class="form-control" id="fee_type">
+                                            <option value="">= 收费状态 =</option>
+                                            <option value="1">已支付</option>
+                                            <option value="2">未支付</option>
+                                            <option value="3">已取消</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" id="searchBtn" class="btn btn-primary">查询</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="fin_type" data-sortable="true">财务类型</th>
+                                    <th data-field="fee_money" data-sortable="true">费用金额</th>
+                                    <th data-field="fin_mode" data-sortable="true">财务方式</th>
+                                    <th data-field="fee_type" data-sortable="true">收费状态</th>
+                                    <th data-field="fee_mode" data-sortable="true">收费方式</th>
+                                    <th data-field="dz_code" data-sortable="true">读者证号</th>
+                                    <th data-field="real_name" data-sortable="true">读者姓名</th>
+                                    <th data-field="barcode" data-sortable="true">图形条码</th>
+                                    <th data-field="op_user" data-sortable="true">操作人</th>
+                                    <th data-field="add_time" data-sortable="true">添加日期</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Finance/getJsonList')%}",
+            sortName: 'finance_id',
+            clickToSelect: true
+        });
+    });
+
+    function toEdit(type, finance_id) {
+        var url = "{%:url('Finance/add');%}?fin_type=" + type;
+        if (finance_id)
+            url = "{%:url('Finance/edit');%}?finance_id=" + finance_id;
+        myOpen({
+            type: 2,
+            title: "编辑",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function opFormatter(value, row) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(0, \'' + row.finance_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,308 @@
+{%include file='public/header_form' %}
+
+<body class="gray-bg">
+<link href="__static__/css/plugins/iCheck/custom.css" rel="stylesheet">
+<link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+
+<script src="__static__/js/plugins/iCheck/icheck.min.js"></script>
+<script src="__static__/js/bootstrap.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row ">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{%$is_inter == 0 ? '本馆读者基础流通规则' : '馆际读者基础流通规则'%}</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" id="postForm" method="post">
+
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">状态:</label>
+                                <div class="col-sm-8">
+                                    <div class="col-sm-6 radio i-checks">
+                                        <label>
+                                            <input type="radio" name="is_close" id="is_close_0" {%$info.is_close===0 ? "checked='checked'" : ''%} value="0">
+                                            <i class="label label-primary">启用</i></label>
+                                    </div>
+                                    <div class="col-sm-6 radio i-checks">
+                                        <label>
+                                            <input type="radio" name="is_close" id="is_close_1" {%$info.is_close===1 ? "checked='checked'" : ''%} value="1" >
+                                            <i class="label label-default">禁用</i></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">续借计算方式:</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control"  name="renew_mode">
+                                        {%volist name='renew_mode_list' id='value'%}
+                                        <option value="{%$key%}" {%$info.renew_mode === $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">续借天数:</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="renew_days" value="{%$info.renew_days|default=0%}">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">最大续借次数:</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="renew_cnt" value="{%$info.renew_cnt|default=0%}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">最大借书天数:</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" name="lend_days" type="text" value="{%$info.lend_days|default=0%}"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">最大借书数量:</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" name="lend_num" type="text" value="{%$info.lend_num|default=0%}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">丢书罚款方式:</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" name="lose_mode">
+                                        {%volist name='lose_mode_list' id='value'%}
+                                        <option value="{%$key%}" {%$info.lose_mode === $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                                        {%/volist%}
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">污损罚款方式:</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" name="dirty_mode">
+                                        {%volist name='dirty_mode_list' id='value'%}
+                                        <option value="{%$key%}" {%$info.dirty_mode === $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                                        {%/volist%}
+
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">丢书罚款类型:</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control"  name="lose_type">
+                                        {%volist name='lose_type_list' id='value'%}
+                                        <option value="{%$key%}" {%$info.lose_type === $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                                        {%/volist%}
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">污损罚款类型:</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" name="dirty_type">
+                                        {%volist name='dirty_type_list' id='value'%}
+                                        <option value="{%$key%}" {%$info.dirty_type === $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">丢书罚款倍率:</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" name="lose_rate" value="{%$info.lose_rate|default=0%}" type="text"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">污损罚款倍率:</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" name="dirty_rate" value="{%$info.dirty_rate|default=0%}" type="text"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">超期每天罚金:</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" name="out_fine" value="{%$info.out_fine|default=0%}" type="text"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">超期最大罚金额:</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" name="out_max_fine" value="{%$info.out_max_fine|default=0%}" type="text"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" id="btnSubmit" type="submit">保存内容</button>
+                                <input type="hidden" name="ltrule_id" value="{%$info.ltrule_id%}">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button class="btn btn-success" id="addBtn" type="button">添加特殊流通规则</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>特殊流通规则
+                        <small class="m-l-sm">特殊流通规则用于对特定的读者类型、图书流通类型、馆藏地址设置流通规则,将在设置的范围内使用设置的流通规则</small>
+                    </h5>
+                </div>
+                <div class="ibox-content">
+                    <table id="Table">
+                        <thead>
+                        <tr>
+                            <th data-radio="true"></th>
+                            {%eq name='is_inter' value='0'%}
+                            <th data-field="dz_type_code" data-sortable="true">读者类型</th>
+                            {%/eq%}
+                            <th data-field="ltype_code" data-sortable="true">图书流通类型</th>
+                            <th data-field="tsg_site_code" data-sortable="true">馆藏地址</th>
+                            <th data-field="is_close" data-formatter="is_close" data-sortable="true">状态</th>
+                            <th data-field="lend_num" data-sortable="true">最大借阅册数</th>
+                            <th data-field="lend_days" data-sortable="true">最大借书天数</th>
+                            <th data-formatter="opFormatter" data-align="center">操作</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="div_hide"></div>
+</div>
+
+
+<script>
+    $(function () {
+        // 单选/多选插件
+        $(".i-checks").iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green",});
+
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('ltrule/getJsonList',['is_inter'=>$is_inter])%}",
+            sortName: 'ltrule_id',
+            clickToSelect: true,
+            showColumns: 0,                 //是否显示所有的列
+            showRefresh: 0                //是否显示刷新按钮
+        });
+    });
+
+    function getFormOptions() {
+        var options = {
+            url: "{%:url('ltrule/edit')%}",
+            success: function (result) {
+                if (result.code == 1) {
+                    layer.msg(result.msg);
+                    location.reload();
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }
+        };
+
+        return options;
+    }
+
+
+
+    //添加特殊流通规则弹窗
+    $('#addBtn').click(function () {
+        myOpen({
+            type: 2,
+            title : '特殊流通规则新增',
+            /*area: ['auto', 'auto'],*/
+            content: "/admin/ltrule/ext?is_inter="+"{%$is_inter%}"// 加载相对应的弹框
+        });
+    });
+
+    //编辑
+    function editBtn(ltrule_id) {
+        myOpen({
+            type: 2,
+            title : '特殊流通规则编辑',
+            /*area: ['auto', 'auto'],*/
+            content: "/admin/ltrule/ext?lt_rule_id="+ltrule_id+'&is_inter='+"{%$is_inter%}"// 加载相对应的弹框
+        });
+    }
+
+    //删除
+    function delBtn(ltrule_id) {
+        $.post("{%:url('ltrule/drop')%}",{ltrule_id:ltrule_id},function (result) {
+            if (result.code == 1){
+                layer.msg(result.msg);
+                location.reload();
+            }else{
+                layer.alert(result.msg,{icon:2});
+            }
+        })
+    }
+
+    //禁用 ---- 启用
+    function setCloseBtn(ltrule_id,is_close) {
+        $.post("{%:url('ltrule/isClose')%}",{ltrule_id:ltrule_id,is_close:is_close},function (result) {
+            if (result.code == 1){
+                layer.msg(result.msg);
+                location.reload();
+            }else{
+                layer.alert(result.msg,{icon:2});
+            }
+        })
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        if (row.is_close == 1){
+            btns.push('<a href="javascript:void(0);" onclick="setCloseBtn(\'' + row.ltrule_id +'\',\''+'0\')" class="btn-sm text-info">' +
+                '<i class="fa fa-check-circle"></i> 启用 </a>');
+        }else{
+            btns.push('<a href="javascript:void(0);" onclick="setCloseBtn(\'' + row.ltrule_id+ '\',\''+ '1\')" class="btn-sm text-danger">' +
+                '<i class="fa fa-minus-circle"></i> 禁用 </a>');
+        }
+
+        btns.push('<a href="javascript:void(0);" onclick="editBtn(\'' + row.ltrule_id + '\')" class="btn-sm text-primary">' +
+            '<i class="fa fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delBtn(\'' + row.ltrule_id + '\')" class="btn-sm text-danger">' +
+            '<i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+    function is_close(value,row) {
+        var is_close = value == 1 ? "<i class='label label-default'>禁用</i>" : "<i class='label label-primary'>启用</i>";
+        return is_close;
+    }
+</script>

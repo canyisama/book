@@ -1,0 +1,173 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<link href="__static__/css/plugins/iCheck/custom.css" rel="stylesheet">
+<script src="__static__/js/plugins/iCheck/icheck.min.js"></script>
+
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row ">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>更换图书条码</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                    <div class="col-sm-10">
+                        <form action="javascript:void 0" class="form-horizontal" id="postForm" method="post">
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <label class="col-sm-4 control-label">原图书条码:</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" name="barcode_old" id="barcode_old" class="form-control" value="{%:input('barcode_old')%}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="col-sm-3 control-label">新图书条码:</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" name="barcode" id="barcode" class="form-control" value="{%:input('barcode')%}">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary" id="reg"> 置换</button>
+                                </div>
+
+                                <div class="col-sm-3">
+                                    <div class="col-sm-6 i-checks">
+                                        <label class="control-label">
+                                            <input type="checkbox" name="only_self" id="only_self" class="form-control" value="1">
+                                            只显示本馆馆藏
+                                        </label>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-8">
+                                    <h3 class="text-warning">可置换条码图书状态为:在架，装订，分编</h3>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>书目信息</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="form-horizontal">
+                        <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-sm-2 control-label">题名</label>
+                                    <div class="col-sm-6">
+                                        <p class="form-control-static" id="title">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-sm-2 control-label">ISBN</label>
+                                    <div class="col-sm-6">
+                                        <p class="form-control-static" id="isbn">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-sm-2 control-label">著者</label>
+                                    <div class="col-sm-6">
+                                        <p class="form-control-static" id="firstauthor">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-sm-2 control-label">出版社</label>
+                                    <div class="col-sm-6">
+                                        <p class="form-control-static" id="publisher">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-sm-2 control-label">出版时间</label>
+                                    <div class="col-sm-6">
+                                        <p class="form-control-static" id="pubdate">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="bookDckList" style="display: none;">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>馆藏信息</h5>
+                </div>
+                <div class="ibox-content">
+                    <table id="Table" data-row-style="fnSetStyle">
+                        <thead>
+                        <tr>
+                            <th data-radio="true"></th>
+                            <th data-field="barcode" data-sortable="true">图书条码</th>
+                            <th data-field="login_no" data-sortable="true">登录号</th>
+                            <th data-field="calino" data-sortable="true">索书号</th>
+                            <th data-field="status" data-formatter="statusOp" data-sortable="true">状态</th>
+                            <th data-field="tsg_code" data-sortable="true">所属馆</th>
+                            <th data-field="tsg_site_code" data-sortable="true">馆藏地址</th>
+                            <th data-field="lt_type" data-sortable="true">流通类型</th>
+                            <th data-field="price" data-sortable="true">单价</th>
+                            <th data-field="check_batch" data-sortable="true">清点批次</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="__static__/js/logic/cf/common_table_op.js"></script>
+<script src="__static__/js/logic/status/status.js" ></script>
+<script src="__static__/js/logic/dc/dcbat.js" ></script>
+<script>
+
+    $(function () {
+
+        $("#barcode_old").keydown(function (e) {
+            //回车
+            if (e.which == 13) {
+                $('#reg').click();
+                return false;
+            }
+        });
+
+
+        $('#reg').click(function () {
+            var barcode_old = $('#barcode_old').val();
+            var barcode = $('#barcode').val();
+            if (!barcode_old){
+                return layer.msg('请输入原图书条码');
+            }
+            if (!barcode){
+                return layer.msg('请输入新图书条码');
+            }
+            var url = "{%:url('Dcbat/barcode_tab')%}?barcode_old="+barcode_old+"&barcode_new="+barcode;
+            options(url,'#barcode_old');
+        });
+    });
+
+</script>
+</body>

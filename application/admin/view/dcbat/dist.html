@@ -1,0 +1,138 @@
+{%include file='public/header_list' %}
+<link href="__static__/css/plugins/iCheck/custom.css" rel="stylesheet">
+<script src="__static__/js/plugins/iCheck/icheck.min.js"></script>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <button  onclick="export_excel()" type="button"
+                                           class="btn btn-outline btn-default" title="导出excel">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            导出excel
+                                        </button>
+                                    </div>
+
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <div class="i-checks radio">
+                                            <label>
+                                                <input class="form-control input-outline" name="stype" id="stype_0" value="" checked="checked" type="radio">
+                                                统计本馆在他馆图书
+                                            </label>
+                                        </div>
+                                        <div class="i-checks radio">
+                                            <label>
+                                                <input class="form-control input-outline" name="stype" id="stype_1" value="" type="radio">
+                                                统计他馆在本馆图书
+                                            </label>
+                                        </div>
+
+                                        <select class="form-control" id="tsg_code">
+                                            <option value="">= 所有分馆 =</option>
+                                            {%volist name='tsg_list' id='vo'%}
+                                            <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                        <select class="form-control" id="tsg_site_code">
+                                            <option value="">= 所有馆藏地址 =</option>
+                                            {%volist name='tsg_site_list' id='vo'%}
+                                            <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                        <select class="form-control" id="lt_type">
+                                            <option value="">= 所有流通规则 =</option>
+                                            {%volist name='ltype_list' id='vo'%}
+                                            <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-field="title">题名</th>
+                                    <th data-field="firstauthor">第一责任者</th>
+                                    <th data-field="barcode" data-sortable="true">图书条码</th>
+                                    <th data-field="calino" data-sortable="true">索书号</th>
+                                    <th data-field="status" data-sortable="true" data-formatter="statusOp">状态</th>
+                                    <th data-field="tsg_code_has" data-sortable="true">所属馆</th>
+                                    <th data-field="tsg_code" data-sortable="true">所在馆</th>
+                                    <th data-field="tsg_site_code" data-sortable="true">馆藏地址</th>
+                                    <th data-field="lt_type" data-sortable="true">流通类型</th>
+                                    <th data-field="price" data-sortable="true">单价</th>
+                                    <th data-field="price_sum" data-sortable="true">套价</th>
+                                    <th data-field="add_time" data-sortable="true">入库日期</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="__static__/js/logic/status/status.js" ></script>
+<script>
+    var cache_time;
+    var is_rep = false;
+    var tableObject = null;
+    $(function () {
+
+        // 单选/多选插件
+        $(".i-checks").iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green",});
+
+        tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Dcbat/getDistList')%}",
+            sortName: 'dck_id',
+            clickToSelect: true,
+            onLoadSuccess : function (data) {
+                if (data.total != 0){
+                    cache_time = new Date().getTime();
+                    is_rep = false;
+                }
+            }
+        });
+    });
+
+
+    function statusOp(value, row) {
+        return dck_status(value);
+    }
+    
+    function export_excel() {
+        var index = layer.load(1,{
+            shade:[0.1,'#fff']
+        });
+        if (is_rep === true){
+            layer.msg('请不要重复导出');
+            return false;
+        }
+        if (cache_time+10*60*1000 <= new Date().getTime()){
+            tableObject.bootstrapTable('refreshOptions',{
+                random:Math.random()
+            });
+        }
+        is_rep = true;
+        layer.close(index);
+        window.location.href = "{%:url('Dcbat/export_excel_dist')%}";
+    }
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="sendEmail()"
+                                           class="btn btn-outline btn-default" title="发送邮件">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            发邮件
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="from_email" type="text"
+                                               placeholder="发件人Email">
+                                        <input class="form-control input-outline" id="from_name" type="text"
+                                               placeholder="发件人">
+                                        <input class="form-control input-outline" id="to_email" type="text"
+                                               placeholder="收件人Email">
+                                        <input class="form-control input-outline" id="to_name" type="text"
+                                               placeholder="收件人">
+                                        <input class="form-control input-outline" id="subject" type="text"
+                                               placeholder="邮件标题">
+                                        <select class="form-control" id="send_status">
+                                            <option value="">所有邮件状态</option>
+                                            {%volist name='status_lists' id='vo'%}
+                                            <option value="{%$key%}">{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="from_name" data-sortable="true">发件人</th>
+                                    <th data-field="from_email" data-sortable="true">发件人Email</th>
+                                    <th data-field="to_name" data-sortable="true">收件人</th>
+                                    <th data-field="to_email" data-sortable="true">收件人Email</th>
+                                    <th data-field="subject" data-sortable="true">邮件标题</th>
+                                    <th data-field="add_time" data-sortable="true">发送时间</th>
+                                    <th data-field="op_user" data-sortable="true">操作用户</th>
+                                    <th data-field="send_status" data-sortable="true" data-formatter="stateFormatter">
+                                        发送状态
+                                    </th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Email/getList')%}",
+            sortName: 'add_time',
+            clickToSelect: true
+        });
+    });
+
+    function sendEmail() {
+        var url = "{%:url('Email/sendmail');%}";
+        myOpen({
+            type: 2,
+            title: "发送邮件",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function info(id) {
+        if (!id){
+            return layer.msg('邮箱id为空');
+        }
+        var url = "{%:url('Email/show')%}?email_id="+id;
+        myOpen({
+            type: 2,
+            title: "邮件信息查看",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+
+
+    /**
+     * 格式"预订批次状态"列
+     * @param value
+     * @returns {string}
+     */
+    function stateFormatter(value) {
+        switch (value) {
+            case 1:
+                return '<span class="label label-success">发送中</span>';
+            case 2:
+                return '<span class="label label-danger">发送失败</span>';
+            case 3:
+                return '<span class="label label-primary">发送成功</span>';
+        }
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="info(\'' + row.email_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 查看 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

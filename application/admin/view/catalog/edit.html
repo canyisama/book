@@ -1,0 +1,747 @@
+<!--<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN'-->
+		<!--'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>-->
+<!--<html xmlns='http://www.w3.org/1999/xhtml'>-->
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+	<TITLE>weblib</TITLE>
+	<!--<link href="__static__/book/css/common.css" rel="stylesheet" media="screen">-->
+	<!--<link href='__static__/book/css/catalog_form.css' rel='stylesheet' type='text/css' media='screen'/>-->
+	<!--<link href='__static__/book/js/jquery.ui/themes/redmond/jquery.ui.css' rel='stylesheet' type='text/css' media='screen'/>-->
+	<!--<link href='__static__/book/js/jquery.plugins/contextMenu/jquery.contextMenu.css' rel='stylesheet' type='text/css' media='screen'/>-->
+    <link href="__static__/css/bootstrap.min.css" rel="stylesheet">
+    <link href="__static__/css/font-awesome.min.css" rel="stylesheet">
+    <link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="__static__/css/animate.min.css" rel="stylesheet">
+    <link href="__static__/css/style.min.css" rel="stylesheet">
+
+    <!--<style type="text/css">-->
+        <!--.marc_table{    margin:0 auto;    margin-top:5px;}-->
+        <!--#tabs{    margin:5px auto;}-->
+        <!--.page_title{    background-color:#9ED2EF;    text-align:center;    height:30px;    line-height:30px;-->
+        <!--}-->
+        <!--.field_input{width:450px;}-->
+
+        <!--#marc_table tr{    vertical-align:top;    }-->
+        <!--.zd_zsf{    letter-spacing: 1mm;}-->
+        <!--.lib_table{line-height:24px;}-->
+
+        <!--.zd_val{    border:1px solid #ccc;    vertical-align: top;    width: 537px;    line-height:17px;    WORD-WRAP: break-word;    OVERFLOW: visible;     WORD-BREAK: break-all;    font-size:14px;    font-family:"̎ͥ";}-->
+        <!--.ui-widget input, .ui-widget select, .ui-widget button {font-size:14px;    font-family:"̎ͥ";}-->
+
+        <!--.zd_desc{width:80px;}-->
+        <!--.zd_name{width:50px;}-->
+        <!--.zd_zsf{width:26px; padding-left:3px;}-->
+        <!--.zd_val_ff_fix{    height:17px;}-->
+        <!--.mt_select{    margin:0 auto;     width:798px;     padding:3px 0px;     text-align:center;}-->
+        <!--#tabs {    margin-top:3px;}-->
+        <!--.ui-tabs .ui-tabs-panel {padding: 0;}-->
+        <!--.no_acc{color:#F33; margin-left:5px;}-->
+        <!--#jdmarc_table th{font-size:14px;}-->
+
+        <!--.mt-tab{width:800px; margin:0 auto;}-->
+        <!--.mt-content{padding-bottom:10px;}-->
+    <!--</style>-->
+    <style>
+        textarea{
+            resize: none;
+            height: 28px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="col-sm-offset-2 col-sm-8">
+    <div class="panel panel-default">
+        <div class='panel-heading text-center'>
+            <p class="page_title"><b>{%$form_title%}</b>;
+                {%php%}
+                if (($_ACTION_NAME_ == "edit") && ($has_edit_acc != "1")) {
+                echo "<b class=\"no_acc\">";
+                    echo l("not_access_info");
+                    echo "</b>";
+                }
+                {%/php%}
+            </p>
+        </div>
+        <div class="panel-body">
+            <div class="panel panel-default">
+                <div class="panel-body">
+<div class="marc_table wrapper wrapper-content form-horizontal m-b">
+    <form method="post" name="catalog_form" id="catalog_form" class="">
+        <div class="mt-tab mt-tab1" id="tab_block">
+
+
+            <div class="tabs-container mt-hd">
+                <ul class="nav nav-tabs">
+                    <li class="z-crt active" data-id="1" id="li-1"><a ti="1" data-toggle="tab" aria-expanded="true" href="javascript:void (0);">简单编目</a></li>
+                    <li data-id="2" class="" id="li-2"><a ti="2"  data-toggle="tab" aria-expanded="false" href="javascript:void (0);">MARC专业编目</a></li>
+                </ul>
+            </div>
+            <div class="mt-content tab-content">
+                <div class="mt_select">
+                    <div class="form-group" style="margin-top: 10px">
+                    <div class="col-sm-5">
+                        <label class="control-label col-sm-6">        书目类型:</label>
+                        <div class="col-sm-6">
+                        <select name="mt_id" id="mt_id" class="form-control input-sm" style="width:150px;">
+                            {%volist name='mt_list' id='vo'%}
+                            <option value="{%$vo.mt_id%}" {%$mt_id==$vo.mt_id?'selected="selected"':''%}>{%$vo.mt_code%}</option>
+                            {%/volist%}
+                        </select>
+                        </div>
+                    </div>
+                    {%eq name='_ACTION_NAME_' value='add'%}
+                    <div class="col-sm-4">
+                        <label class="control-label col-sm-6">MARC模板:</label>
+                        <div class="col-sm-6">
+                        <select name="marc_tpl_id" id="marc_tpl_id" class="form-control input-sm" style="width:150px;">
+                            {%volist name='tpl_list' id='vo'%}
+                            <option value="{%$vo.marc_tpl_id%}" {%$marc_tpl_id==$vo.marc_tpl_id%}>{%$vo.tpl_name%}</option>
+                            {%/volist%}
+                        </select>
+                        </div>
+                    </div>
+                    {%/eq%}
+
+                    <div class="col-sm-3">
+                        <label style="color:red;">
+                            &nbsp;&nbsp;<input type="checkbox"  class="valign_fix" {%$book_info.is_verify==1?'checked="checked"':''%} name="is_verify" id="is_verify" value="1"  />
+                            书目已经审核</label>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2">
+                            书目所有馆:[{%$book_info.tsg_code%}]
+                            &nbsp;&nbsp;编目员:[{%$book_info.cataloger%} ]
+                            &nbsp;&nbsp;编目时间:[{%$book_info["catatime"] ? date("Y-m-d H:i:s",$book_info["catatime"]):''%}]
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table">
+                    <tr>
+                        <td width="100%">
+                            <div class="mt-item tab-pane active" ti="1" id="tab-1">
+                                <table width="100%" cellspacing="0" cellpadding="0" class="lib_table" id="jdmarc_table"
+                                       style="border-collapse:separate;border-spacing:10px;">
+                                    <tr class="text-center" style="margin-bottom: 10px">
+                                        <th  width="180" align="right">&nbsp;</th>
+                                        <td  width="520"  align="left">
+                                            {%$has_fields_hide ?'&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue">[部分录入字段已设置为隐藏！]</span>':''%}
+                                        </td>
+                                    </tr>
+                                    <tr >
+                                        <td height="20" align="right">{%:l('isbn')%} ：</td>
+                                        <td class="tab-align-l">
+                                            <input  name="isbn"   type="text"  value="{%$book_info.isbn%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('title')%} ：</td>
+                                        <td class="tab-align-l">
+                                            <input maxlength="200" name="title" type="text" value="{%$book_info.title%}" class="form-control input-sm"/>
+                                        </td>
+                                        <td>
+                                            <span style="color: red">*</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('bl_title')%} ：</td>
+                                        <td class="tab-align-l">
+                                            <input maxlength="200" name="bl_title" type="text" value="{%$book_info.bl_title%}" class="form-control input-sm"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('othertitle')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="150" name="othertitle" type="text" value="{%$book_info.othertitle%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('fjtitle')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="50" name="fjtitle" type="text" value="{%$book_info.fjtitle%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('fjno')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="20" name="fjno" type="text" value="{%$book_info.fjno%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('firstauthor')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="100" name="firstauthor" type="text" value="{%$book_info.firstauthor%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('otherauthor')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="100" name="otherauthor" type="text" value="{%$book_info.otherauthor%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('series')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="100" name="series" type="text" value="{%$book_info.series%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('seriesauthor')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="100" name="seriesauthor" type="text" value="{%$book_info.seriesauthor%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('publisher')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="100" name="publisher" type="text" value="{%$book_info.publisher%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('pubplace')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="100" name="pubplace" type="text" value="{%$book_info.pubplace%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('pubdate')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="100" name="pubdate" type="text" value="{%$book_info.pubdate%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('pages')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="100" name="pages" type="text" value="{%$book_info.pages%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('edition')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="100" name="edition" type="text" value="{%$book_info.edition%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('accessories')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="100" name="accessories" type="text" value="{%$book_info.accessories%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('charts')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="10" name="charts" type="text" value="{%$book_info.charts%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('gennotes')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="80" name="gennotes" type="text" value="{%$book_info.gennotes%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('binding')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <select name="binding"  class="form-control input-sm">
+                                                {%volist name='binding_list' id='vo'%}
+                                                <option value="{%$vo.cnf_val%}" {%$book_info.binding==$vo.cnf_val?'selected="selected"':''%}>{%$vo.cnf_val%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('lags')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <select name="binding"  class="form-control input-sm">
+                                                {%volist name='lags_list' id='vo'%}
+                                                <option value="{%$vo.cnf_val%}" {%$book_info.lags==$vo.cnf_val?'selected="selected"':''%}>{%$vo.cnf_val%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('size')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="20" name="size" type="text" value="{%$book_info.size%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('abstract')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <textarea name="abstract" class="form-control" style="width:685px; height:100px;">{%$book_info.abstract%}</textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('clc')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input  name="clc" type="text" value="{%$book_info.clc%}" class="form-control input-sm">
+                                        </td>
+                                        <td>
+                                            <span style="color: red">*</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('subject')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="50" name="subject" type="text" value="{%$book_info.subject%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">{%:l('price_ms')%} ：</td>
+                                        <td  class="tab-align-l">
+                                            <input maxlength="20" name="price_ms" type="text" value="{%$book_info.price_ms%}" class="form-control input-sm">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="mt-item tab-pane" ti="2" id="tab-2">
+                                <table width="100%" style="border-collapse:collapse;border: 1px solid blue;" cellspacing="0"
+                                       cellpadding="0" class="marc_table" id="marc_table">
+
+                                <tr style="background-color:#CECECE;height:30px;line-height:30px;">
+                                    <td style="text-align:center;border-collapse:collapse;border: 1px solid blue;">字段名称</td>
+                                    <td style="border-collapse:collapse;border: 1px solid blue;">字段编号</td>
+                                    <td style="border-collapse:collapse;border: 1px solid blue;">标识</td>
+                                    <td style="border-collapse:collapse;border: 1px solid blue;">数据项</td>
+                                </tr>
+                   </table>
+                                <!--<table width="100%" style="border-collapse:collapse;background-color:#CECECE;border: 1px solid blue;" cellspacing="0"-->
+                                       <!--cellpadding="0" class="marc_table" id="marc_table">-->
+                                    <!--<tr style="height:30px;line-height:30px;">-->
+                                        <!--<td style="text-align:center;border-collapse:collapse;">字段名称</td>-->
+                                        <!--<td style="border-collapse:collapse;">字段编号</td>-->
+                                        <!--<td style="border-collapse:collapse;">标识</td>-->
+                                        <!--<td style="border-collapse:collapse;">数据项</td>-->
+                                    <!--</tr>-->
+                                <!--</table>-->
+                            </div>
+                        <!--</td>-->
+                    <!--</tr>-->
+                <!--</table>-->
+            </div>
+        </div>
+        <!-- /tab选项卡 -->
+    </form>
+</div>
+
+</td>
+<td>
+   <div id="MrcTools" style="display:block;">
+       <input name="btn" id="btn_AddField" title="ALT+A添加字段"
+              class="btn_1 btn btn-primary" onclick="marc_obj.insertLine();" type="button" value="添加字段(A)" style="margin-bottom: 5px"/><br>
+       <input name="btn" id="btn_AddSubField" title="ALT+W添加子字段"
+              class="btn_1 btn btn-primary" onclick="marc_obj.addSzdHead();" type="button" value="加子字段(W)"/><br><br>
+       <input name="btn"  class="btn_1 btn btn-primary"
+              title="ALT+D删除字段" onclick="marc_obj.delLine()" type="button" value="删除字段(D)" style="margin-bottom: 5px"/><br>
+       <input name="btn"  class="btn_1 btn btn-primary"
+              title="ALT+E删除子字段" onclick="marc_obj.delSzd()" type="button" value="删子字段(E)" style="margin-bottom: 5px"/><br>
+       <input name="btn"  class="btn_1 btn btn-primary"
+              title="ALT+K删除空字段" onclick="delField();" type="button" value="删空字段(K)" style="margin-bottom: 5px"/><br><br>
+       <input name="btn" id="btn_AutoPy" title="ALT+P自动生成拼音字段" class="btn_1 btn btn-primary"
+              onclick="add_pinyinZd();" type="button" value="生成拼音(P)" style="margin-bottom: 5px"/><br>
+       <input name="btn" id="btn_SortField" title="ALT+Q字段排序" class="btn_1 btn btn-primary"
+              onclick="marc_obj.MarcTableOrder();" type="button" value="字段排序(Q)"/><br><br>
+       <input name="btn" id="btn_LoadDftMarc" title="ALT+L加载默认MARC模板" class="btn_1 btn btn-primary"
+              onclick="loadDefault();" type="button" value="默认模板 (L)" style="margin-bottom: 5px"/><br>
+       <input name="btn" id="btn_pasteMarc" title="ALT+M粘贴Marc数据" class="btn_1 btn btn-primary"
+              onclick="marcPasteOpen();" type="button" value="粘贴Marc(M)"/><br><br>
+    </div>
+       <input name="btn" id="btn_AutoAdd" title="ALT+S保存书目并添加明细"
+              class="btn_1 btn btn-primary" onclick="submit_form(this,1)" type="button" value="添加馆藏(S)"/><br><br>
+       <input name="btn" id="btn_SaveCatalog" title="ALT+B保存书目"
+              class="btn_1 btn btn-primary" onclick="submit_form(this,0)" type="button" value="保存书目(B)" /><br><br>
+        <input name="btn_bopy_book" id="btn_bopy_book"
+               class="btn_1 btn btn-primary" title="ALT+T套录书目" onclick="copy_book()" type="button" value="套录书目(T)" /><br><br>
+        <input name="btn"  class="btn_1 btn btn-primary" title="ALT+X退出编目界面" onclick="reback()" type="button" value="退出编目(X)" />
+        </td>
+</tr>
+</table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type='text/javascript'>
+    var URL = '__URL__';
+    var APP = '__APP__';
+    var PUBLIC = '__PUBLIC__';
+    var SITE_URL = '';
+    var SITE_URL_FULL = '/admin';
+    var isIE = !!window.ActiveXObject;
+    var isIE6 = isIE && !window.XMLHttpRequest;
+    var today = "{%$today_str%}";
+</script>
+
+<script src="__static__/book/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src='__static__/book/js/jquery.autosize.js' type='text/javascript'></script>
+<script src="__static__/book/js/common.js" type="text/javascript"></script>
+<script src='__static__/book/js/catalog_form.js' type='text/javascript'></script>
+<script src="__static__/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="__static__/js/jquery.form.js"></script>
+<script src='__static__/book/js/mydialog/jquery.ui.js' type='text/javascript'></script>
+<script src='__static__/book/js/mydialog/ui.dialog_all.js' type='text/javascript'></script>
+<script src='__static__/book/js/jquery.plugins/contextMenu/jquery.contextMenu.js' type='text/javascript'></script>
+<script src='__static__/book/js/marc.js' type='text/javascript'></script>
+<script src='__static__/book/js/marc_plus.js' type='text/javascript'></script>
+<script src='__static__/book/js/gen_pinyin.js?t={%:time()%}' type='text/javascript'></script>
+<script src='__static__/book/js/baseTab/baseTab.js' type='text/javascript' charset='utf-8'></script>
+<script src="__static__/js/plugins/layer/layer.min.js"></script>
+<!--<link href='__static__/book/js/baseTab/baseTab.css' rel='stylesheet' type='text/css' />-->
+
+<script>
+    var marc_data = {%$marc_json%};
+    var mapper = {%$mapper_json%};
+    var marc_fields = {%$marc_fields%};
+    var fields_hide_json = {%$fields_hide_json%};
+</script>
+<script type="text/javascript">
+    var add_dck_msg = "{%$add_dck_msg%}";
+    var curval = 1;
+    var in_frame = 1;
+    var form_obj = '';
+    var catalog_form_valid = '';
+    var marc_obj = "";
+    var is_init = false;
+    var ActName = "{%$_ACTION_NAME_%}";
+    var has_edit_acc = "{%$has_edit_acc%}";
+    var bm_jd_marc = "{%$bm_jd_marc%}";
+    var is_on_submit = false;
+    var tsg_code = "{%$_user_info.tsg_code%}";
+    var pinyin_config = "{%$pinyin_config%}";
+    var pinyin_dx = "{%$pinyin_dx%}";
+    var bm_del_empty = "{%$bm_del_empty%}";
+
+    $(function () {
+        // 内容块切换 - 借还操作
+        $('.nav-tabs li').click(function() {
+            // 当前添加类名并移除兄弟级
+            $(this).addClass('active').siblings().removeClass('active');
+            tab_id = $(this).attr('data-id');
+            layer.closeAll();
+            $('.tab-pane').removeClass('active');
+        });
+
+
+        if (ActName != "edit") {
+            switch (curval) {
+                case "1":
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val("添加馆藏(S)")
+                    });
+                    break;
+                case "2":
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val("添加预订(S)")
+                    });
+                    break;
+                case "3":
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val("添加验收(S)")
+                    });
+                    break;
+                case "4":
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val("添加预订(S)")
+                    });
+                    break;
+                case "5":
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val("添加验收(S)")
+                    });
+                    break;
+                case "6":
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val("添加装订(S)")
+                    });
+                    break;
+                default:
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).remove();
+                    });
+                    break;
+            }
+        } else {
+            $("input[id='btn_AutoAdd']").each(function () {
+                $(this).remove();
+            });
+        }
+        for (var i in fields_hide_json) {
+            var field_name = fields_hide_json[i];
+            $("#catalog_form [name='" + field_name + "']").parent().parent().remove();
+        }
+
+        marc_obj = new MARC(marc_data, mapper, $("#jdmarc_table"), $("#marc_table"), marc_fields);
+
+        $("#tab_block").baseTab({
+            "initTabIndex": bm_jd_marc,
+            "onTabClick": function (index) {
+                if (index == "1") {
+                    $('#li-1').addClass('active').siblings().removeClass('active');
+                    if (is_init) {
+                        $('#MrcTools').css('display', 'none');
+                        marc_obj.tab_switch("jd");
+                    }
+                }
+                else if (index == "2") {
+                    $('#li-2').addClass('active').siblings().removeClass('active');
+                    $('#MrcTools').css('display', 'block');
+                    marc_obj.tab_switch("marc");
+                }
+            }
+        });
+
+
+        form_obj = $('#catalog_form');
+        catalog_form_valid = form_obj.validate({
+            errorPlacement: function (error, element) {
+                $(element).next('.field_notice').hide();
+                $(element).after(error);
+            },
+            onkeyup: false,
+            focusInvalid: false,
+            errorClass: "form_valid_error",
+            rules: {
+                title: {
+                    required: true
+                },
+                clc: {
+                    required: true
+                }
+            },
+            messages: {
+                title: {
+                    required: "{%:l('title_require')%}"
+                },
+                clc: {
+                    required: "{%:l('clc_require')%}"
+                }
+            }
+        });
+        table_enter_next($(".lib_table"));
+        $(".lib_table input,.lib_table textarea").keydown(function (e) {
+            if (e.which == 38) {
+                back_element(e, 38);
+            }
+            else if (e.which == 40) {
+                next_element(e, 40);
+            }
+        });
+        if (ActName == "add" || ActName == "copyadd" || ActName == "z3950add") {
+            $("#mt_id,#marc_tpl_id").change(function (e) {
+                var mt_id = $("#mt_id").val();
+                var marc_tpl_id = $("#marc_tpl_id").val();
+                var url = SITE_URL_FULL + "/Catalog/" + ActName + "?in_frame=" + in_frame
+                if (ActName == "add") {
+                    if ($(this).attr("id") == "mt_id") {
+                        url = url + "&mt_id=" + mt_id;
+                    }
+                    else {
+                        url = url + "&mt_id=" + mt_id + "&marc_tpl_id=" + marc_tpl_id;
+                    }
+                }
+                else if (ActName == "copyadd") {
+                    var book_share_id = "{%:input('book_share_id/d')%}";
+                    url = url + "&mt_id=" + mt_id + "&book_share_id=" + book_share_id;
+                }
+                else if (ActName == "z3950add") {
+                    var rpn = "{%:input('rpn')%}";
+                    var z3950_id = "{%:input('z3950_id')%}";
+                    var curr_pos = "{%:input('curr_pos')%}";
+                    var curr_db = "{%:input('curr_db')%}";
+                    url = url + "&mt_id=" + mt_id + "&rpn=" + rpn + "&z3950_id=" + z3950_id + "&curr_pos=" + curr_pos + "&curr_db=" + curr_db;
+                }
+                location.href = url;
+            });
+
+            $("#btn_bopy_book,#btn_bopy_book1").remove();
+            $("#edit_info_show").remove();
+        }
+        else {
+            $("#mt_id").attr("disabled", "disabled");
+        }
+        if (ActName == "edit" && has_edit_acc !== "1") {
+            $("#btn_AutoAdd,#btn_submit,#btn_SaveCatalog").remove();
+        }
+        var currIndex = bm_jd_marc;
+        if (currIndex == "1") {
+            $('#MrcTools').css('display', 'none');
+            var obj = $("#jdmarc_table input[name='isbn']");
+            var val = obj.val();
+            obj.val("");
+            obj.focus();
+            obj.val(val);
+        }
+        else if (currIndex == "2") {
+            $('#MrcTools').css('display', 'block');
+            var obj = $("#marc_table .zd_val:first");
+            var val = obj.val();
+            obj.val("");
+            obj.focus();
+            obj.val(val);
+        }
+        is_init = true;
+    });
+
+    function submit_form(this_obj, autoadd) {
+        if (is_on_submit) {
+            return false;
+        }
+        is_on_submit = true;
+        var currIndex = $("#tab_block").baseTabCmd("getCurrIndex");
+        if (currIndex == "1") {
+            marc_obj.tab_switch("marc");
+        }
+        else {
+            marc_obj.tab_switch("jd");
+        }
+
+        var zd_names = new Array();
+        marc_obj.marctable.find("input.zd_name").each(function (index, element) {
+            zd_names.push($.trim(this.value));
+        });
+        for (var i in zd_names) {
+            if (!zd_names[i]) {
+                alert("MARC字段名为空,请核对！");
+                is_on_submit = false;
+                return false;
+            }
+
+            if (zd_names[i].length != 3) {
+                alert("MARC字段名错误，请核对！");
+                is_on_submit = false;
+                return false;
+            }
+        }
+
+        genZd801();
+        if (currIndex == "2") {
+            var title_zd = mapper["title"];
+            var clc_zd = mapper["clc"];
+            var title = marc_obj.getZdValue(title_zd);
+            var clc = marc_obj.getZdValue(clc_zd);
+            marc_obj.tab_switch("jd");
+            if (!title) {
+                alert("题名" + title_zd + "字段不能为空！");
+                is_on_submit = false;
+                return false;
+            }
+            if (!clc) {
+                alert("分类号" + clc_zd + "字段不能为空！");
+                is_on_submit = false;
+                return false;
+            }
+        }
+
+        if (catalog_form_valid.form()) {
+            var btn_obj = $(this_obj);
+            if (bm_del_empty != "1") {
+                marc_obj.delEmpty();
+            }
+            $('#catalog_form').ajaxSubmit({
+                type: "post", dataType: "json", success: function (ret) {
+                    if ((autoadd != 1) || (ret.code == 0)) {
+                        alert(ret.msg);
+                    }
+
+                    if (ret.code) {
+                        if (ActName == "edit") {
+                            //ret_url=SITE_URL_FULL+"/Catalog/index";
+                            history.back();
+                        }
+                        else {
+                            if (in_frame) {
+                                var pop_msg = "";
+                                if (curval == 1) {
+                                    var url = SITE_URL_FULL + "/Catalog/framework?book_id=" + ret.data.book_id;
+                                    pop_msg = "是否添加馆藏数据?";
+                                }
+                                else if (curval == 2) {
+                                    var url = SITE_URL_FULL + "/Destine/framework?book_id=" + ret.data.book_id;
+                                    pop_msg = "是否添加预订数据?";
+                                }
+                                else if (curval == 3) {
+                                    var url = SITE_URL_FULL + "/Ys/framework?book_id=" + ret.data.book_id;
+                                    pop_msg == "是否添加验收数据?";
+                                }
+                                else if (curval == 4) {
+                                    var url = SITE_URL_FULL + "/Qk/framework?book_id=" + ret.data.book_id;
+                                    pop_msg = "是否添加期刊预订数据?";
+                                }
+                                else if (curval == 5) {
+                                    history.back();
+                                    return false;
+                                }
+                                else if (curval == 6) {
+                                    var url = SITE_URL_FULL + "/Qk/qk_framework?book_id=" + ret.data.book_id;
+                                    pop_msg = "是否添加期刊装订数据?";
+                                }
+                                if (autoadd == 1) {
+                                    url += "&open_add=1";
+                                    window.location.href = url;
+                                    return false;
+                                }
+                                else {
+                                    window.location.href = url;
+                                    return false;
+                                }
+                            }
+                            else {
+                                var ret_url = SITE_URL_FULL + "/Catalog/index?book_id=" + ret.data.book_id;
+                                window.location.href = ret_url;
+                            }
+                        }
+                    }
+                    else {
+                    }
+
+                    is_on_submit = false;
+                }
+            });
+
+        }
+        else {
+            form_obj.find("input.form_valid_error:first").focus();
+            is_on_submit = false;
+        }
+    }
+
+    function reback() {
+        if (confirm("您确认退出编目吗?当前录入的数据将不会保存!") == true) {
+            window.history.back();
+        }
+    }
+
+    function loadDefault() {
+        if (confirm("您确认载入默认MARC模板吗?当前录入的数据将不会保存!") == true) {
+            marc_obj.loadDefault();
+        }
+    }
+
+    function delField() {
+        if (confirm("您确认删除空字段吗?") == true) {
+            marc_obj.delEmpty();
+        }
+    }
+
+
+    function copy_book() {
+        var url = SITE_URL_FULL + "/Catalog/add?copy_book_id={%:input('book_id')%}&in_frame=" + in_frame + "&curval=" + curval;
+        turn_to(url);
+    }
+
+    function turn_to(url) {
+        var main_frame = get_frame();
+        if (main_frame) {
+            window.top.document.getElementById("mainframe").src = url;
+        }
+        else {
+            window.location.href = url;
+        }
+    }
+</script>
+</body>
+</html>
+

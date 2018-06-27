@@ -1,0 +1,58 @@
+{%include file='public/header_form' %}
+
+<body>
+<div class="space-20"></div>
+<div>
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="qk_cycle_id" id="qk_cycle_id" value="{%$info.qk_cycle_id%}">
+            <!--{%:token('__token__', 'sha1')%}-->
+            <div class="form-group">
+                    <label class="col-sm-3 control-label">周期名称：</label>
+                    <div class="col-sm-8">
+                        <input id="cycle_name" name="cycle_name" class="form-control" type="text"
+                               required="required"
+                               placeholder="请输入周期名称" value="{%$info.cycle_name%}">
+                    </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">周期出版册数：</label>
+                <div class="col-sm-8">
+                    <input id="cycle_cnt" name="cycle_cnt" class="form-control" type="text"
+                           required="required"
+                           placeholder="请输入周期出版册数" value="{%$info.cycle_cnt%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <input id="remark" name="remark" class="form-control" type="text"
+                           placeholder="请输入备注" value="{%$info.remark%}">
+                </div>
+            </div>
+
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="div_hide"></div>
+<script>
+    function getFormOptions() {
+        var id = $('#qk_cycle_id').val();
+        var url = "{%:url('QkCycle/add')%}";
+        if (id){
+            url = "{%:url('QkCycle/edit')%}?qk_cycle_id="+id;
+        }
+        return {url:url};
+    }
+</script>

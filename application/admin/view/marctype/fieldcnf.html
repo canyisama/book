@@ -1,0 +1,125 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <select class="form-control" id="mt_id">
+                                            {%volist name="mt_list" id="mt"%}
+                                            <option value="{%$mt.mt_id%}">{%$mt.mt_code%}</option>
+                                            {%/volist%}
+                                        </select>
+                                        <input class="form-control input-outline" id="zd_name" type="text"
+                                               placeholder="字段标识符">
+                                        <input class="form-control input-outline" id="zd_text" type="text"
+                                               placeholder="字段含义全称">
+                                        <input class="form-control input-outline" id="zd_text_jd" type="text"
+                                               placeholder="字段含义简称">
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" id="searchBtn" class="btn btn-primary">查询</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="mt_code" data-sortable="true">MARC类型</th>
+                                    <th data-field="zd_name" data-sortable="true">字段标识符</th>
+                                    <th data-field="zd_text_jd" data-sortable="true">字段含义简称</th>
+                                    <th data-field="zsf1" data-sortable="true">指示符1</th>
+                                    <th data-field="zzd_bs" data-sortable="true">子字段标识</th>
+                                    <th data-field="is_must" data-sortable="true" data-formatter="mustFormatter">
+                                        是否必备字段
+                                    </th>
+                                    <th data-field="len" data-sortable="true">字段固定长度</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Marctype/fieldcnf_list')%}",
+            sortName: 'marc_field_id',
+            sortOrder: "asc",
+            clickToSelect: true,
+            pageSize: 160000,
+            pageList: []
+        });
+    });
+
+    function toEdit(marc_field_id) {
+        var mt_id = $("#mt_id").val();
+        var url = "{%:url('Marctype/add_field')%}?mt_id=" + mt_id;
+        if (mt_id)
+            url = "{%:url('Marctype/edit_field')%}?marc_field_id=" + marc_field_id + "&mt_id=" + mt_id;
+
+        myOpen({
+            type: 2,
+            title: mt_id ? "编辑数据" : "添加数据",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function delData(marc_field_id) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('Marctype/drop_field')%}", {marc_field_id: marc_field_id}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function mustFormatter(value) {
+        if (value == 1) {
+            return '<span class="label label-success">是</span>';
+        }
+        return '<span class="label label-danger">否</span>';
+    }
+
+    function opFormatter(value, row) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.marc_field_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.marc_field_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

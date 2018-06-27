@@ -1,0 +1,78 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <button type="button" id="excel_export" class="btn btn-primary">导出excel</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="tsg_code">分馆名称</th>
+                                    <th data-field="book_cnt">馆藏种数</th>
+                                    <th data-field="dck_all_cnt">馆藏总册数(含期刊)</th>
+                                    <th data-field="dck_all_money">馆藏总金额</th>
+                                    <th data-field="dz_cnt">读者总数</th>
+                                    <th data-field="dz_valid_cnt">有效读者数</th>
+                                    <th data-field="lend_cnt">借书总数</th>
+                                    <th data-field="lend_valid_cnt">当前借书数</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var  cache_time = 0;
+    var is_rep = false;
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Dcbat/tsgInfo')%}",
+            sortable:false,
+            onLoadSuccess:function (data) {
+                if (data.total != 0){
+                    cache_time = new Date().getTime();
+                    is_rep = false;
+                }
+            }
+        });
+
+        $('#excel_export').click(function () {
+            var index = layer.load(1,{
+                shade:[0.1,'#fff']
+            });
+            if (is_rep === true){
+                layer.msg('请不要重复导出');
+                return false;
+            }
+            if (cache_time+10*60*1000 <= new Date().getTime()){
+                tableObject.bootstrapTable('refreshOptions',{
+                   random:Math.random()
+                });
+            }
+            is_rep = true;
+            layer.close(index);
+            window.location.href = "{%:url('Dcbat/export_excel_tsg')%}";
+        });
+    })
+
+</script>
+
+</body>
+</html>

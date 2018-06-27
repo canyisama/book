@@ -1,0 +1,43 @@
+{%extend name='public/header' /%}
+{%block name='head'%}
+{__block__}
+<link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="__static__/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="__static__/js/indexpage.js"></script>
+{%/block%}
+
+{%block name='content_user'%}
+{__block__}
+
+<div>
+    <table id="Table">
+        <thead>
+        <tr>
+            <th data-field="tsg_code" data-sortable="true">所在分馆</th>
+            <th data-field="title" data-formatter="titleOp" data-sortable="true">书名</th>
+            <th data-field="barcode" data-sortable="true">图书条码</th>
+            <th data-field="fee_mode" data-sortable="true">财务类型</th>
+            <th data-field="fee_money" data-sortable="true">财务金额</th>
+            <th data-field="fee_type" data-sortable="true">缴费状态</th>
+            <th data-field="fin_mode" data-sortable="true">缴费类型</th>
+            <th data-field="add_time" data-sortable="true">罚款日期</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+
+<script src="__static__/js/logic/opac/table.js" ></script>
+
+<script>
+    var source = 'finan_list';
+    var sort_name = 'add_time';
+
+</script>
+
+{%/block%}

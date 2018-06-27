@@ -1,0 +1,110 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增规则">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="ltype_code" type="text"
+                                               placeholder="流通类型代码">
+                                        <input class="form-control input-outline" id="ltype_name" type="text"
+                                               placeholder="图书类型名称">
+                                        <input class="form-control input-outline" id="remark" type="text"
+                                               placeholder="备注">
+
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="ltype_code" data-sortable="true">流通类型代码</th>
+                                    <th data-field="tsg_code" data-sortable="true">分馆代码</th>
+                                    <th data-field="ltype_name" data-sortable="true">图书类型名称</th>
+                                    <th data-field="remark" data-sortable="true">备注</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('ltype/getJsonList')%}",
+            sortName: 'ltype_code',
+            clickToSelect: true
+        });
+    });
+
+
+    function toEdit(ltype_code) {
+        myOpen({
+            type: 2,
+            title: "流通类型编辑",
+            /*area: ['auto', 'auto'],*/
+            content: "{%:url('ltype/edit');%}?ltype_code=" + ltype_code
+        });
+    }
+
+    function delData(ltype_code,tsg_code) {
+        myConfirm("确定要删除此图书类型吗？", 3, function () {
+            $.post("{%:url('ltype/drop')%}", {ltype_code: ltype_code,tsg_code:tsg_code}, function (result) {
+                if (result.code == 1) {
+                    layer.msg(result.msg);
+                    location.reload();
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+
+
+
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.ltype_code + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.ltype_code+'\',\''+row.tsg_code+ '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+{%include file='public/header_form' %}
+<style>
+    .table-hover>tbody>tr:hover{ background-color: rgb(120, 188, 218); color: white; cursor: pointer;}
+</style>
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="user_id" value="{%$user_info.user_id%}">
+            <div class="col-sm-7">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label"> 所属分馆代码：</label>
+                    <div class="col-sm-8">
+                        <select id="belong_tsg_code" name="belong_tsg_code" class="form-control">
+                            {%volist name="tsg_list" id="tsg"%}
+                            <option value="{%$tsg.tsg_code%}"
+                                    {%$tsg.tsg_code==$user_info.belong_tsg_code?'selected':''%}>
+                                {%$tsg.tsg_code%} | {%$tsg.tsg_name%}
+                            </option>
+                            {%/volist%}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label"><span class="text-muted">*</span> 登录名：</label>
+                    <div class="col-sm-8">
+                        <input id="user_name" name="user_name" class="form-control input-sm" type="text"
+                               required="required"
+                               placeholder="请输入登录名" value="{%$user_info.user_name%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">{%$user_info.user_id?'':'<span class="text-muted">*</span>'%}密码：</label>
+                    <div class="col-sm-8">
+                        <input id="user_pwd" name="user_pwd" class="form-control input-sm" type="password" value=""
+                          {%$user_info.user_id?'':'required="required"'%}>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label"><span class="text-muted">*</span> 名称：</label>
+                    <div class="col-sm-8">
+                        <input id="real_name" name="real_name" class="form-control input-sm" type="text"
+                               required="required"
+                               placeholder="请输入名称" value="{%$user_info.real_name%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label"><span class="text-muted">*</span> 有效期：</label>
+                    <div class="col-sm-8">
+                        <input id="expiry_date" name="expiry_date" class="form-control input-sm" type="text"
+                               required="required" readonly
+                               placeholder="请输入有效期" value="{%$user_info.expiry_date|fmt_date%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">状态：</label>
+                    <div class="col-sm-8">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" value="0" name="is_close" {%$user_info.is_close!=1?'checked':''%}>
+                                有效</label>
+                            &nbsp;&nbsp;&nbsp;
+                            <label>
+                                <input type="radio" value="1" {%$user_info.is_close==1?'checked':''%}
+                                       name="is_close">
+                                无效</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">部门：</label>
+                    <div class="col-sm-8">
+                        <input id="user_dep" name="user_dep" class="form-control input-sm" type="text"
+                               placeholder="请输入部门" value="{%$user_info.user_dep%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">邮政编码：</label>
+                    <div class="col-sm-8">
+                        <input id="user_post" name="user_post" class="form-control input-sm" type="text"
+                               placeholder="请输入邮政编码" value="{%$user_info.user_post%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">电话：</label>
+                    <div class="col-sm-8">
+                        <input id="phone" name="phone" class="form-control input-sm" type="text"
+                               placeholder="请输入电话" value="{%$user_info.phone%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">手机：</label>
+                    <div class="col-sm-8">
+                        <input id="mobile" name="mobile" class="form-control input-sm" type="text"
+                               placeholder="请输入手机" value="{%$user_info.mobile%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">电子邮箱：</label>
+                    <div class="col-sm-8">
+                        <input id="email" name="email" class="form-control input-sm" type="text"
+                               placeholder="请输入电子邮箱" value="{%$user_info.email%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">联系地址：</label>
+                    <div class="col-sm-8">
+                        <input id="user_addr" name="user_addr" class="form-control input-sm" type="text"
+                               placeholder="请输入联系地址" value="{%$user_info.user_addr%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">允许登录IP：</label>
+                    <div class="col-sm-8">
+                        <textarea name="ip_limit" class="form-control input-sm"
+                                  style="resize:none;">{%$user_info.ip_limit%}</textarea>
+                        <p class="form-control-static">为空允许所有IP,每行一条IP数据,IP格式:192.168.1.5、192.168.1.5-192.168.1.65</p>
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    <div class="col-sm-12">
+                        <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                            <i class="fa fa-check"></i> 保存
+                        </button>
+                        <a class="btn btn-outline btn-danger" id="btnCancel">
+                            <i class="fa fa-times"></i> 取消
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <table class="table table-hover table-bordered text-center">
+                    <thead>
+                    <tr>
+                        <th class="text-center">选择</th>
+                        <th class="text-center">角色代码</th>
+                        <th class="text-center">角色名称</th>
+                        <th class="text-center">分馆代码</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {%volist name="role_list" id="role"%}
+                    <tr>
+                        <td><input type="checkbox" name="role_code[]" value="{%$role.role_code%}"
+                                   {%if in_array($role.role_code,$user_role_list_exist)%}checked="checked"{%/if%}
+                        </td>
+                        <td>{%$role.role_code%}</td>
+                        <td>{%$role.role_name%}</td>
+                        <td>{%$role.tsg_code%}</td>
+                    </tr>
+                    {%/volist%}
+                    </tbody>
+                </table>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="__static__/js/laydate/laydate.js"></script>
+<script>
+    $(function () {
+        laydate.render({
+            elem: '#expiry_date' //指定元素
+        });
+        
+        $("table tr").click(function () {
+            var ck = $(this).find("input[type='checkbox']");
+            ck.prop("checked", !ck.prop("checked"));
+        });
+    });
+    
+    function getFormOptions() {
+        var user_id = "{%$user_info.user_id%}";
+        return {url: user_id ? "{%:url('User/edit')%}" : "{%:url('User/add')%}"};
+    }
+</script>

@@ -1,0 +1,407 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<style>
+    .formPanel {
+        padding: 20px;
+    }
+
+    .formPanel .opName {
+        width: 40%;
+        float: left;
+        line-height: 35px;
+    }
+
+    .formPanel .opField {
+        width: 50%;
+        float: left;
+    }
+</style>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="添加读者">添加读者</a>
+                                        <a href="javascript:void(0)" onclick="toOpenPanel(1)"
+                                           class="btn btn-outline btn-default" title="证件处理">证件处理</a>
+                                        <a href="javascript:void(0)" onclick="toOpenPanel(2)"
+                                           class="btn btn-outline btn-default" title="修改读者单位">修改读者单位</a>
+                                        <a href="javascript:void(0)" onclick="toOpenPanel(3)"
+                                           class="btn btn-outline btn-default">修改密码</a>
+                                        <a href="javascript:void(0)" onclick="toOpenPanel(4)"
+                                           class="btn btn-outline btn-default">修改有效期</a>
+                                        <a href="javascript:void(0)" onclick="toOpenPanel(5)"
+                                           class="btn btn-outline btn-default">修改类型</a>
+                                        <a href="javascript:void(0)" onclick="toOpenPanel(6)"
+                                           class="btn btn-outline btn-default">读者换证</a>
+                                        <a href="javascript:void(0)" onclick="finance_op(1)"
+                                           class="btn btn-outline btn-default">收费操作</a>
+                                        <a href="javascript:void(0)" onclick="finance_op(2)"
+                                           class="btn btn-outline btn-default">退费操作</a>
+                                        <a href="javascript:void(0)" onclick="print_finan()"
+                                           class="btn btn-outline btn-default">财务清单</a>
+                                        <a href="javascript:void(0)" onclick="return_card()"
+                                           class="btn btn-outline btn-default">退证处理</a>
+                                        <a href="javascript:void(0)" onclick="multiDel()"
+                                           class="btn btn-outline btn-default">批量删除</a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <select class="form-control" id="dz_type_code">
+                                            <option value="">= 请选择类型 =</option>
+                                            {%volist name="dz_type_list" id="dz_type"%}
+                                            <option value="{%$dz_type.dz_type_code%}">{%$dz_type.dz_type_name%}</option>
+                                            {%/volist%}
+                                        </select>
+                                        <select class="form-control" id="unit_name">
+                                            <option value="">= 请选择单位 =</option>
+                                            {%volist name="$unit_name_list" id="dz_unit"%}
+                                            <option value="{%$dz_unit.unit_name%}">{%$dz_unit.unit_name%}</option>
+                                            {%/volist%}
+                                        </select>
+                                        <input class="form-control input-outline" id="dz_code" type="text"
+                                               placeholder="读者证号">
+                                        <input class="form-control input-outline" id="real_name" type="text"
+                                               placeholder="读者姓名">
+                                        <select class="form-control" id="dz_status">
+                                            <option value="">= 读者证状态 =</option>
+                                            {%volist name="dz_status_list" id="status"%}
+                                            <option value="{%$status%}">{%$status%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" id="searchBtn" class="btn btn-primary">查询</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-checkbox="true"></th>
+                                    <th data-field="dz_id" data-visible="false">dz_id</th>
+                                    <th data-field="dz_code" data-sortable="true">读者证号</th>
+                                    <th data-field="real_name" data-sortable="true">读者姓名</th>
+                                    <th data-field="dz_status" data-sortable="true" data-formatter="statusFormatter">
+                                        状态
+                                    </th>
+                                    <th data-field="dz_type_name" data-sortable="true">读者类型</th>
+                                    <th data-field="unit_name" data-sortable="true">单位名称</th>
+                                    <th data-field="portrait" data-sortable="true" data-formatter="picFormatter">读者照片
+                                    </th>
+                                    <th data-field="gender">性别</th>
+                                    <th data-field="lend_num">借阅次数</th>
+                                    <th data-field="beg_time">启用日期</th>
+                                    <th data-field="end_time">有效期至</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="div_hide"></div>
+<div class="hidePanel hide">
+    <div class="text-center formPanel">
+        <form method="post">
+            <input type="hidden" name="dz_ids">
+            <div class="opName">
+                <span class="control-label"></span>
+            </div>
+            <div class="opField"></div>
+            <div class="text-center m-t">
+                <div class="col-sm-12">
+                    <div class="space-20"></div>
+                    <button class="btn btn-outline btn-info btnSubmit" type="submit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="__static__/js/jquery.form.js"></script>
+<script>
+    var tableObject = null;
+    $(function () {
+        tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Dzgl/getJsonList')%}",
+            sortName: 'dz_id',
+            sortOrder: 'asc',
+            clickToSelect: true
+        });
+
+        // 异步提交表单
+        $("body").on("click", ".btnSubmit", function () {
+            var options = {
+                url: $(this).parents("form").attr("action"),
+                target: "#div_hide",
+                success: function (result) {
+                    if (result.code == 1) {
+                        layer.alert(result.msg, {icon: 1}, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.alert(result.msg, {icon: 2});
+                    }
+                }
+            };
+            $(this).parents("form").ajaxForm(options);
+        });
+
+        // 取消关闭弹出层
+        $("body").on("click", ".btnCancel", function () {
+            layer.closeAll();
+            return false;
+        });
+
+        $("#Table").on("mouseover", "img", function () {
+            layer.tips(
+                '<img src="' + $(this).attr("src") + '" height="150">',
+                "#" + $(this).attr("id"),
+                {
+                    tips: [2, '#e2e2e2']
+                }
+            );
+        });
+    });
+
+    // 获取选中行
+    function getRows() {
+        var rows = tableObject.bootstrapTable('getSelections');
+        if (rows.length == 0) {
+            layer.msg("没有选中行!");
+            return false;
+        }
+        var ids = [];
+        $.each(rows, function (i, row) {
+            ids.push(row.dz_id);
+        });
+        return ids.join(',');
+    }
+
+    function toOpenPanel(type) {
+        var ids = getRows();
+        if (!ids) {
+            layer.alert('请先选择读者再进行操作!', {icon: 2});
+            return false;
+        }
+        var isMulti = isNaN(ids), title = "", postUrl = "", opName = "", opField = "";
+        switch (type) {
+            case 1:
+                title = "证件处理";
+                opName = "选择读者证状态";
+                opField = $("#dz_status").clone().attr("name", "dz_status");
+                opField.find("option:eq(0)").remove();
+                postUrl = "{%:url('Dzgl/batch_status')%}";
+                break;
+            case 2:
+                title = "修改单位";
+                opName = "选中单位名称";
+                opField = $("#unit_name").clone().attr("name", "unit_name");
+                opField.find("option:eq(0)").remove();
+                postUrl = "{%:url('Dzgl/batch_unit')%}";
+                break;
+            case 3:
+                title = "修改密码";
+                opName = "输入新的密码";
+                opField = '<input type="password" name="pwd" class="form-control" required>';
+                postUrl = "{%:url('Dzgl/batch_pwd')%}";
+                break;
+            case 4:
+                title = "修改有效期";
+                opName = "选择新的有效期";
+                opField = '<input type="text" name="endtime" class="form-control" readonly required>';
+                postUrl = "{%:url('Dzgl/batch_endtime')%}";
+                break;
+            case 5:
+                title = "修改读者类型";
+                opName = "选择读者类型";
+                opField = $("#dz_type_code").clone().attr("name", "dztype");
+                opField.find("option:eq(0)").remove();
+                postUrl = "{%:url('Dzgl/batch_dztype')%}";
+                break;
+            case 6:
+                if (isMulti) {
+                    layer.alert('只能选择一位读者进行本操作!', {icon: 2});
+                    return false;
+                }
+                title = "读者换证";
+                opName = "新的读者证号";
+                opField = '<input type="text" name="dz_code" class="form-control" required>';
+                postUrl = "{%:url('Dzgl/swap_card')%}";
+                break;
+        }
+
+        $(".hidePanel").find("form").attr("action", postUrl);
+        $(".hidePanel").find("input[name='dz_ids']").val(ids);
+        $(".hidePanel").find(".opName").find("span").text(opName);
+        $(".hidePanel").find(".opField").html(opField);
+        myOpen({
+            type: 1,
+            title: title,
+            area: ["400px", "200px"],
+            content: $(".hidePanel").html()
+        });
+        laydate.render({
+            elem: ".layui-layer-content input[name='endtime']"
+        });
+    }
+
+    // 退证
+    function return_card() {
+        var dz_id = getRows();
+        if (!dz_id) return;
+        if (isNaN(dz_id)) {
+            layer.alert("只能选择一位读者进行本操作!");
+            return;
+        }
+        myConfirm("是否确认退证？", 0, function () {
+            $.post("{%:url('Dzgl/get_dz_ple_money')%}", {dz_id: dz_id}, function (result) {
+                if (result.code) {
+                    myConfirm("您应现金退还读者人民币【" + result.data + "元】", 0, function () {
+                        $.post("{%:url('Dzgl/return_card')%}", {dz_id: dz_id}, function (ret) {
+                            if (ret.code) {
+                                layer.alert(ret.msg, {icon: 1}, function () {
+                                    location.reload();
+                                });
+                            } else {
+                                layer.alert(result.msg, {icon: 2});
+                            }
+                        }, "json");
+                    })
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    /**
+     * @param fin_type 1收费,2退费
+     */
+    function finance_op(fin_type) {
+        var dz_id = getRows();
+        if (!dz_id) return;
+        if (isNaN(dz_id)) {
+            layer.alert("只能选择一位读者进行本操作!");
+            return;
+        }
+        myOpen({
+            type: 2,
+            /*area: ['auto', 'auto'],*/
+            title: '添加财务信息',
+            content: "{%:url('Finance/add')%}?fin_type=" + fin_type + "&dz_id=" + dz_id
+        });
+    }
+
+    function print_finan() {
+        var dz_id = getRows();
+        if (!dz_id) return;
+        if (isNaN(dz_id)) {
+            layer.alert("只能选择一位读者进行本操作!");
+            return;
+        }
+        myOpen({
+            type: 2,
+            /*area: ['auto', 'auto'],*/
+            title: '选择打印的收费项目',
+            content: "{%:url('Finance/select_list')%}?dz_id=" + dz_id
+        });
+    }
+
+    // 多选删除
+    function multiDel() {
+        var ids = getRows();
+        if (!ids) return;
+        delData(ids);
+    }
+
+    // 新增/编辑
+    function toEdit(dz_id) {
+        var url = "{%:url('Dzgl/add')%}";
+        if (dz_id) {
+            url = "{%:url('Dzgl/edit');%}?dz_id=" + dz_id;
+        }
+        myOpen({
+            type: 2,
+            title: dz_id ? "编辑读者" : "添加读者",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    // 删除
+    function delData(dz_id) {
+        var title = "删除读者将连读者的财务信息一起删除,是否确认删除？";
+        var url = "{%:url('Dzgl/drop')%}";
+        if (isNaN(dz_id)) {
+            title = "是否确认批量删除读者(读者的财务信息将一起删除),借书未还读者将无法删除？";
+            url = "{%:url('Dzgl/batch_drop')%}";
+        }
+        myConfirm(title, 2, function () {
+            $.post(url, {dz_id: dz_id}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function picFormatter(value, row) {
+        if (value){
+            return '<img id="dzPic' + row.dz_id + '" src="' + value + '" height="30" width="30">';
+        }
+        return '<img id="dzPic' + row.dz_id + '" src="/__static__/img/{%$Think.PORTRAIT_NAME%}" height="30" width="30">';
+    }
+
+    function statusFormatter(value) {
+        switch (value) {
+            case '有效':
+                return '<span class="label label-primary">有效</span>';
+            case '挂失':
+                return '<span class="label label-warning">挂失</span>';
+            case '暂停':
+                return '<span class="label label-warning">暂停</span>';
+            case '退证':
+                return '<span class="label label-danger">退证</span>';
+            case '补办':
+                return '<span class="label label-success">补办</span>';
+            case '注销':
+                return '<span class="label label-danger">注销</span>';
+        }
+    }
+
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.dz_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.dz_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

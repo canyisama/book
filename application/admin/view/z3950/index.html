@@ -1,0 +1,98 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="tsg_code" data-sortable="true">分馆代码</th>
+                                    <th data-field="z3950_name" data-sortable="true">名称</th>
+                                    <th data-field="addr" data-sortable="true">服务器地址</th>
+                                    <th data-field="port" data-sortable="true">端口号</th>
+                                    <th data-field="db" data-sortable="true">数据库名称</th>
+                                    <th data-field="charset" data-sortable="true">字符集</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Z3950/getJsonList')%}",
+            sortName: 'z3950_id',
+            sortOrder: "asc",
+            clickToSelect: true
+        });
+    });
+
+    function toEdit(z3950_id) {
+        var url = "{%:url('Z3950/add');%}";
+        if (z3950_id)
+            url = "{%:url('Z3950/edit');%}?z3950_id=" + z3950_id;
+
+        myOpen({
+            type: 2,
+            title: z3950_id ? "编辑数据" : "添加数据",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function delData(z3950_id) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('Z3950/drop')%}", {z3950_id: z3950_id}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    //测试
+    function toTest(z3950_id) {
+
+    }
+
+    function opFormatter(value, row) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.z3950_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.z3950_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="toTest(\'' + row.z3950_id + '\')" class="btn-sm text-navy"><i class="fa fa-forward"></i> 测试 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

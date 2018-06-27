@@ -1,0 +1,202 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+
+                                    <div class="form-group" style="margin-left: 215px;">
+                                        <label>设置选中项状态：</label>
+                                        <select class="form-control" id="set_state">
+                                            <option value="">= 设置状态 =</option>
+                                            <option value="1">验收状态</option>
+                                            <option value="2">完成状态</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" id="btnSetState" class="btn btn-primary">设置</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="batch_no" type="text"
+                                               placeholder="批次号">
+                                        <input class="form-control input-outline" id="seller_code" type="text"
+                                               placeholder="默认书商代码">
+                                        <input class="form-control input-outline" id="cost_code" type="text"
+                                               placeholder="默认预算代码">
+                                        <input class="form-control input-outline" id="opuser" type="text"
+                                               placeholder="创建人">
+                                        <input class="form-control input-outline" id="remark" type="text"
+                                               placeholder="备注">
+                                        <select class="form-control" id="status">
+                                            <option value="">= 批次状态 =</option>
+                                            <option value="1">验收状态</option>
+                                            <option value="2">完成状态</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" id="searchBtn" class="btn btn-primary">查询</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="batch_no" data-sortable="true">批次号</th>
+                                    <th data-field="seller_code" data-sortable="true">默认书商代码</th>
+                                    <th data-field="cost_code" data-sortable="true">默认预算代码</th>
+                                    <th data-field="status" data-sortable="true" data-formatter="stateFormatter">
+                                        状态
+                                    </th>
+                                    <th data-field="opuser">创建人</th>
+                                    <th data-field="remark">备注</th>
+                                    <th data-field="add_time" data-sortable="true">创建时间</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Batch/getJsonList')%}",
+            sortName: 'batch_no',
+            clickToSelect: true
+        });
+
+        $("#btnSetState").click(function () {
+            var state = $("#set_state").val();
+            if (!state) {
+                layer.msg("请选择要设置的状态!");
+                return false;
+            }
+            // 获取选中行
+            var rows = tableObject.bootstrapTable('getSelections');
+            if (rows.length == 0) {
+                layer.msg("没有选中行!");
+                return false;
+            }
+            var batch_no = rows[0].batch_no;
+            $.post("{%:url('Batch/setState');%}", {
+                batch_no: batch_no,
+                state: state
+            }, function (result) {
+                myConfirm(result.msg, result.code, function () {
+                    // 确定按钮事件
+                    if (result.code == 1) {
+                        location.reload();
+                    }
+                });
+            }, "json");
+        });
+    });
+
+    function fnSetStyle(row, index) {
+        if (row.batch_no == "{%$batch_no_curr%}") {
+            return {classes: 'identifying-row'};
+        }
+        return {};
+    }
+
+    function toEdit(batch_no) {
+        var url = "{%:url('Batch/add');%}";
+        if (batch_no)
+            url = "{%:url('Batch/edit');%}?batch_no=" + batch_no;
+        myOpen({
+            type: 2,
+            title: batch_no ? "批次编辑" : "批次新增",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function setDefault(batch_no) {
+        myConfirm("是否设为默认批次号？", 0, function () {
+            $.post("{%:url('Batch/setDefault');%}", {batch_no: batch_no}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function delData(batch_no) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('Batch/drop')%}", {batch_no: batch_no}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    /**
+     * 格式"状态"列
+     * @param value
+     * @returns {string}
+     */
+    function stateFormatter(value) {
+        switch (value) {
+            case 1:
+                return '<span class="label label-warning">验收状态</span>';
+            case 2:
+                return '<span class="label label-primary">完成状态</span>';
+        }
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        if (row.batch_no == "{%$batch_no_curr%}") {
+            btns.push('<a href="javascript:void(0);" class="btn-sm">默认批次 </a>');
+        } else {
+            btns.push('<a href="javascript:void(0);" onclick="setDefault(\'' + row.batch_no + '\')" class="btn-sm"><i class="fa fa-check-circle"></i> 设为默认批次 </a>');
+        }
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.batch_no + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.batch_no + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,106 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="cost_code" type="text"
+                                               placeholder="预算代码">
+                                        <input class="form-control input-outline" id="cost_type" type="text"
+                                               placeholder="预算类型">
+                                        <input class="form-control input-outline" id="cost_sour" type="text"
+                                               placeholder="经费来源">
+                                        <input class="form-control input-outline" id="cost_money" type="text"
+                                               placeholder="预算金额">
+                                        <input class="form-control input-outline" id="cost_remark" type="text"
+                                               placeholder="备注">
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="cost_code" data-sortable="true">预算代码</th>
+                                    <th data-field="tsg_code" data-sortable="true">分馆代码</th>
+                                    <th data-field="cost_type" data-sortable="true">预算类型</th>
+                                    <th data-field="cost_sour" data-sortable="true">经费来源</th>
+                                    <th data-field="cost_money" data-sortable="true">预算金额</th>
+                                    <th data-field="cost_remark" data-sortable="true">备注</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Cost/getJsonList')%}",
+            sortName: 'cost_code',
+            clickToSelect: true
+        });
+    });
+
+    function toEdit(cost_code) {
+        var url = "{%:url('Cost/add');%}";
+        if (cost_code)
+            url = "{%:url('Cost/edit');%}?cost_code=" + cost_code;
+        myOpen({
+            type: 2,
+            title: cost_code ? "编辑预算信息" : "添加预算信息",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function delData(cost_code) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('Cost/drop')%}", {cost_code: cost_code}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function opFormatter(value, row) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.cost_code + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.cost_code + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

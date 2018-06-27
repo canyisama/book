@@ -1,0 +1,275 @@
+{%include file='public/header_form' %}
+<body class="gray-bg">
+<link href="__static__/css/plugins/iCheck/custom.css" rel="stylesheet">
+
+<script src="__static__/js/plugins/iCheck/icheck.min.js"></script>
+
+<div class="space-20"></div>
+<div class="col-sm-12">
+    <form class="form-horizontal m-t" id="postForm" method="post">
+        <div class="form-group">
+            <div class="row">
+                <label class="col-sm-2 control-label">读者类型: </label>
+                <div class="col-sm-3">
+                    <select class="form-control" name="dz_type_code">
+                        <option value="">所有读者类型</option>
+                        {%volist name='dz_type_code_list' id='value'%}
+                        <option value="{%$key%}" {%$info.dz_type_code == $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+
+                <label class="col-sm-2 control-label">丢书罚款方式: </label>
+                <div class="col-sm-3">
+                    <select class="form-control" name="lose_mode">
+                        {%volist name='lose_mode_list' id='value'%}
+                        <option value="{%$key%}" {%$info.lose_mode == $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <label class="col-sm-2 control-label">图书流通类型: </label>
+                <div class="col-sm-3">
+                    <select class="form-control" name="ltype_code">
+                        <option value="">所有图书流通类型</option>
+                        {%volist name='ltype_code_list' id='value'%}
+                        <option value="{%$key%}" {%$info.ltype_code == $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+
+                <label class="col-sm-2 control-label">丢书罚款类型: </label>
+                <div class="col-sm-3">
+                    <select class="form-control" name="lose_type">
+                        {%volist name='lose_type_list' id='value'%}
+                        <option value="{%$key%}" {%$info.lose_type == $key ? "selected='selected'" : ''%} >{%$value%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div>
+                    <label class="col-sm-2  control-label ">馆藏地址: </label>
+                    <div class="col-sm-3 form-control" style="width: 192px;margin-left: 18px;height: 180px">
+                        <ul class="list-unstyled">
+                            <li>
+                                <label>
+                                <input type="checkbox" class="checkbox i-checks" name="tsg_site_code_all" id="tsg_site_code_all" value="1">
+                                所有馆藏地址</label>
+                            </li>
+                            {%volist name='tsg_site_code_list' id='value'%}
+                            <li>
+                                <label>
+                                <input {%if($info) %} {%:in_array($key,$info.tsg_site_code) || empty($info.tsg_site_code.0) ? 'checked="checked"' : ''%} {%/if%}
+                                type="checkbox"  class="checkbox i-checks" name="tsg_site_code[]" id="tsg_site_code_{%$key%}" value="{%$key%}">
+                                {%$key%}|{%$value%}</label>
+                            </li>
+                            {%/volist%}
+
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-bottom: 50px;">
+                    <label class="col-sm-2 control-label">丢书罚款倍率: </label>
+                    <div class="col-sm-3">
+                        <input class="form-control" name="lose_rate" type="text" value="{%$info.lose_rate|default=''%}">
+                    </div>
+                </div>
+                <div style="margin-bottom: 100px;">
+                    <label class="col-sm-2 control-label">续借计算方式: </label>
+                    <div class="col-sm-3">
+                        <select class="form-control" name="renew_mode">
+                            {%volist name='renew_mode_list' id='value'%}
+                            <option value="{%$key%}" {%$info.renew_mode == $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                            {%/volist%}
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-bottom: 150px;">
+                    <label class="col-sm-2 control-label">最大续借次数: </label>
+                    <div class="col-sm-3">
+                        <input class="form-control" type="text" name="renew_cnt" value="{%$info.renew_cnt|default=''%}">
+                    </div>
+                </div>
+                <div>
+                    <label class="col-sm-2 control-label">续借天数: </label>
+                    <div class="col-sm-3">
+                        <input class="form-control" type="text" name="renew_days" value="{%$info.renew_days|default=''%}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <label class="col-sm-1 control-label" style="margin-left: 50px">状态: </label>
+                <div class="col-sm-4">
+                    <div class="col-sm-6 radio i-checks">
+                        <label>
+                            <input type="radio" name="is_close" id="is_close_0" {%$info.is_close===0 ? "checked='checked'" : ''%} value="0">
+                            <i class="label label-primary">启用</i></label>
+                    </div>
+                    <div class="col-sm-6 radio i-checks">
+                        <label>
+                            <input type="radio" name="is_close" id="is_close_1" {%$info.is_close===1 ? "checked='checked'" : ''%} value="1" >
+                            <i class="label label-default">禁用</i></label>
+                    </div>
+                </div>
+
+                <label class="col-sm-2 control-label" style="margin-left: -50px">污损罚款方式: </label>
+                <div class="col-sm-3">
+                    <select class="form-control" name="dirty_mode">
+                        {%volist name='dirty_mode_list' id='value'%}
+                        <option value="{%$key%}" {%$info.dirty_mode == $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <label class="col-sm-2 control-label">最大借阅册数: </label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" id="lend_num" name="lend_num" value="{%$info.lend_num|default=''%}">
+                </div>
+
+                <label class="col-sm-2 control-label">污损罚款类型: </label>
+                <div class="col-sm-3">
+                    <select class="form-control" name="dirty_type">
+                        {%volist name='dirty_type_list' id='value'%}
+                        <option value="{%$key%}" {%$info.dirty_type == $key ? "selected='selected'" : ''%}>{%$value%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <label class="col-sm-2 control-label">最大借书天数: </label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" id="lend_days" name="lend_days" value="{%$info.lend_days|default=''%}">
+                </div>
+
+                <label class="col-sm-2 control-label">污损罚款倍率: </label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" name="dirty_rate" value="{%$info.dirty_rate|default=''%}">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <label class="col-sm-2 control-label">超期每天罚金: </label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" name="out_fine" value="{%$info.out_fine|default=''%}">
+                </div>
+
+                <label class="col-sm-2 control-label">超期最大罚金: </label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" name="out_max_fine" value="{%$info.out_max_fine|default=''%}">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <label class="col-sm-2 control-label">备注: </label>
+                <div class="col-sm-10">
+                    <textarea name="remark" style="width:530px; height:80px;" class="form-control">{%$info.remark|default=''%}</textarea>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group text-center">
+            <div class="col-sm-12">
+                <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                    <i class="fa fa-check"></i> 保存
+                    <input type="hidden" value="{%$info.ltrule_id|default=0%}" name="ltrule_id"/>
+                </button>
+                <a class="btn btn-outline btn-danger" id="btnCancel">
+                    <i class="fa fa-times"></i> 取消
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+        </form>
+    </div>
+
+<div id="div_hide"></div>
+
+<script>
+
+
+
+    $(function () {
+
+        // 单选/多选插件
+        $(".i-checks").iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green",});
+
+
+        var length_now = $('input[name="tsg_site_code[]"]:checked').length;
+        var length = $('input[name="tsg_site_code[]"]').length;
+        if (length_now == length){
+            $('#tsg_site_code_all').iCheck('check');
+        }
+
+        $('#postForm').validate({
+            rules:{
+                lend_num : {
+                    required : true,
+                    digits:true
+                },
+                lend_days : {
+                    required : true,
+                    digits:true,
+                    max:1000
+                }
+            },
+            messages:{
+                lend_num : {
+                    required : '最大借阅数量不能为空',
+                    digits: '最大借阅数量必须为整数'
+                },
+                lend_days : {
+                    required : '最大借阅天数不能为空',
+                    digits: '最大借阅天数必须为整数',
+                    max: '最大借阅天数为1000天'
+                }
+            }
+        });
+    });
+    
+    function getFormOptions() {
+        return {url:"{%:url('ltrule/ext',['is_inter'=>0])%}"};
+    }
+
+    $('#tsg_site_code_all').on('ifChecked', function(event){
+        $('.checkbox').iCheck('check');
+    });
+    $('#tsg_site_code_all').on('ifUnchecked', function(event){
+        $('.checkbox').iCheck('uncheck');
+    });
+
+
+    $('input[name="tsg_site_code[]"]').on('ifChecked',function (event) {
+        var length_now = $('input[name="tsg_site_code[]"]:checked').length;
+        var length = $('input[name="tsg_site_code[]"]').length;
+        if (length_now == length){
+            $('#tsg_site_code_all').iCheck('check');
+        }
+    });
+
+    $('input[name="tsg_site_code[]"]').on('ifUnchecked',function (event) {
+        var length_now = $('input[name="tsg_site_code[]"]:checked').length;
+        var length = $('input[name="tsg_site_code[]"]').length;
+        if (length_now != length){
+            $('#tsg_site_code_all').iCheck('uncheck');
+        }
+    });
+
+</script>
+</body>

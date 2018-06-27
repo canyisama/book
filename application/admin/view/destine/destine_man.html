@@ -1,0 +1,98 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <select class="form-control" id="destine_batch_code">
+                                            <option value="">= 预订批次号 =</option>
+                                            {%volist name="destine_batch_list" id="batch"%}
+                                            <option value="{%$batch.destine_batch_code%}">
+                                                {%$batch.destine_batch_code%}
+                                            </option>
+                                            {%/volist%}
+                                        </select>
+                                        <select class="form-control" id="status">
+                                            <option value="">= 状态 =</option>
+                                            <option value="1">预订</option>
+                                            <option value="2">退订</option>
+                                        </select>
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="题名">
+                                        <input class="form-control input-outline" id="clc" type="text"
+                                               placeholder="分类号">
+                                        <input class="form-control input-outline" id="publisher" type="text"
+                                               placeholder="出版社">
+                                        <input class="form-control input-outline" id="order_no" type="text"
+                                               placeholder="订购号">
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+                            <table id="destineTable">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="destine_id" data-visible="false">destine_id</th>
+                                    <th data-field="book_id" data-visible="false">book_id</th>
+                                    <th data-field="title">题名</th>
+                                    <th data-field="clc">分类号</th>
+                                    <th data-field="publisher">出版社</th>
+                                    <th data-field="status" data-sortable="true"
+                                        data-formatter="destineTableInfo.destineTableStateFormatter">状态
+                                    </th>
+                                    <th data-field="order_no" data-sortable="true">订购号</th>
+                                    <th data-field="ori_price" data-sortable="true">原价</th>
+                                    <th data-field="discount" data-sortable="true">折扣</th>
+                                    <th data-field="price" data-sortable="true">折后价</th>
+                                    <th data-field="book_cnt" data-sortable="true">复本数</th>
+                                    <th data-field="remark" data-sortable="true">备注</th>
+                                    <th data-formatter="destineTableInfo.destineTableOpFormatter"
+                                        data-align="center">操作
+                                    </th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__static__/js/logic/cf/destine.js"></script>
+<script>
+    $(function () {
+        destineTableInfo.url = "{%:url('Destine/getJsonList');%}?source=destine_man&";
+        destineTableInfo.showDestineTable({
+            url: "{%:url('Destine/getJsonList');%}?source=destine_man&",
+            toolbar: "#Toolbar",
+            showColumns: !0,
+            showRefresh: !0,
+            pagination: !0,
+            icons: {refresh: "glyphicon-repeat", columns: "glyphicon-list"},
+            pageSize: 20,
+            pageList: [20, 50, 100]
+        });
+    });
+
+    function toOpenPage(type, destine_id) {
+        myOpen({
+            type: 2,
+            title: "编辑数据",
+            /*area: ['auto', 'auto'],*/
+            content: "{%:url('Destine/edit');%}?destine_id=" + destine_id
+        });
+    }
+
+</script>
+
+</body>
+</html>

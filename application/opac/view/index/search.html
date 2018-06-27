@@ -1,0 +1,213 @@
+{%extend name='public/header' /%}
+
+{%block name='head'%}
+{__block__}
+<link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+<link href="__static__/css/search.css" rel="stylesheet">
+
+
+<script src="__static__/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<style>
+
+
+</style>
+{%/block%}
+{%block name='content'%}
+<!--<div class="wrapper wrapper-content" >-->
+    <div class="container" style="width: 100%">
+            <div class="col-sm-12">
+                <form action="" method="get" class="form-horizontal" id="searchForm" onsubmit="return false">
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="col-sm-8">
+                                    <div class="col-sm-3" >
+                                        <select name="zd[]" id="search_type" class="form-control" style="margin-left: -31px">
+                                            {%volist name='fields' id='vo'%}
+                                            <option value="{%$key%}">{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value="" name="val[]" id="search_txt"/>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="col-sm-3">
+                                            <button class="btn btn-primary" type="button" id="searchBtn">结果中检索</button>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button class="btn btn-primary" type="button" id="search_ref">检索</button>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <button class="btn btn-primary" id="advance" type="button">高级检索</button>
+                                        </div>
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row" id="order_show">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="control-label col-sm-1" style="margin-left: -92px">排序:</label>
+                                <div class="col-sm-1">
+                                    <select name="order_zd" id="order_zd" class="form-control refresh">
+                                        {%volist name='order_list' id='vo'%}
+                                        <option value="{%$key%}" {%$order_zd==$key?'selected="selected"':''%}>{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                                <label class="control-label col-sm-1">排序方式:</label>
+                                <div class="col-sm-1">
+                                    <select name="order_seq" id="order_seq" class="form-control refresh">
+                                        <option value="desc" {%$order_seq=='desc'?'selected="selected"':''%}>降序排列</option>
+                                        <option value="asc"  {%$order_seq=='asc'?'selected="selected"':''%}>升序排列</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <label class="control-label"><!--检索条件:<span id="search_condition"></span>,-->搜索结果总数:<span id="search_total">0</span>条,耗时:<span id="search_time">0</span>秒</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row row-lg">
+                                <div class="col-sm-2">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            结果筛选
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row form-horizontal m-b">
+                                                <div class="col-sm-offset-1 col-sm-10">
+                                                    <ul class="list-unstyled" id="result" style="display: none">
+                                                        <li class="checkbox bord">
+                                                            <label class="control-label text-navy">
+                                                                <input type="checkbox" class="tsg_code_all" id="tsg_code_all">
+                                                                编目图书馆
+                                                            </label>
+                                                            <ul id="tsg_code" class="bord-child">
+
+                                                            </ul>
+                                                        </li>
+                                                        <li class="checkbox bord" >
+                                                            <label class="control-label text-navy">
+                                                                <input type="checkbox" class="mt_id_all" id="mt_id_all">
+                                                                图书类型
+                                                            </label>
+                                                            <ul id="mt_id" class="bord-child">
+
+                                                            </ul>
+                                                        </li>
+                                                        <li class="checkbox bord"  >
+                                                            <label class="control-label text-navy">
+                                                                <input type="checkbox" class="firstauthor_all" id="firstauthor_all">
+                                                                著者
+                                                            </label>
+                                                            <ul id="firstauthor" class="bord-child">
+
+                                                            </ul>
+                                                        </li>
+                                                        <li class="checkbox bord" >
+                                                            <label class="control-label text-navy">
+                                                                <input type="checkbox" class="publisher_all" id="publisher_all">
+                                                                出版社
+                                                            </label>
+                                                            <ul id="publisher" class="bord-child">
+
+                                                            </ul>
+                                                        </li>
+                                                        <li class="checkbox bord" >
+                                                            <label class="control-label text-navy">
+                                                                <input type="checkbox" class="pubdate_all" id="pubdate_all">
+                                                                出版日期
+                                                            </label>
+                                                            <ul id="pubdate" class="bord-child">
+
+                                                            </ul>
+                                                        </li>
+                                                        <li class="checkbox bord" >
+                                                            <label class="control-label text-navy">
+                                                                <input type="checkbox" class="subject_all" id="subject_all">
+                                                                主题词
+                                                            </label>
+                                                            <ul id="subject" class="bord-child">
+
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <div class="example-wrap">
+                                        <div class="example">
+                                            <table id="Table" style="display: none">
+                                                <thead>
+                                                <tr>
+                                                    <th data-field="book_id" data-visible="false">ID</th>
+                                                    <th data-field="tsg_code" data-visible="true">编目图书馆</th>
+                                                    <th data-field="isbn">ISBN</th>
+                                                    <th data-field="clc">分类号</th>
+                                                    <th data-field="mt_name">图书类型</th>
+                                                    <th data-field="title" data-formatter="titleOp">题名</th>
+                                                    <th data-field="firstauthor">著者</th>
+                                                    <th data-field="publisher">出版社</th>
+                                                    <th data-field="pubdate">出版日期</th>
+                                                    <th data-field="subject">主题词</th>
+                                                    <th data-field="price_ms">价格</th>
+                                                </tr>
+                                                </thead>
+                                            </table>
+
+                                            <div id="douban" style="display:none;">
+                                                <div class="panel panel-default" id="douban_input">
+                                                    <div class="panel-heading">
+                                                    豆瓣关键字查询
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        <div class="col-sm-6">
+                                                            <input type="text" class="form-control" id="q" value="" placeholder="请输入查询关键字">
+                                                        </div>
+                                                        <button type="button" id="douban_search" class="btn btn-primary">豆瓣查询</button>
+                                                    </div>
+                                                </div>
+                                                <div class="panel panel-default" id="douban_show" style="display: none">
+                                                    <div class="panel-heading">
+                                                        豆瓣搜索结果
+                                                    </div>
+                                                    <div class="panel-body" id="douban_ret_show">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+    </div>
+<!--</div>-->
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+<script src="__static__/js/indexpage.js"></script>
+<script src="__static__/js/logic/opac/common.js"></script>
+<script src="__static__/js/logic/opac/search.js"></script>
+{%/block%}

@@ -1,0 +1,39 @@
+{%extend name='public/header' /%}
+
+{%block name='content_user'%}
+{__block__}
+<dl class="contDl">
+    <dt>个人信息</dt>
+    <div class="clear user_info">
+        <div class="fl Head_portrait">
+            <img src="{%$info.portrait?get_img_full_path($info.portrait):'__static__/img/dz_default2.jpg'%}" alt="" />
+            <a href="{%:url('User/info')%}" class="btn-success btn" style="color: white">个人信息</a>
+        </div>
+        <div class="fl data_info">
+            <p><strong>{%$info.real_name%}</strong> 欢迎您</p>
+            <p>当前借阅数里:{%$info.curr_lend_num|default=0%}</p>
+            <p>当前预约数量:{%$info.curr_reser_num|default=0%}</p>
+            <p>当前预借数量:{%$info.curr_lend_reser_num|default=0%}</p>
+            <p>上次登录IP:{%$log_info.ip_addr%}</p>
+            <p>上次登录时间:{%$log_info.log_time%}</p>
+        </div>
+    </div>
+</dl>
+<dl class="contDl">
+    <dt>借阅通知</dt>
+    <ul class="list_notice">
+        {%volist name='lend_list' id='vo'%}
+            {%if condition="$vo->getData('must_time') > time()"%}
+            <li class="clear">
+                <a href="{%:url('Book/lend')%}">您于〖{%$vo.add_time%}〗借阅的〖<b>{%$vo.title%}</b>〗将于〖<b>{%$vo.must_time%}</b>〗到期,请尽快归还.</a>
+            </li>
+            {%else /%}
+            <li class="clear">
+                <a href="{%:url('Book/lend')%}">您于〖{%$vo.add_time%}〗借阅的〖<b>{%$vo.title%}</b>〗已于〖<b>{%$vo.must_time%}</b>〗到期,请尽快归还.</a>
+            </li>
+            {%/if%}
+        {%/volist%}
+
+    </ul>
+</dl>
+{%/block%}

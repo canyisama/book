@@ -1,0 +1,230 @@
+{%include file='public/header_form' %}
+
+<div class="space-20"></div>
+<div class="row">
+    <form class="form-horizontal m-t" id="postForm" method="post">
+        <input type="hidden" name="book_id" value="{%$info.book_id?:$book_id%}">
+        <input type="hidden" name="destine_id" value="{%$info.destine_id%}">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">订购号：</label>
+                <div class="col-sm-6">
+                    <input id="order_no" name="order_no" class="form-control" type="text"
+                           placeholder="请输入订购号" value="{%$info.order_no%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">卷册号：</label>
+                <div class="col-sm-6">
+                    <input id="jzinfo" name="jzinfo" class="form-control" type="text"
+                           placeholder="请输入卷册号" value="{%$info.jzinfo%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 原价：</label>
+                <div class="col-sm-6">
+                    <input id="ori_price" name="ori_price" class="form-control" type="text"
+                           required="required"
+                           placeholder="请输入原价" value="{%$info.ori_price%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 折扣（%）：</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <input id="discount" name="discount" class="form-control" type="text"
+                               required="required"
+                               placeholder="请输入折扣 %" value="{%$info.discount%}">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 折后价：</label>
+                <div class="col-sm-6">
+                    <input id="price" name="price" class="form-control" type="text"
+                           required="required"
+                           placeholder="请输入折后价" value="{%$info.price%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 复本数：</label>
+                <div class="col-sm-6">
+                    <input id="book_cnt" name="book_cnt" class="form-control" type="text"
+                           required="required"
+                           placeholder="请输入复本数" value="{%$info.book_cnt%}">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">预订批次号：</label>
+                <div class="col-sm-6">
+                    <p class="form-control-static">
+                        {%$batch_info.destine_batch_code%}
+                        <input type="hidden" name="destine_batch_code" id="destine_batch_code"
+                               value="{%$batch_info.destine_batch_code%}">
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">分馆代码：</label>
+                <div class="col-sm-6">
+                    <p class="form-control-static">
+                        {%$tsg_info.tsg_code%}〖{%$tsg_info.tsg_name%}〗
+                        <input type="hidden" name="tsg_code" id="tsg_code" value="{%$tsg_info.tsg_code%}">
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">书商代码：</label>
+                <div class="col-sm-6">
+                    <p class="form-control-static">
+                        {%$batch_info.seller_code%}
+                        <input type="hidden" name="seller_code" id="seller_code" value="{%$batch_info.seller_code%}">
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">预算代码：</label>
+                <div class="col-sm-6">
+                    <p class="form-control-static">
+                        {%$batch_info.cost_code%}
+                        <input type="hidden" name="cost_code" id="cost_code" value="{%$batch_info.cost_code%}">
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">图书来源：</label>
+                <div class="col-sm-6">
+                    <select id="order_sour" name="order_sour" class="form-control">
+                        {%volist name="ly_list" id="ly"%}
+                        <option value="{%$ly.cnf_val%}">{%$ly.cnf_val%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">状态：</label>
+                <div class="col-sm-6">
+                    <select name="status" class="form-control">
+                        <option value="1" {%$info.status==1?'selected':''%}>预订</option>
+                        <option value="2" {%$info.status==2?'selected':''%}>退订</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">备注：</label>
+                <div class="col-sm-9">
+                    <textarea id="remark" name="remark" class="form-control">{%$info.remark%}</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="form-group text-center">
+            <div class="col-sm-12">
+                <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                    <i class="fa fa-check"></i> 保存
+                </button>
+                <a class="btn btn-outline btn-danger" id="btnCancel">
+                    <i class="fa fa-times"></i> 取消
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        $("#ori_price").blur(function () {
+            var ori_price = parseFloat($("#ori_price").val());
+            if (isNaN(ori_price)) return false;
+            var discount = parseFloat($("#discount").val());
+            if (isNaN(discount)) return false;
+            $("#price").val((ori_price * discount / 100).toFixed(2));
+        });
+        $("#discount").blur(function () {
+            var ori_price = parseFloat($("#ori_price").val());
+            if (isNaN(ori_price)) return false;
+            var discount = parseFloat($("#discount").val());
+            if (isNaN(discount)) return false;
+            $("#price").val((ori_price * discount / 100).toFixed(2));
+        });
+        $("#price").blur(function () {
+            var ori_price = parseFloat($("#ori_price").val());
+            if (isNaN(ori_price)) return false;
+            var price = parseFloat($("#price").val());
+            if (isNaN(price)) return false;
+            $("#discount").val((price / ori_price * 100).toFixed(2));
+        });
+
+        var e = "<i class='fa fa-times-circle'></i> ";
+        $("#postForm").validate({
+            rules: {
+                ori_price: {
+                    number: true,
+                    required: true,
+                    min: 1
+                },
+                discount: {
+                    number: true,
+                    required: true,
+                    min: 1
+                },
+                price: {
+                    number: true,
+                    required: true,
+                    min: 0
+                },
+                book_cnt: {
+                    digits: true,
+                    required: true,
+                    min: 1
+                }
+            },
+            messages: {
+                ori_price: {
+                    number: e + "原价必须为数字",
+                    required: e + "请输入原价",
+                    min: e + "原价最低不能小于 1"
+                },
+                discount: {
+                    number: e + "折扣必须为数字",
+                    required: e + "请输入折扣",
+                    min: e + "折扣最低不能小于 1"
+                },
+                price: {
+                    number: e + "折后价必须为数字",
+                    required: e + "请输入折后价",
+                    min: e + "折后价最低不能小于 0"
+                },
+                book_cnt: {
+                    digits: e + "复本数必须为整数",
+                    required: e + "请输入复本数",
+                    min: e + "复本数最低不能小于 0"
+                }
+            }
+        })
+    });
+
+    function getFormOptions() {
+
+        if (!$("#postForm").valid())
+            return false;
+
+        var options = {
+            url: "{%:url('Destine/edit')%}",
+            success: function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        parent.refreshCurTab();
+                        parent.layer.closeAll();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }
+        };
+        return options;
+    }
+</script>

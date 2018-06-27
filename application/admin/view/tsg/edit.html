@@ -1,0 +1,97 @@
+{%include file='public/header_form' %}
+
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="hide_code" value="{%$tsg_info.tsg_code%}">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 分馆代码：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="tsg_code" name="tsg_code" class="form-control input-sm" required
+                           value="{%$tsg_info.tsg_code%}"  {%$tsg_info.tsg_code?'readonly':''%}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 分馆名称：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="tsg_name" name="tsg_name" class="form-control input-sm"
+                           value="{%$tsg_info.tsg_name%}"
+                           required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">状态: </label>
+                <div class="col-sm-6">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="tsg_close" value="0" {%$tsg_info.tsg_close==0?'checked':''%}> 启用
+                        </label>&nbsp;&nbsp;&nbsp;
+                        <label>
+                            <input type="radio" name="tsg_close" value="1" {%$tsg_info.tsg_close!=0?'checked':''%}> 禁用
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"> 分馆地址：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="tsg_addr" name="tsg_addr" class="form-control input-sm"
+                           value="{%$tsg_info.tsg_addr%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"> 联系电话：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="tsg_phone" name="tsg_phone" class="form-control input-sm"
+                           value="{%$tsg_info.tsg_phone%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"> 手机：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="tsg_telno" name="tsg_telno" class="form-control input-sm"
+                           value="{%$tsg_info.tsg_telno%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"> 邮政编码：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="tsg_post" name="tsg_post" class="form-control input-sm"
+                           value="{%$tsg_info.tsg_post%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"> 电子邮箱：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="tsg_email" name="tsg_email" class="form-control input-sm"
+                           value="{%$tsg_info.tsg_email%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"> 分馆类型：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="tsg_type" name="tsg_type" class="form-control input-sm"
+                           value="{%$tsg_info.tsg_type%}">
+                </div>
+            </div>
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function getFormOptions() {
+        var tsg_code = "{%$tsg_info.tsg_code%}";
+        return {url: tsg_code ? "{%:url('Tsg/edit')%}" : "{%:url('Tsg/add')%}"};
+    }
+</script>

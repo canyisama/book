@@ -1,0 +1,84 @@
+{%extend name='public/header' /%}
+
+{%block name='content'%}
+<div class="wrapper wrapper-content">
+    <div class="container">
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h1 class="text-center" style=" margin-top:0px;margin-bottom: -5px;color: #00b7ee">
+                                图书借阅排行top100({%:cookie('tsg_name')?:'所有分馆'%})</h1>
+                        </div>
+                    </div>
+                </div>
+
+                {%volist name='list' id='vo'%}
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-2" style="height: 200px">
+                                    <a href="{%:url('Index/book_view',['book_id'=>$vo.book_id])%}" id="skip" target="_blank">
+                                        <img class="top_book_img" data-isbn="{%$vo.book.isbn%}"
+                                             src=""  alt="" height="100%" width="100%">
+                                    </a>
+                                </div>
+                                <div class="col-sm-7">
+                                    <div class="row">
+                                        <a href="{%:url('Index/book_view',['book_id'=>$vo.book_id])%}" target="_blank">
+                                            <h3 class="col-sm-4" style="color: #0e9aef">{%$vo.book.title_all%}</h3>
+                                        </a>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-sm-4">标准编号:{%$vo.book.isbn%}</label>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-sm-4">分类号:{%$vo.book.clc%}</label>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-sm-4">著者:{%$vo.book.firstauthor%}</label>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-sm-4">出版社:{%$vo.book.publisher%}</label>
+                                        <label class="control-label col-sm-4">出版日期:{%$vo.book.pubdate%}</label>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-sm-4">价格:{%$vo.book.price_ms%}</label>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-sm-4">借阅次数:{%$vo.lend_cnt%}</label>
+                                    </div>
+                                    {%eq name='vo.is_coll' value='0'%}
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <button type="button" onclick="collect('{%$vo.book_id%}')" class="btn btn-primary">收藏</button>
+                                        </div>
+                                    </div>
+                                    {%/eq%}
+                                </div>
+                                <div class="col-sm-3">
+                                    <div style="margin-top: 30%">
+                                        <h1 style="color:#0d8ddb">TOP {%$vo.top_num%}</h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {%/volist%}
+                <div class="text-right">
+                    <h3 >{%$page%}</h3>
+                </div>
+            </div>
+    </div>
+</div>
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+<script src="__static__/js/logic/opac/common.js"></script>
+<script>
+    var default_img = "/__static__/img/opac/BookNoPicture.jpg";
+</script>
+{%/block%}

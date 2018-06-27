@@ -1,0 +1,171 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div role="group">
+                            <form class="form-inline" onsubmit="return false;">
+
+                                <div class="form-group">
+                                    <button type="button" id="noticeBatchBtn" class="btn btn-primary">批量通知</button>
+                                    <button type="button" id="reportExcelBtn" class="btn btn-primary">导出Excel</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="dz_code" type="text"
+                                               placeholder="读者证号">
+                                        <input class="form-control input-outline" id="barcode" type="text"
+                                               placeholder="图书条码">
+                                        <input class="form-control input-outline" id="real_name" type="text"
+                                               placeholder="读者姓名">
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="题名">
+                                        <input class="form-control input-outline" id="add_time" type="text"
+                                               placeholder="借出日期">
+                                        <select class="form-control" id="must_time">
+                                            <option value="">= 超期天数 =</option>
+                                            <option value="3">〖3天〗</option>
+                                            <option value="5">〖5天〗</option>
+                                            <option value="10">〖10天〗</option>
+                                            <option value="15">〖15天〗</option>
+                                            <option value="30">〖30天〗</option>
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-checkbox="true" ></th>
+                                    <th data-field="dz_code" data-sortable="true">读者证号</th>
+                                    <th data-field="real_name" data-sortable="true">读者姓名</th>
+                                    <th data-field="title" data-sortable="true">题名</th>
+                                    <th data-field="barcode" data-sortable="true">图书条码</th>
+                                    <th data-field="calino" data-sortable="true">索书号</th>
+                                    <th data-field="price" data-sortable="true">价格</th>
+                                    <th data-field="site_name" data-formatter="siteFormatter" data-sortable="true">馆藏地址</th>
+                                    <th data-field="unit_name" data-sortable="true">单位名称</th>
+                                    <th data-field="add_time" data-sortable="true">借出日期</th>
+                                    <th data-field="must_time" data-sortable="true">应还日期</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 时间插件
+
+    var  tableObject = null;
+    var is_ret = false;
+    var cache_time;
+    $(function () {
+        tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Lend/getJsonList')%}",
+            sortName: 'add_time',
+            clickToSelect: true,
+            onLoadSuccess : function (data) {
+                if (data.total != 0){
+                    cache_time = new Date().getTime();
+                    is_rep = false;
+                }
+            }
+        });
+
+        laydate.render({
+            elem: '#add_time' //指定元素
+        });
+    });
+
+    //批量通知
+    $("#noticeBatchBtn").click(function () {
+            var rows = tableObject.bootstrapTable('getSelections');
+            if(rows.length == 0){
+                layer.msg('没有选中行');
+                return false;
+            }
+            var arr = [];
+            rows.forEach(function (value,index,arr2) {
+                arr.push(value.lend_id);
+            });
+            var str = arr.join();
+            myOpen({
+                type:2,
+                title:'批量发送通知',
+                /*area: ['auto', 'auto'],*/
+                content:"{%:url('Email/sendnotice_batch')%}?tpl_type=2&pkey_ids="+str
+            });
+    });
+
+    //导出excel
+    $("#reportExcelBtn").click(function () {
+        if (is_rep === true){
+            return layer.msg('请不要重复导出');
+        }
+        if (cache_time+10*60*1000 <= new Date().getTime()){
+            return layer.msg('请再次查询再打印');
+        }
+        is_rep = true;
+        window.location.href = "{%:url('Lend/export_excel_timeout')%}";
+    });
+
+    // 单个邮件通知
+    function noticeBtn(lend_id) {
+        myOpen({
+            type:2,
+            title:'发送邮件通知',
+            /*area: ['auto', 'auto'],*/
+            content:"{%:url('Email/sendnotice')%}?tpl_type=2&pkey_id="+lend_id
+        })
+    }
+
+    //单个短信通知
+    function smsBtn(lend_id) {
+        myOpen({
+            type:2,
+            title:'发送短信通知',
+            /*area: ['auto', 'auto'],*/
+            content:"{%:url('Sms/sendnotice')%}?tpl_type=2&pkey_id="+lend_id
+        })
+    }
+    /**
+     *
+     * @param value
+     * @param row
+     * @returns {string}
+     */
+    function siteFormatter(value,row) {
+        return row.tsg_site_code +'|'+ value;
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="noticeBtn(\'' + row.lend_id + '\')" class="btn-sm text-success"><i class="fa fa-envelope-o fa-fw"></i> 邮件通知 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="smsBtn(\'' + row.lend_id + '\')" class="btn-sm text-success"><i class="fa fa-mobile"></i> 短信通知 </a>');
+        return btns.join("|");
+    }
+</script>
+
+</body>

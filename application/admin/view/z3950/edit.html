@@ -1,0 +1,83 @@
+{%include file='public/header_form' %}
+
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="z3950_id" value="{%$info.z3950_id%}">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">分馆代码：</label>
+                <div class="col-sm-5">
+                    <p class="form-control-static">
+                        {%$tsg_info.tsg_code%}〖{%$tsg_info.tsg_name%}〗
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 名称：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="z3950_name" name="z3950_name" class="form-control"
+                           value="{%$info.z3950_name%}" required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 服务器地址：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="addr" name="addr" class="form-control" value="{%$info.addr%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 端口号：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="port" name="port" class="form-control" value="{%$info.port%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 数据库名称：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="db" name="db" class="form-control" value="{%$info.db%}"><span
+                        class="text-muted">多数据库用英文逗号,隔开</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 字符集：</label>
+                <div class="col-sm-5">
+                    <select id="charset" name="charset" class="form-control">
+                        <option value="gbk">gbk</option>
+                        <option value="utf-8">utf-8</option>
+                        <option value="marc-8">marc-8</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"> 用户名：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="user_name" name="user_name" class="form-control" value="{%$info.user_name%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"> 密码：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="pwd" name="pwd" class="form-control" value="{%$info.pwd%}">
+                </div>
+            </div>
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function getFormOptions() {
+        var id = "{%$info.z3950_id%}";
+        return {url: id ? "{%:url('Z3950/edit')%}" : "{%:url('Z3950/add')%}"};
+    }
+</script>

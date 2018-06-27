@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{%$web_title%}</title>
+    <script src="__static__/js/jquery.min.js"></script>
+    <script src="__static__/js/plugins/layer/layer.min.js"></script>
+</head>
+<body>
+<script>
+    layer.alert("{%$msg%}", {icon: '{%$type%}'}, function () {
+        layer.closeAll();
+    });
+</script>
+</body>
+</html>

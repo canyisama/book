@@ -1,0 +1,132 @@
+{%include file='public/header_form' %}
+
+<div class="space-20"></div>
+<div class="row">
+    <form class="form-horizontal m-t" id="postForm" method="post">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">发件人:</label>
+                <div class="col-sm-6">
+                    <p class="form-control-static">{%$info.from_name%}</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">发件人Email:</label>
+                <div class="col-sm-6">
+                    <p class="form-control-static">{%$info.from_email%}</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">收件人:</label>
+                <div class="col-sm-6">
+                    <input id="to_name" name="to_name" class="form-control input-sm" type="text"
+                           placeholder="请输入收件人" value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">收件人Email:</label>
+                <div class="col-sm-6">
+                    <input id="to_email" name="to_email" class="form-control input-sm" type="text"
+                           placeholder="请输入收件人Email" value="">
+                </div>
+                <div class="col-sm-2">
+                    <span style="color: red;font-size: large">*</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">邮件模板列表:</label>
+                <div class="col-sm-6">
+                    <select name="email_tpl" id="email_tpl" class="form-control input-sm">
+                        <option value=""></option>
+                        {%volist name='email_tpl_lists' id='vo'%}
+                        <option value="{%$vo.email_tpl_id%}">{%$vo.tpl_name%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">邮件标题:</label>
+                <div class="col-sm-6">
+                    <input id="subject" name="subject" class="form-control input-sm" type="text"
+                           placeholder="请输入邮件标题" value="">
+                </div>
+                <div class="col-sm-2">
+                    <span style="color: red;font-size: large">*</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">邮件内容:</label>
+                <div class="col-sm-6">
+                    <textarea id="email_body" name="email_body" class="form-control input-sm" style="height: 100px"></textarea>
+                </div>
+                <div class="col-sm-2">
+                    <span style="color: red;font-size: large">*</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group text-center">
+            <div class="col-sm-12">
+                <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                    <i class="fa fa-check"></i> 保存
+                </button>
+                <a class="btn btn-outline btn-danger" id="btnCancel">
+                    <i class="fa fa-times"></i> 取消
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        $("#postForm").validate({
+            rules: {
+                to_email: {
+                    email: true,
+                    required: true,
+                },
+                subject: {
+                    required: true,
+                },
+                email_body: {
+                    required: true,
+                }
+            },
+            messages: {
+                to_email: {
+                    email: "不是有效的邮箱格式",
+                    required: "请输入收件人Email"
+                },
+                subject: {
+                    required: "请输入邮件标题",
+                },
+                email_body: {
+                    required: "请输入邮件内容",
+                }
+            }
+        });
+
+        //改变值
+        $('#email_tpl').change(function () {
+            var id = $(this).val();
+            if(!id){
+                $('#subject').val('');
+                $('#email_body').val('');
+            }else{
+                $.get("{%:url('Email/loadtpl')%}",{email_tpl_id:id},function (result) {
+                    if (result.code == 1){
+                        $('#subject').val(result.data.tpl_subject);
+                        $('#email_body').val(result.data.tpl_body);
+                    }else{
+                        layer.alert(result.msg,{icon:2});
+                    }
+                },'json');
+            }
+        });
+
+    });
+
+    function getFormOptions() {
+        return {url:"{%:url('Email/sendmail')%}"};
+    }
+</script>

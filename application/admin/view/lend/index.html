@@ -1,0 +1,92 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="dz_code" type="text"
+                                               placeholder="读者证号">
+                                        <input class="form-control input-outline" id="barcode" type="text"
+                                               placeholder="图书条码">
+                                        <input class="form-control input-outline" id="real_name" type="text"
+                                               placeholder="读者姓名">
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="题名">
+                                        <input class="form-control input-outline" id="add_time" type="text"
+                                               placeholder="借出日期">
+                                        {%eq name='type' value='2'%}
+                                        <input class="form-control input-outline" id="end_time" type="text"
+                                               placeholder="归还日期">
+                                        {%/eq%}
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true" ></th>
+                                    <th data-field="dz_code" data-sortable="true">读者证号</th>
+                                    <th data-field="real_name" data-sortable="true">读者姓名</th>
+                                    <th data-field="title" data-sortable="true">题名</th>
+                                    <th data-field="barcode" data-sortable="true">图书条码</th>
+                                    <th data-field="calino" data-sortable="true">索书号</th>
+                                    <th data-field="price" data-sortable="true">价格</th>
+                                    <th data-field="site_name" data-formatter="siteFormatter" data-sortable="true">馆藏地址</th>
+                                    <th data-field="re_cnt" data-sortable="true">续借次数</th>
+                                    <th data-field="add_time" data-sortable="true">借出日期</th>
+                                    {%eq name='type' value='2'%}
+                                    <th data-field="end_time" data-sortable="true">归还日期</th>
+                                    {%/eq%}
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 时间插件
+
+
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Lend/getJsonList',['type'=>$type])%}",
+            sortName: 'add_time',
+            clickToSelect: true
+        });
+
+        laydate.render({
+            elem: '#add_time'//指定元素
+        });
+        laydate.render({
+            elem: '#end_time'
+        });
+
+    });
+
+
+    /**
+     *
+     * @param value
+     * @param row
+     * @returns {string}
+     */
+    function siteFormatter(value,row) {
+        return row.tsg_site_code +'|'+ value;
+    }
+
+</script>
+
+</body>

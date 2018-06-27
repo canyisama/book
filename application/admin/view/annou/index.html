@@ -1,0 +1,95 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="subject" type="text"
+                                               placeholder="公告标题">
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="annou_id" data-visible="false">annou_id</th>
+                                    <th data-field="subject" data-sortable="true">公告标题</th>
+                                    <th data-field="add_time" data-sortable="true">发布时间</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Annou/getJsonList')%}",
+            sortName: 'add_time',
+            clickToSelect: true
+        });
+    });
+
+    function toEdit(annou_id) {
+        var url = "{%:url('Annou/add');%}";
+        if (annou_id)
+            url = "{%:url('Annou/edit');%}?annou_id=" + annou_id;
+        myOpen({
+            type: 2,
+            title: annou_id ? "编辑公告" : "发布新公告",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function delData(annou_id) {
+        myConfirm("是否删除此数据？", 2, function () {
+            $.post("{%:url('Annou/drop')%}", {annou_id: annou_id}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function opFormatter(value, row) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.annou_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.annou_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

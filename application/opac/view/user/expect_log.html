@@ -1,0 +1,82 @@
+{%extend name='public/header' /%}
+{%block name='head'%}
+{__block__}
+<link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="__static__/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+{%/block%}
+
+{%block name='content_user'%}
+{__block__}
+
+<div>
+    <table id="Table">
+        <thead>
+        <tr>
+            <th data-field="title"  data-sortable="true">书名</th>
+            <th data-field="firstauthor" data-sortable="true">著者</th>
+            <th data-field="publisher" data-sortable="true">出版社</th>
+            <th data-field="pubdate" data-sortable="true">出版时间</th>
+            <th data-field="isbn" data-sortable="true">ISBN</th>
+            <th data-field="status" data-sortable="true">状态</th>
+            <th data-field="add_time" data-sortable="true">荐购时间</th>
+            <th data-field="verify_time" data-sortable="true">审核时间</th>
+            <th data-field="book_time" data-sortable="true">到书时间</th>
+            <th data-formatter="opFormatter" data-align="center">操作</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+
+<script src="__static__/js/indexpage.js"></script>
+<script>
+    var sort_name = 'add_time';
+
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "/opac/User/expectJson",
+            sortName: sort_name,
+            showColumns : false,
+            showRefresh : false
+        });
+    });
+
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        if (row.ori_status !== 1){
+            return '-';
+        }
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="dropBtn(\'' + row.expect_log_id + '\',\''+row.dz_id+'\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 取消 </a>');
+        return btns.join("|");
+    }
+
+    // 取消
+    function dropBtn(expect_id,dz_id) {
+        myConfirm("确定取消吗？", 3, function () {
+            $.post("{%:url('User/dropExpect')%}", {expect_log_id: expect_id,dz_id:dz_id}, function (result) {
+                if (result.code == 1) {
+                    layer.msg(result.msg);
+                    location.reload();
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+</script>
+
+{%/block%}

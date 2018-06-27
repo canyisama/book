@@ -1,0 +1,420 @@
+<hr/>
+<div class="col-sm-12">
+    <div class="tabs-container">
+        <ul class="nav nav-tabs">
+            <li class="{%$source=='dck'?'active':''%}">
+                <a data-toggle="tab" href="#tab_dck" aria-expanded="true">馆藏信息</a>
+            </li>
+            <li class="{%$source=='ys'?'active':''%}">
+                <a data-toggle="tab" href="#tab_ys" aria-expanded="false">验收信息</a>
+            </li>
+            <li class="{%$source=='destine'?'active':''%}">
+                <a data-toggle="tab" href="#tab_destine" aria-expanded="false">预订信息</a>
+            </li>
+            <div class="form-inline" style="margin-top: 2px;">
+                <div class="checkbox">
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <label title="显示所有分馆">
+                        <input class="form-control input-outline" id="show_all_tsg" name="show_all_tsg"
+                               {%:cookie('show_all_tsg')?'checked':''%} type="checkbox">
+                        显示所有分馆
+                    </label>
+                </div>
+            </div>
+        </ul>
+        <div class="tab-content">
+
+            <!-- 馆藏信息 -->
+            <div id="tab_dck" class="tab-pane {%$source=='dck'?'active':''%}">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <button type="button" onclick="toOpenPage('dck_edit')"
+                                class="btn btn-sm btn-primary">
+                            <i class="fa fa-plus"></i> 添加馆藏
+                        </button>
+                        <button type="button" onclick="delDckList()"
+                                class="btn btn-sm btn-danger">
+                            <i class="fa fa-times"></i> 批量删除
+                        </button>
+                        <button type="button" onclick="toOpenPage('dck_edit_batch')"
+                                class="btn btn-sm btn-success">
+                            <i class="fa fa-edit"></i> 批量修改
+                        </button>
+                        <button type="button" class="btn btn-sm btn-white"
+                                onclick="dckTable.refreshTable();" title="刷新">
+                            <i class="fa fa-refresh"></i>
+                        </button>
+                        <panel style="margin-left: 20%;">本馆（<span id="dck_cnt_self_txt">_</span>）册，总共（<span
+                                id="dck_cnt_all_txt">_</span>）册
+                        </panel>
+                    </div>
+                    <table id="dckTable">
+                        <thead>
+                        <tr>
+                            <th data-checkbox="true"></th>
+                            <th data-field="dck_id" data-visible="false">dck_id</th>
+                            <th data-field="barcode" data-sortable="true">图书条码</th>
+                            <th data-field="calino" data-sortable="true">索书号</th>
+                            <th data-field="status" data-sortable="true">状态</th>
+                            <th data-field="tsg_code_has" data-sortable="true">所属馆</th>
+                            <th data-field="tsg_code" data-sortable="true">所在馆</th>
+                            <th data-field="tsg_site_code" data-sortable="true">馆藏地址</th>
+                            <th data-field="lt_type" data-sortable="true">流通类型</th>
+                            <th data-field="price" data-sortable="true">单价</th>
+                            <th data-field="price_sum" data-sortable="true">套价</th>
+                            <th data-field="add_time" data-sortable="true">入库日期</th>
+                            <th data-formatter="dckTable.opFormatter" data-align="center">操作</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 验收信息 -->
+            <div id="tab_ys" class="tab-pane {%$source=='ys'?'active':''%}">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <button type="button" onclick="toOpenPage('ys_edit')"
+                                class="btn btn-sm btn-primary">
+                            <i class="fa fa-plus"></i> 新增验收
+                        </button>
+                        <button type="button" class="btn btn-sm btn-white"
+                                onclick="ysTable.refreshTable();" title="刷新">
+                            <i class="fa fa-refresh"></i>
+                        </button>
+                    </div>
+                    <table id="ysTable">
+                        <thead>
+                        <tr>
+                            <th data-radio="true"></th>
+                            <th data-field="ys_id" data-visible="false">ys_id</th>
+                            <th data-field="batch_no" data-sortable="true">验收批次</th>
+                            <th data-field="ys_type" data-sortable="true" data-formatter="ysTypeFormatter">验收类型</th>
+                            <th data-field="tsg_code" data-sortable="true">分馆代码</th>
+                            <th data-field="calino" data-sortable="true">索书号</th>
+                            <th data-field="seller_code" data-sortable="true">书商代码</th>
+                            <th data-field="cost_code" data-sortable="true">预算代码</th>
+                            <th data-field="ys_cnt" data-sortable="true">复本数</th>
+                            <th data-field="ori_price" data-sortable="true">单价</th>
+                            <th data-field="discount" data-sortable="true">折扣</th>
+                            <th data-field="price" data-sortable="true">折后价</th>
+                            <th data-field="ys_user" data-sortable="true">验收人</th>
+                            <th data-field="ys_time" data-sortable="true">验收时间</th>
+                            <th data-formatter="ysTable.opFormatter" data-align="center">操作</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 预订信息 -->
+            <div id="tab_destine" class="tab-pane {%$source=='destine'?'active':''%}">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <button type="button" onclick="toOpenPage('destine_edit')"
+                                class="btn btn-sm btn-primary">
+                            <i class="fa fa-plus"></i> 新增预订
+                        </button>
+                        <button type="button" class="btn btn-sm btn-white"
+                                onclick="destineTable.refreshTable();" title="刷新">
+                            <i class="fa fa-refresh"></i>
+                        </button>
+                    </div>
+                    <table id="destineTable">
+                        <thead>
+                        <tr>
+                            <th data-radio="true"></th>
+                            <th data-field="destine_id" data-visible="false">destine_id</th>
+                            <th data-field="book_id" data-visible="false">book_id</th>
+                            <th data-field="status" data-sortable="true"
+                                data-formatter="destineTableStateFormatter">状态
+                            </th>
+                            <th data-field="destine_batch_code" data-sortable="true">预订批次号</th>
+                            <th data-field="tsg_code" data-sortable="true">分馆代码</th>
+                            <th data-field="order_no" data-sortable="true">订购号</th>
+                            <th data-field="jzinfo" data-sortable="true">卷册号</th>
+                            <th data-field="price" data-sortable="true">折后价</th>
+                            <th data-field="book_cnt" data-sortable="true">复本数</th>
+                            <th data-field="order_sour" data-sortable="true">图书来源</th>
+                            <th data-field="remark" data-sortable="true">备注</th>
+                            <th data-formatter="destineTable.opFormatter"
+                                data-align="center">操作
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="__static__/js/logic/cf/common_table_op.js"></script>
+<script>
+    var source = "{%$source%}" // 来源页面,dck,ys,destine 等
+        , height2 = ($(top.window).height() - 160) // 子表高度
+        , dckTable
+        , ysTable
+        , destineTable;
+
+    $(function () {
+        function initDckTable() {
+            dckTable = dckTable || new CommonTableObject("#dckTable", {
+                height: height2,
+                sortName: "add_time",
+                onLoadSuccess: function (data) { // 数据加载成功的回调,设置本馆数量/全部数量
+                    if (!!data.data) {
+                        $("#dck_cnt_all_txt").text(data.data.dck_cnt_all);
+                        $("#dck_cnt_self_txt").text(data.data.dck_cnt_self);
+                    } else {
+                        $("#dck_cnt_all_txt").text('_');
+                        $("#dck_cnt_self_txt").text('_');
+                    }
+                },
+                onLoadError: function () {
+                    $("#dck_cnt_all_txt").text('_');
+                    $("#dck_cnt_self_txt").text('_');
+                }
+            });
+            dckTable.opFormatter = function (value, row) {
+                var btns = [];
+                btns.push('<a href="javascript:void(0);" onclick="toOpenPage(\'dck_edit\',\'' + row.dck_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+                btns.push('<a href="javascript:void(0);" onclick="delDck(\'' + row.dck_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+                return btns.join("|");
+            };
+        }
+
+        function initYsTable() {
+            ysTable = ysTable || new CommonTableObject("#ysTable", {height: height2, sortName: "ys_id"});
+            ysTable.opFormatter = function (value, row) {
+                var btns = [];
+                btns.push('<a href="javascript:void(0);" onclick="toOpenPage(\'ys_edit\',\'' + row.ys_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+                btns.push('<a href="javascript:void(0);" onclick="delYs(\'' + row.ys_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+                return btns.join("|");
+            };
+        }
+
+        function initDestineTable() {
+            destineTable = destineTable || new CommonTableObject("#destineTable", {
+                height: height2,
+                sortName: "add_time"
+            });
+            destineTable.opFormatter = function (value, row) {
+                var btns = [];
+                btns.push('<a href="javascript:void(0);" onclick="toOpenPage(\'destine_edit\',\'' + row.destine_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+                if (row.status == 1) {
+                    btns.push('<a href="javascript:void(0);" onclick="setDestineState(\'' + row.destine_id + '\', 2);" class="btn-sm text-warning"><i class="fa fa-minus-circle"></i> 退订</a>');
+                } else {
+                    btns.push('<a href="javascript:void(0);" onclick="setDestineState(\'' + row.destine_id + '\', 1);" class="btn-sm text-navy"><i class="fa fa-check-circle"></i> 重订</a>');
+                }
+                btns.push('<a href="javascript:void(0);" onclick="delDestine(\'' + row.destine_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+                return btns.join("|");
+            };
+        }
+
+        // 按当前页面来源初始化不同的table对象
+        switch (source) {
+            case "dck":
+                initDckTable();
+                break;
+            case "ys":
+                initYsTable();
+                break;
+            case "destine":
+                initDestineTable();
+                break;
+        }
+
+        $("#show_all_tsg").click(function () {
+            var val = $(this).prop("checked") ? 1 : 0;
+            $.setCookie("show_all_tsg", val, 30, "/");
+
+            refreshCurTab();
+        });
+
+        /**
+         * 点击切换下方tab栏,只有此时能确保 window.book_id 一定会有值
+         * 所以在这里才指定了子表的 url 参数
+         */
+        $(".nav-tabs a").click(function () {
+            switch ($(this).attr("href")) {
+                case "#tab_dck":
+                    initDckTable();
+                    var url = "{%:url('Dck/getJsonList');%}?book_id=" + window.book_id;
+                    dckTable.showTable({url: url});
+                    break;
+                case "#tab_ys":
+                    initYsTable();
+                    var url = "{%:url('Ys/getYsList');%}?book_id=" + window.book_id + "&destine_id=" + window.destine_id + "&ys_type=" + window.ys_type;
+                    ysTable.showTable({url: url});
+                    break;
+                case "#tab_destine":
+                    initDestineTable();
+                    var url = "{%:url('Destine/getJsonList')%}?book_id=" + window.book_id;
+                    destineTable.showTable({url: url});
+                    break;
+            }
+        });
+    });
+
+    // 刷新当前tab下的列表
+    function refreshCurTab() {
+        var tab = $(".nav-tabs li.active a").attr("href");
+        switch (tab) {
+            case "#tab_dck":
+                dckTable.refreshTable();
+                break;
+            case "#tab_ys":
+                ysTable.refreshTable();
+                break;
+            case "#tab_destine":
+                destineTable.refreshTable();
+                break;
+        }
+    }
+
+    /**
+     * 验收保存后的回调,刷新表格
+     */
+    function ysEditCallBack() {
+        refreshCurTab();
+    }
+
+    /**
+     * 打开弹出层页面
+     */
+    function toOpenPage(type, id) {
+        switch (type) {
+            case "ys_edit":
+                var url = "{%:url('Ys/add');%}?book_id=" + window.book_id + "&ys_type=" + window.ys_type + "&destine_id=" + window.destine_id;
+                if (id)
+                    url = "{%:url('Ys/edit');%}?ys_id=" + id + "&book_id=" + window.book_id + "&ys_type=" + window.ys_type + "&destine_id=" + window.destine_id;
+                myOpen({
+                    type: 2,
+                    title: id ? "编辑预订验收(附加馆藏)" : "新增预订验收(附加馆藏)",
+                    /*area: ['auto', 'auto'],*/
+                    content: url
+                });
+                break;
+            case "destine_edit":
+                var url = "{%:url('Destine/add');%}?book_id=" + window.book_id;
+                if (id)
+                    url = "{%:url('Destine/edit');%}?destine_id=" + id + "&book_id=" + window.book_id;
+                myOpen({
+                    type: 2,
+                    title: id ? "编辑数据" : "添加数据",
+                    /*area: ['auto', 'auto'],*/
+                    content: url
+                });
+                break;
+            case 'dck_edit':
+                var url = "{%:url('Dck/add')%}?book_id=" + window.book_id;
+                var area = ['1250px', '700px'];
+                if (id) {
+                    url = "{%:url('Dck/edit')%}?dck_id=" + id;
+                    area = ['1250px', '700px'];
+                }
+                myOpen({
+                    type: 2,
+                    title: id ? "编辑馆藏" : "添加馆藏",
+                    area: area,
+                    content: url,
+                });
+                break;
+            case 'dck_edit_batch':
+                var dck_ids = getSelectRows("dckTable");
+                if (!dck_ids) return;
+                var url = "{%:url('Dck/edit_batch')%}?book_id=" + window.book_id + "&dck_id=" + dck_ids;
+                myOpen({
+                    type: 2,
+                    title: "馆藏批修改",
+                    /*area: ['auto', 'auto'],*/
+                    content: url
+                });
+                break;
+        }
+    }
+
+    function delYs(ys_id) {
+        ysTable.del("{%:url('ys/drop');%}", {ys_id: ys_id}, function (index) {
+            if (index) {
+                layer.close(index);
+                refreshCurTab();
+            }
+        });
+    }
+
+    function getSelectRows(element) {
+        var rows = $("#" + element).bootstrapTable('getSelections');
+        if (rows.length == 0) {
+            layer.msg('没有选中行!');
+            return false;
+        }
+        var dck_ids = [];
+        $.each(rows, function (index, row) {
+            dck_ids.push(row.dck_id);
+        });
+        return dck_ids.join(',');
+    }
+
+    /**
+     * 多选删除
+     */
+    function delDckList() {
+        var dck_ids = getSelectRows("dckTable");
+        if (!!dck_ids) {
+            delDck(dck_ids);
+        }
+    }
+
+    function delDck(dck_id) {
+        dckTable.del("{%:url('Dck/drop');%}", {dck_id: dck_id}, function (index) {
+            if (index) {
+                layer.close(index);
+                refreshCurTab();
+            }
+        });
+    }
+
+    function setDestineState(destine_id, status) {
+        var title = status == 1 ? '是否重订？' : '是否退订？';
+        myConfirm(title, 0, function () {
+            $.post("{%:url('Destine/setState')%}", {destine_id: destine_id, status: status}, function (result) {
+                if (result.code == 1) {
+                    var index = layer.alert(result.msg, {icon: 1}, function () {
+                        destineTable.refreshTable();
+                        layer.close(index);
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function delDestine(destine_id) {
+        destineTable.del("{%:url('destine/drop');%}", {destine_id: destine_id}, function (index) {
+            if (index) {
+                destineTable.refreshTable();
+                layer.close(index);
+            }
+        });
+    }
+
+    function destineTableStateFormatter(value) {
+        if (value == 1) {
+            return '<span class="label label-primary">预订</span>';
+        } else {
+            return '<span class="label label-danger">退订</span>';
+        }
+    }
+
+    function ysTypeFormatter(value) {
+        if (value == 1) {
+            return '<span class="label label-primary">预定验收</span>';
+        } else {
+            return '<span class="label label-danger">直接验收</span>';
+        }
+    }
+</script>

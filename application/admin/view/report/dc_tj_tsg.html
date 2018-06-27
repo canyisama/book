@@ -1,0 +1,119 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>{%$report_info.report_name%}</h5>
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal m-t" id="form_report" method="post" action="{%:url('Report/preview',['report_id'=>input('report_id')]);%}">
+                    <div class="form-group">
+                        <div class="col-sm-6">
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-4">所属分馆</label>
+                                <div class="col-sm-6">
+                                    <select name="tsg_code" class="form-control">
+                                        <option value="">所有分馆</option>
+                                        {%volist name='tsg_list' id='value'%}
+                                        <option value="{%$key%}">{%$value%}</option>
+                                        {%/volist%}
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4">入库日期</label>
+                                <div class="col-sm-6">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="time_beg" name="time_beg" placeholder="开始范围" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="time_end" name="time_end" placeholder="结束范围" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">排序方式：</label>
+                                <div class="col-sm-8">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="order_type">
+                                                <option value="">= 排序列 =</option>
+                                                {%volist name="order_list" id="order"%}
+                                                <option value="{%$key%}">{%$order%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="order_seq">
+                                                <option value="">= 排序 =</option>
+                                                <option value="asc">升序</option>
+                                                <option value="desc">降序</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">报表格式：</label>
+                                <div class="col-sm-8">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <select class="form-control" name="report_gs_id">
+                                                {%volist name="report_gs_list" id="gs"%}
+                                                <option value="{%$gs.report_gs_id%}">{%$gs.gs_name%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-primary"><i class="fa fa-cog"></i> 设置</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"> </label>
+                                <div class="col-sm-3">
+                                    <div class="input-group">
+                                        <button class="btn btn-primary"><i class="fa fa-eye"></i> 报表预览</button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="input-group">
+                                        <button class="btn btn-primary" onclick="open_chart('{%$gs.report_gs_id%}')"><i class="fa fa-bar-chart"></i>图表展示</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+        laydate.render({
+            elem: '#time_beg' //指定元素
+        });
+        laydate.render({
+            elem: '#time_end' //指定元素
+        });
+    });
+
+    function open_chart(report_gs_id) {
+        var url = '/admin/report/chart?report_gs_id='+report_gs_id+'&report_id={%:input("report_id")%}';
+        $('#form_report').attr('action',url);
+    }
+
+</script>

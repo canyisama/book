@@ -1,0 +1,104 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div role="group">
+                            <form class="form-inline" onsubmit="return false;">
+                                <div class="form-group">
+                                    <button type="button" id="ltBtn" class="btn btn-primary">流通</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="dz_code" type="text"
+                                               placeholder="读者证号">
+                                        <input class="form-control input-outline" id="real_name" type="text"
+                                               placeholder="读者姓名">
+                                        <input class="form-control input-outline" id="op_user" type="text"
+                                               placeholder="操作人">
+                                        <select class="form-control" id="tsg_site_code">
+                                            <option value="">=所有馆藏地址=</option>
+                                            {%volist name='tsg_lists' id='value'%}
+                                            <option value="{%$key%}">〖{%$value%}〗</option>
+                                            {%/volist%}
+                                        </select>
+                                        <select class="form-control" id="lt_status">
+                                            <option value="">=状态=</option>
+                                            {%volist name='status_lists' id='value'%}
+                                            <option value="{%$key%}">〖{%$value%}〗</option>
+                                            {%/volist%}
+                                        </select>
+
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true" ></th>
+                                    <th data-field="dz_code" data-sortable="true">读者证号</th>
+                                    <th data-field="real_name" data-sortable="true">读者姓名</th>
+                                    <th data-field="site_name" data-formatter="siteFormatter" data-sortable="true">阅览地点</th>
+                                    <th data-field="lt_status"  data-sortable="true">状态</th>
+                                    <th data-field="beg_time" data-sortable="true">签到时间</th>
+                                    <th data-field="end_time" data-sortable="true">签退时间</th>
+                                    <th data-field="lt_time" data-formatter="readTime" data-sortable="true">阅读时长</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Lend/readRoomList')%}",
+            sortName: 'beg_time',
+            clickToSelect: true
+        });
+    });
+
+
+    /**
+     *
+     * @param value
+     * @param row
+     * @returns {string}
+     */
+    function siteFormatter(value,row) {
+        return row.tsg_site_code +'|'+ value;
+    }
+
+    function readTime(value,row) {
+        new_time = Math.round(value/60*100)/100;
+        return new_time+'分钟';
+    }
+
+    //流通弹窗
+    $('#ltBtn').click(function () {
+        myOpen({
+            type: 2,
+            title:'阅览签到/签退',
+            /*area: ['auto', 'auto'],*/
+            content: "/admin/lend/roomLt"// 加载相对应的弹框
+        });
+    });
+
+</script>
+
+</body>

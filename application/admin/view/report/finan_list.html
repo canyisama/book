@@ -1,0 +1,158 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>{%$report_info.report_name%}</h5>
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal m-t" method="post" action="{%:url('Report/preview',['report_id'=>input('report_id')]);%}">
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">读者证号：</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="dz_code" name="dz_code" placeholder="读者证号">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">添加日期：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" id="time_beg" name="time_beg" placeholder="开始时间" readonly>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" id="time_end" name="time_end" placeholder="结束时间" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">读者单位：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="unit_name[]" size="5">
+                                        <option value="">= 所有读者单位 =</option>
+                                        {%volist name="unit_name_list" id="vo"%}
+                                        <option value="{%$vo.unit_name%}">{%$vo.unit_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">财务类型：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="fin_type[]" size="5">
+                                        <option value="">= 全部 =</option>
+                                        {%volist name="fin_type_list" id="vo"%}
+                                        <option value="{%$key%}">{%$vo%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">收费方式：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="fee_mode[]" size="5">
+                                        <option value="">= 全部 =</option>
+                                        {%volist name="fee_mode_list" id="vo"%}
+                                        <option value="{%$key%}">{%$vo%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">收费状态：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="fee_type[]" size="5">
+                                        <option value="">= 全部 =</option>
+                                        {%volist name="fee_type_list" id="vo"%}
+                                        <option value="{%$key%}">{%$vo%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">操作人：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="op_user[]" size="5">
+                                        <option value="">= 全部 =</option>
+                                        {%volist name="user_list" id="vo"%}
+                                        <option value="{%$vo.user_name%}">{%$vo.user_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">排序方式：</label>
+                                <div class="col-sm-8">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="order_type">
+                                                <option value="">= 排序列 =</option>
+                                                {%volist name="order_list" id="order"%}
+                                                <option value="{%$key%}">{%$order%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="order_seq">
+                                                <option value="">= 排序 =</option>
+                                                <option value="asc">升序</option>
+                                                <option value="desc">降序</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">报表格式：</label>
+                                <div class="col-sm-8">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <select class="form-control" name="report_gs_id">
+                                                {%volist name="report_gs_list" id="gs"%}
+                                                <option value="{%$gs.report_gs_id%}">{%$gs.gs_name%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-primary"><i class="fa fa-cog"></i> 设置</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"> </label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <button class="btn btn-primary"><i class="fa fa-eye"></i> 报表预览</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+        laydate.render({
+            elem: '#time_beg' //指定元素
+        });
+        laydate.render({
+            elem: '#time_end' //指定元素
+        });
+    });
+
+</script>

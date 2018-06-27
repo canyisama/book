@@ -1,0 +1,217 @@
+{%include file='public/header_simple' %}
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>MARC映射条目</h5>
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal m-t" method="post">
+                    <div class="row">
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">MARC类型：</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" id="mt_id" name="mt_id">
+                                        {%volist name="mt_list" id="mt"%}
+                                        <option value="{%$mt.mt_id%}" {%$mt_id==$mt.mt_id?'selected':''%}>
+                                            {%$mt.mt_code%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">题名：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="title" value="{%$mapper_info.title%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">并列题名：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="bl_title" value="{%$mapper_info.bl_title%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">副题名：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="othertitle" value="{%$mapper_info.othertitle%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">ISBN：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="isbn"
+                                           value="{%$mapper_info.isbn%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">分辑名：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="fjtitle"
+                                           value="{%$mapper_info.fjtitle%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">分辑号：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="fjno"
+                                           value="{%$mapper_info.fjno%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">分类号：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="clc"
+                                           value="{%$mapper_info.clc%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">第一责任者：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="firstauthor"
+                                           value="{%$mapper_info.firstauthor%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">其他责任者：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="otherauthor"
+                                           value="{%$mapper_info.otherauthor%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">出版社：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="publisher"
+                                           value="{%$mapper_info.publisher%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">出版地：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="pubplace"
+                                           value="{%$mapper_info.pubplace%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">出版时间：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="pubdate"
+                                           value="{%$mapper_info.pubdate%}">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">丛书名：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="series" value="{%$mapper_info.series%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">丛编著者：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="seriesauthor" value="{%$mapper_info.seriesauthor%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">页码：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="pages" value="{%$mapper_info.pages%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">版次：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="edition"
+                                           value="{%$mapper_info.edition%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">附件：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="accessories"
+                                           value="{%$mapper_info.accessories%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">图表：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="charts"
+                                           value="{%$mapper_info.charts%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">装帧方式：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="binding"
+                                           value="{%$mapper_info.binding%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">图书语种：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="lags"
+                                           value="{%$mapper_info.lags%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">尺寸：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="size"
+                                           value="{%$mapper_info.size%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">一般性附注：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="gennotes"
+                                           value="{%$mapper_info.gennotes%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">内容摘要：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="abstract"
+                                           value="{%$mapper_info.abstract%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">主题词：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="subject"
+                                           value="{%$mapper_info.subject%}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 m-t">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"> </label>
+                                <div class="col-sm-8">
+                                    <button class="btn btn-primary" type="submit">确认</button>
+                                    <button class="btn btn-warning" type="reset">重置</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $("#mt_id").change(function () {
+                location.href = "{%:url('Marctype/config')%}?mt_id=" + $(this).val();
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="dz_type_name" type="text"
+                                               placeholder="读者类型名称">
+                                        <input class="form-control input-outline" id="dz_type_code" type="text"
+                                               placeholder="读者类型代码">
+                                        <input class="form-control input-outline" id="valid_days" type="text"
+                                               placeholder="读者证有效天数">
+
+                                        <select class="form-control" id="is_inter">
+                                            <option value="">= 馆际借还 =</option>
+                                            <option value="1">开通</option>
+                                            <option value="0">关闭</option>
+                                        </select>
+                                        <select class="form-control" id="is_reser">
+                                            <option value="">= 开通预约 =</option>
+                                            <option value="1">是</option>
+                                            <option value="0">否</option>
+                                        </select>
+                                        <select class="form-control" id="is_out_can">
+                                            <option value="">= 超期可借 =</option>
+                                            <option value="1">开通</option>
+                                            <option value="0">关闭</option>
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="dz_type_code" data-sortable="true">读者类型代码</th>
+                                    <th data-field="dz_type_name" data-sortable="true">读者类型名称</th>
+                                    <th data-field="is_inter" data-sortable="true" data-formatter="isInterFormatter">
+                                        馆际借还
+                                    </th>
+                                    <th data-field="valid_days" data-sortable="true">读者证有效天数</th>
+                                    <th data-field="max_lend_num" data-sortable="true">最大借书量</th>
+                                    <th data-field="inter_lend_num" data-sortable="true">馆际最大借书量</th>
+                                    <th data-field="dz_ple_money" data-sortable="true">读者押金</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('DzType/getJsonList')%}",
+            sortName: 'dz_type_code',
+            clickToSelect: true
+        });
+    });
+
+    function toEdit(dz_type_code) {
+        var url = "{%:url('DzType/add');%}";
+        if (dz_type_code)
+            url = "{%:url('DzType/edit');%}?dz_type_code=" + dz_type_code;
+        myOpen({
+            type: 2,
+            title: dz_type_code ? "编辑数据" : "添加数据",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function delData(dz_type_code) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('DzType/drop')%}", {dz_type_code: dz_type_code}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function opFormatter(value, row) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.dz_type_code + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.dz_type_code + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+    function isInterFormatter(value) {
+        switch (value) {
+            case 0:
+                return '<span class="label label-danger">关闭</span>';
+            case 1:
+                return '<span class="label label-primary">开通</span>';
+        }
+    }
+</script>
+
+</body>
+</html>

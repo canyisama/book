@@ -1,0 +1,112 @@
+{%include file='public/header_simple' %}
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>新数据文件上传导入</h5>
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal m-t" id="catalog_form" name="catalog_form" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">MARC类型：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="mt_id_change" name="mt_id_change">
+                                        {%volist name="mt_list" id="mt"%}
+                                        <option value="{%$mt.mt_id%}" {%$mt_id==$mt.mt_id?'selected':''%}>{%$mt.mt_code%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">文件编码：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="file_encode" name="file_encode">
+                                        <option value="gbk">gbk</option>
+                                        <option value="utf-8">utf-8</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">marc文件：</label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <input type="file" name="marc_file">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"> </label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <button class="btn btn-primary">确认</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>已上传数据文件导入</h5>
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal m-t" action="{%:url('Destine/importbook');%}" id="marc_import_form" name="marc_import_form" method="post">
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">MARC类型：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="mt_id" name="mt_id">
+                                        {%volist name="mt_list" id="mt"%}
+                                        <option value="{%$mt.mt_id%}" {%$mt_id==$mt.mt_id?'selected':''%}>{%$mt.mt_code%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">已上传文件选择：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="upload_id" name="upload_id">
+                                        {%volist name="file_list" id="file"%}
+                                        <option value="{%$file.upload_id%}">{%$file.file_name%} | {%$file.file_encode%} | {%$file.add_time%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">改变文件编码：</label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <select name="change_file_encode" class="form-control">
+                                            <option value=""></option>
+                                            <option value="utf-8">utf-8</option>
+                                            <option value="gbk">gbk</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"> </label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <button class="btn btn-primary">确认</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

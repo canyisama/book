@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{%block name='head'%}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>{%$web_title%}</title>
+<!--<link rel="shortcut icon" href="/favicon.ico">-->
+<link href="__static__/css/bootstrap.min.css?v=3.3.5" rel="stylesheet">
+<link href="__static__/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+<link href="__static__/css/animate.min.css" rel="stylesheet">
+<link href="__static__/css/style.min.css?v=4.0.0" rel="stylesheet">
+<link rel="stylesheet" href="__static__/css/book.css" />
+<script>
+    if(window.top!==window.self){window.top.location=window.location};
+</script>
+
+<script src="__static__/js/jquery.min.js"></script>
+<script src="__static__/js/bootstrap.min.js"></script>
+<script src="__static__/js/plugins/layer/layer.min.js"></script>
+{%/block%}
+</head>
+
+
+
+<body class="gray-bg top-navigation">
+<div id="wrapper">
+    <div id="page-wrapper" class="gray-bg">
+        {%block name='top'%}
+        <div class="row border-bottom white-bg">
+            <nav class="navbar navbar-static-top" role="navigation" style="height: 50px">
+                <div class="navbar-header">
+                    <ul class="nav navbar-top-links navbar-left">
+                        <!--<button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse"-->
+                        <!--class="navbar-toggle collapsed" type="button">-->
+                        <!--<i class="fa fa-reorder"></i>-->
+                        <!--</button>-->
+                        <!--<a href="#" class="navbar-brand">所有分馆</a>-->
+                        <li class="dropdown">
+                            <a aria-expanded="false" id="tsg" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            {%:cookie('tsg_name')?:$tsg_list.0.tsg_name%}
+                            <span class="caret"></span>
+                            </a>
+
+                            <ul role="menu" class="dropdown-menu">
+                                {%volist name='tsg_list' id='vo'%}
+                                <li>
+                                    <a class="tsg_click" data-value="{%$vo.tsg_code%}" href="#">{%$vo.tsg_name%}</a>
+                                </li>
+                                {%/volist%}
+                            </ul>
+
+                        </li>
+
+
+
+                        {%volist name='top_menu' id='vo'%}
+                        <li class="dropdown" data-url="{%$vo.url%}">
+                            <!--<span class="reg dropdown" ">-->
+                                <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    {%$vo.text%}
+
+                                    {%notempty name='vo.child'%}
+                                    <span class="caret"></span>
+                                    {%/notempty%}
+                                </a>
+                            <!--</span>-->
+                            <ul role="menu" class="dropdown-menu">
+                                {%volist name='vo.child' id='child'%}
+                                <li>
+                                    <a href="{%$child.url%}">{%$child.text%}</a>
+                                </li>
+                                {%/volist%}
+                            </ul>
+                        </li>
+                        {%/volist%}
+                    </ul>
+                </div>
+                <div class="navbar-collapse collapse" id="navbar">
+
+                    <ul class="nav navbar-top-links navbar-right">
+                        <li class="active">
+                            {%empty name='Think.session.dz_info.real_name'%}
+                            <a aria-expanded="false" role="button" href="{%:url('opac/Login/index')%}"> 登录<i class="fa fa-sign-in"></i></a>
+                            {%else/%}
+                            <a aria-expanded="false" role="button" href="{%:url('Login/logout')%}"> 您好,{%:session('dz_info.real_name')%}
+                               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 退出<i class="fa fa-sign-out"></i> </a>
+                            {%/empty%}
+                        </li>
+                        {%volist name='top_menu_right' id='vo'%}
+                        <li class="dropdown" data-url="{%$vo.url%}">
+                            <a aria-expanded="false" role="button" href="{%$vo.url%}" class="dropdown-toggle" data-toggle="dropdown">
+                                {%$vo.text%} <span class="caret"></span></a>
+                            <ul role="menu" class="dropdown-menu">
+                                {%volist name='vo.child' id='child'%}
+                                <li>
+                                    <a href="{%$child.url%}">{%$child.text%}</a>
+                                </li>
+                                {%/volist%}
+                            </ul>
+                        </li>
+                        {%/volist%}
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        {%/block%}
+        <div class="row" id="back_height" style="height: 93vh">
+
+        {%if condition="($controller == 'book') || ($controller == 'user')"%}
+            {%block name='content_user'%}
+            <div class="wrapper wrapper-content" style="margin-top: -33px">
+                <div class="container">
+                    <div class="clear user_cont">
+                        <div class="fl left_cont">
+                            {%volist name='top_menu_right' id='vo'%}
+                            <dl class="contDl left_contDl">
+                                <dt>{%$vo.text%}</dt>
+                                {%volist name='vo.child' id='child'%}
+                                <!--<dd class="selectDd"><a href="#">用户首页</a></dd>-->
+                                <dd><a href="{%$child.url%}">{%$child.text%}</a></dd>
+                                {%/volist%}
+                            </dl>
+                            {%/volist%}
+                        </div>
+                        <div class="fr right_cont">
+
+            {%/block%}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {%else /%}
+            <div id="action_height">
+            {%block name='content'%}
+
+            {%/block%}
+            </div>
+        {%/if%}
+
+        </div>
+        {%block name='footer'%}
+        <div class="footer navbar-fixed-bottom">
+            <div class="pull-right">
+                © 2018-2018 东莞二进制
+            </div>
+        </div>
+        {%/block%}
+    </div>
+</div>
+</body>
+
+{%block name='js'%}
+
+<!--<script src="__static__/js/content.min.js?v=1.0.0"></script>-->
+<script>
+    jQuery.extend({
+        getCookie: function (sName) {
+            var aCookie = document.cookie.split("; ");
+            for (var i = 0; i < aCookie.length; i++) {
+                var aCrumb = aCookie[i].split("=");
+                if (sName == aCrumb[0]) return decodeURIComponent(aCrumb[1]);
+            }
+            return '';
+        },
+
+        setCookie: function (sName, cook_val, sExpires, path) {
+            var sCookie = sName + "=" + encodeURIComponent(cook_val);
+            if (sExpires != null) {
+                var date = new Date();
+                date.setTime(date.getTime() + sExpires * 24 * 3600 * 1000);
+                sCookie += "; expires=" + date.toGMTString();
+            }
+            if (path != null) sCookie += "; path=" + path;
+            document.cookie = sCookie;
+        },
+        removeCookie: function (sName) {
+            document.cookie = sName + "=; expires=Fri, 31 Dec 1999 23:59:59 GMT;";
+        }
+    });
+
+    window.tsg_code = "{%$tsg_list.0.tsg_code%}";
+    window.tsg_name = "{%$tsg_list.0.tsg_name%}";
+
+    var height = $('#back_height').height();
+    var action_height = $('#action_height').height();
+
+    $(function () {
+        if (action_height > height || height > 300){
+            $('#back_height').css('height','');
+        }
+
+        $('.dropdown').mousemove(function () {
+           $(this).addClass('open');
+           return false;
+        });
+
+        $('.dropdown').mouseout(function () {
+            $(this).removeClass('open');
+            return false;
+        });
+
+       $('.dropdown').click(function () {
+          var url = $(this).attr('data-url');
+
+          if (url){
+              window.location.href = url;
+          }
+
+       });
+
+       $('.tsg_click').click(function () {
+
+           window.tsg_code = $(this).attr('data-value');
+           window.tsg_name = $(this).text();
+
+          $.setCookie('tsg_code',window.tsg_code,'1','/');
+          $.setCookie('tsg_name',window.tsg_name,'1','/');
+          $('#tsg').html(window.tsg_name+"<span class='caret'></span>");
+          location.reload();
+           return false;
+
+       });
+
+    });
+</script>
+{%/block%}
+
+
+</html>

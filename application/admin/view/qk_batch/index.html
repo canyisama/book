@@ -1,0 +1,197 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                    <div class="form-group" style="margin-left: 215px;">
+                                        <label>设置选中项状态：</label>
+                                        <select class="form-control" id="set_state">
+                                            <option value="">= 设置状态 =</option>
+                                            <option value="1">预订状态</option>
+                                            <option value="2">验收状态</option>
+                                            <option value="3">完成状态</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" id="btnSetState" class="btn btn-primary">设置</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="qk_batch_code" type="text"
+                                               placeholder="预订批次号">
+                                        <input class="form-control input-outline" id="seller_code" type="text"
+                                               placeholder="书商代码">
+                                        <input class="form-control input-outline" id="cost_code" type="text"
+                                               placeholder="预算代码">
+                                        <input class="form-control input-outline" id="add_user" type="text"
+                                               placeholder="创建人">
+                                        <input class="form-control input-outline" id="remark" type="text"
+                                               placeholder="备注">
+                                        <select class="form-control" id="status">
+                                            <option value="">= 批次状态 =</option>
+                                            <option value="1">预订状态</option>
+                                            <option value="2">验收状态</option>
+                                            <option value="3">完成状态</option>
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="qk_batch_code" data-sortable="true">预订批次号</th>
+                                    <th data-field="seller_code" data-sortable="true">书商代码</th>
+                                    <th data-field="cost_code" data-sortable="true">预算代码</th>
+                                    <th data-field="add_time" data-sortable="true">创建时间</th>
+                                    <th data-field="status" data-sortable="true" data-formatter="stateFormatter">
+                                        预订批次状态
+                                    </th>
+                                    <th data-field="add_user">创建人用户名</th>
+                                    <th data-field="remark">备注</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('qkBatch/getJsonList')%}",
+            sortName: 'qk_batch_code',
+            clickToSelect: true
+        });
+
+        $("#btnSetState").click(function () {
+            var state = $("#set_state").val();
+            if (!state) {
+                layer.msg("请选择要设置的状态!");
+                return false;
+            }
+            // 获取选中行
+            var rows = tableObject.bootstrapTable('getSelections');
+            if (rows.length == 0) {
+                layer.msg("没有选中行!");
+                return false;
+            }
+            var qk_batch_code = rows[0].qk_batch_code;
+            $.post("{%:url('qkBatch/setState');%}", {
+                qk_batch_code: qk_batch_code,
+                state: state
+            }, function (result) {
+                myConfirm(result.msg, result.code, function () {
+                    // 确定按钮事件
+                    if (result.code == 1) {
+                        location.reload();
+                    }
+                }, function () {
+                    // 取消按钮事件
+
+                }, ['确定']);
+            }, "json");
+        });
+    });
+
+    function toEdit(qk_batch_code) {
+        myOpen({
+            type: 2,
+            title: "编辑",
+            /*area: ['auto', 'auto'],*/
+            content: "{%:url('qkBatch/edit');%}?qk_batch_code=" + qk_batch_code
+        });
+    }
+
+    function setDefault(qk_batch_code) {
+        myConfirm("是否设为默认预订批次号？", 0, function () {
+            $.post("{%:url('qkBatch/setDefault');%}", {qk_batch_code: qk_batch_code}, function (result) {
+                    layer.msg(result.msg);
+                    location.reload();
+            }, "json");
+        });
+    }
+
+    /**
+     * 标识背景色
+     */
+    function fnSetStyle(row, index) {
+        if (row.qk_batch_code == "{%$qk_batch_curr%}"){
+            return {classes: 'identifying-row'};
+        }
+        return {};
+    }
+
+    function delData(qk_batch_code) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('qkBatch/drop')%}", {qk_batch_code: qk_batch_code}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+
+    /**
+     * 格式"预订批次状态"列
+     * @param value
+     * @returns {string}
+     */
+    function stateFormatter(value) {
+        switch (value) {
+            case 1:
+                return '预订状态';
+            case 2:
+                return '验收状态';
+            case 3:
+                return '完成状态';
+        }
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="setDefault(\'' + row.qk_batch_code + '\')" class="btn-sm"><i class="fa fa-check-circle"></i> 设为默认批次 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.qk_batch_code + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.qk_batch_code + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

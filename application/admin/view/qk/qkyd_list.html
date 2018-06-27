@@ -1,0 +1,125 @@
+<hr/>
+<div class="col-sm-12">
+
+        <div class="tab-content">
+            <!-- 预订信息 -->
+                <div class="panel-body">
+                    <div class="form-group" style="margin-top: -10px">
+                        <div class="col-sm-4">
+                            <div class="form-inline" style="margin-top: 6px;">
+                                <div class="checkbox">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label title="显示所有分馆">
+                                        <input class="form-control input-outline" id="show_all_tsg" name="show_all_tsg"
+                                               {%:cookie('show_all_tsg')?'checked':''%} type="checkbox">
+                                        显示所有分馆
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <p  class="text-center">预订信息</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="pull-right">
+                                {%neq name='source' value='qk_ys'%}
+                                <button type="button" onclick="toOpenPage()"
+                                        class="btn btn-sm btn-primary">
+                                    <i class="fa fa-plus"></i> 新增预订
+                                </button>
+                                {%/neq%}
+                                <button type="button" class="btn btn-sm btn-white"
+                                        onclick="qkTableInfo.refreshQkTable();" title="刷新">
+                                    <i class="fa fa-refresh"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <table id="qkTable">
+                        <thead>
+                        <tr>
+                            <th data-radio="true"></th>
+                            <th data-field="qkyd_id" data-visible="false">qkyd_id</th>
+                            <th data-field="book_id" data-visible="false">book_id</th>
+                            <th data-field="status" data-sortable="true"
+                                data-formatter="qkTableInfo.qkTableStateFormatter">状态
+                            </th>
+                            <th data-field="qk_batch_code" data-sortable="true">预订批次号</th>
+                            <th data-field="tsg_code" data-sortable="true">分馆代码</th>
+                            <th data-field="order_no" data-sortable="true">订购号</th>
+                            <th data-field="order_year" data-sortable="true">订购年份</th>
+                            <th data-field="price" data-sortable="true">原价</th>
+                            <th data-field="year_price" data-sortable="true">年价</th>
+                            <th data-field="qk_cnt" data-sortable="true">预订期数</th>
+                            <th data-field="qk_cnt" data-sortable="true">已验收册数</th>
+                            <th data-field="book_cnt" data-sortable="true">复本数</th>
+                            <th data-field="cycle_name" data-sortable="true">出版周期</th>
+                            <th data-formatter="qkTableInfo.qkTableOpFormatter"
+                                data-align="center">操作
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+</div>
+
+<script src="__static__/js/logic/cf/qk.js"></script>
+<script>
+
+    var height2 = ($(top.window).height() - 160) * 0.4;// 子表高度
+
+    $(function () {
+        $("#show_all_tsg").click(function () {
+            var val = $(this).prop("checked") ? 1 : 0;
+            $.setCookie("show_all_tsg", val, 30, "/");
+
+            qkTableInfo.refreshQkTable();
+
+        });
+    });
+    function initQkTable(){
+        if (window.book_id){
+            if(qkTableInfo.isInit){
+                qkTableInfo.refreshQkTable();
+            }else{
+                qkTableInfo.showQkTable({
+                    height: height2,
+                    toolbar: null,
+                    searchBtn: null,
+                    queryParams: function (params) {
+                        return params;
+                    }
+                });
+            }
+        }
+    }
+    /**
+     * 打开弹出层页面
+     */
+    function toOpenPage(id) {
+        var url = "{%:url('Qk/add');%}?book_id=" + window.book_id;
+        if (id)
+            url = "{%:url('Qk/edit');%}?qk_id=" + id + "&book_id=" + window.book_id;
+        myOpen({
+            type: 2,
+            title: id ? "编辑数据" : "添加数据",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+    /**
+     *验收
+     */
+    function qkYs(id) {
+        var url = "{%:url('qk/ys');%}?qk_id="+id;
+        myOpen({
+            type: 2,
+            title: '期刊验收',
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+</script>

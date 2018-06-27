@@ -1,0 +1,565 @@
+{%include file='public/header_form' %}
+
+<script src="__static__/js/bootstrap.min.js"></script>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading text-center">
+                            {%$form_title%}
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-horizontal" id="postForm" method="post">
+                                <input type="hidden" name="book_id" value="{%$info.book_id%}">
+                                <div class="form-inline text-center">
+                                    <div class="form-group col-sm-12">
+                                        <label>书目类型：</label>
+                                        <select class="form-control input-outline" id="mt_id" name="mt_id">
+                                            {%volist name="$mt_list" id="mt"%}
+                                            <option value="{%$mt.mt_id%}" {%$mt_id==$mt.mt_id?'selected':''%}>
+                                                {%$mt.mt_code%}
+                                            </option>
+                                            {%/volist%}
+                                        </select>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <label>
+                                            <input type="checkbox" class="input-outline" name="is_verify" id="is_verify"
+                                                   value="1" {%$book_info.is_verify==1?'checked':''%}> 书目已经审核
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-inline text-center">
+                                    <div class="form-group col-sm-12">
+                                        <label>书目所有馆:[ {%$book_info.tsg_code%} ]</label>
+                                        <label style="padding: 15px 30px 15px 30px;">编目员:[ {%$book_info.cataloger%} ]</label>
+                                        <label>编目时间:[ {%$book_info.catatime|fmt_date_time%} ]</label>
+                                    </div>
+                                </div>
+                                <div class="tabs-container">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true"> 简单编目</a>
+                                        </li>
+                                        <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">MARC专业编目</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div id="tab-1" class="tab-pane active">
+                                            <div class="panel-body">
+                                                <div class="col-sm-1"></div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">ISBN：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="isbn" name="isbn" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入ISBN" value="{%$book_info.isbn%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label"><span class="text-muted">*</span> 题名：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="title" name="title" class="form-control" type="text"
+                                                                   required="required"
+                                                                   placeholder="请输入题名" value="{%$book_info.title%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">并列题名：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="bl_title" name="bl_title" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入并列题名" value="{%$book_info.bl_title%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">副题名：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="othertitle" name="othertitle" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入副题名" value="{%$book_info.othertitle%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">分辑名：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="fjtitle" name="fjtitle" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入分辑名" value="{%$book_info.fjtitle%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">分辑号：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="fjno" name="fjno" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入分辑号" value="{%$book_info.fjno%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">第一责任者：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="firstauthor" name="firstauthor" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入第一责任者" value="{%$book_info.firstauthor%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">丛书名：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="series" name="series" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入丛书名" value="{%$book_info.series%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">丛编著者：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="seriesauthor" name="seriesauthor" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入丛编著者" value="{%$book_info.seriesauthor%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">出版社：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="publisher" name="publisher" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入出版社" value="{%$book_info.publisher%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">出版地：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="pubplace" name="pubplace" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入出版地" value="{%$book_info.pubplace%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">出版时间：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="pubdate" name="pubdate" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入出版时间" value="{%$book_info.pubdate%}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">页码：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="pages" name="pages" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入页码" value="{%$book_info.pages%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">版次：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="edition" name="edition" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入版次" value="{%$book_info.edition%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">照片：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="charts" name="charts" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入照片" value="{%$book_info.charts%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">一般性附注：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="gennotes" name="gennotes" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入一般性附注" value="{%$book_info.gennotes%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">{%:l('binding')%}：</label>
+                                                        <div class="col-sm-8">
+                                                            <select class="form-control" name="binding">
+                                                                {%volist name="$binding_list" id="binding"%}
+                                                                <option value="{%$binding.cnf_val%}" {%$binding.cnf_val==$book_info.binding?'selected':''%}>{%$binding.cnf_val%}</option>
+                                                                {%/volist%}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">{%:l('lags')%}：</label>
+                                                        <div class="col-sm-8">
+                                                            <select class="form-control" name="lags">
+                                                                {%volist name="$lags_list" id="lags"%}
+                                                                <option value="{%$lags.cnf_val%}" {%$lags.cnf_val==$book_info.lags?'selected':''%}>{%$lags.cnf_val%}</option>
+                                                                {%/volist%}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">尺寸：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="size" name="size" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入尺寸" value="{%$book_info.size%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">内容摘要：</label>
+                                                        <div class="col-sm-8">
+                                                            <textarea id="abstract" name="abstract" class="form-control" placeholder="请输入内容摘要" rows="3">{%$book_info.abstract%}</textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label"><span class="text-muted">*</span> 分类号：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="clc" name="clc" class="form-control" type="text"
+                                                                   required="required"
+                                                                   placeholder="请输入分类号" value="{%$book_info.clc%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">主题词：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="subject" name="subject" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入主题词" value="{%$book_info.subject%}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label">价格描述：</label>
+                                                        <div class="col-sm-8">
+                                                            <input id="price_ms" name="price_ms" class="form-control input-sm" type="text"
+                                                                   placeholder="请输入价格描述" value="{%$book_info.price_ms%}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-1">
+                                                    <div class="from-group m-b">
+                                                        <button class="btn btn-primary">保存书目(B)</button>
+                                                    </div>
+                                                    <div class="from-group m-b">
+                                                        <button class="btn btn-primary">套录书目(T)</button>
+                                                    </div>
+                                                    <div class="from-group m-b">
+                                                        <button class="btn btn-primary">退出编目(X)</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="tab-2" class="tab-pane">
+                                            <div class="panel-body">
+                                                <strong>移动设备优先</strong>
+                                                <p>在 Bootstrap 2 中，我们对框架中的某些关键部分增加了对移动设备友好的样式。而在 Bootstrap 3 中，我们重写了整个框架，使其一开始就是对移动设备友好的。这次不是简单的增加一些可选的针对移动设备的样式，而是直接融合进了框架的内核中。也就是说，Bootstrap 是移动设备优先的。针对移动设备的样式融合进了框架的每个角落，而不是增加一个额外的文件。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var marc_data = {%$marc_json%},
+    mapper = {%$mapper_json%},
+    marc_fields = {%$marc_fields%},
+    fields_hide_json = {%$fields_hide_json%};
+</script>
+
+<script>
+    var add_dck_msg = "{%$add_dck_msg%}",
+        curval = "{%:input('curval')%}",
+        in_frame = "{%:input('in_frame')%}",
+        catalog_form_valid = "",
+        marc_obj = "",
+        is_init = false,
+        ActName = "{%$_ACTION_NAME_%}",
+        has_edit_acc = "{%$has_edit_acc%}",
+        bm_jd_marc = "{%$bm_jd_marc%}",
+        is_on_submit = false,
+        tsg_code = "{%$_user_info.tsg_code%}",
+        pinyin_config = "{%$pinyin_config%}",
+        pinyin_dx = "{%$pinyin_dx%}",
+        bm_del_empty = "{%$bm_del_empty%}"
+    ;
+
+    $(function () {
+        if (ActName != 'edit') {
+            switch (curval) {
+                case '1':
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val('添加馆藏(S)')
+                    });
+                    break;
+                case '2':
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val('添加预订(S)')
+                    });
+                    break;
+                case '3':
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val('添加验收(S)')
+                    });
+                    break;
+                case '4':
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val('添加预订(S)')
+                    });
+                    break;
+                case '5':
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val('添加验收(S)')
+                    });
+                    break;
+                case '6':
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).val('添加装订(S)')
+                    });
+                    break;
+                default:
+                    $("input[id='btn_AutoAdd']").each(function () {
+                        $(this).remove();
+                    });
+                    break;
+            }
+        } else {
+            $("input[id='btn_AutoAdd']").each(function () {
+                $(this).remove();
+            });
+        }
+        for (var i in fields_hide_json) {
+            var field_name = fields_hide_json[i];
+            $("#catalog_form [name='" + field_name + "]").parent().parent().remove();
+        }
+        marc_obj = new MARC(marc_data, mapper, $('#jdmarc_table'), $('#marc_table'), marc_fields);
+
+        table_enter_next($('.lib_table'));
+        $('.lib_table input,.lib_table textarea').keydown(function (e) {
+            if (e.which == 38) {
+                back_element(e, 38);
+            }
+            else if (e.which == 40) {
+                next_element(e, 40);
+            }
+        });
+
+        if (ActName == 'add' || ActName == 'copyadd' || ActName == 'z3950add') {
+            $('#mt_id,#marc_tpl_id').change(function (e) {
+                var mt_id = $('#mt_id').val();
+                var marc_tpl_id = $('#marc_tpl_id').val();
+                var url = SITE_URL_FULL + '/Catalog/' + ActName + '?in_frame=' + in_frame
+                if (ActName == 'add') {
+                    if ($(this).attr('id') == 'mt_id') {
+                        url = url + '&mt_id=' + mt_id;
+                    }
+                    else {
+                        url = url + '&mt_id=' + mt_id + '&marc_tpl_id=' + marc_tpl_id;
+                    }
+                }
+                else if (ActName == 'copyadd') {
+                    var book_share_id = "{%:input('book_share_id')%}";
+                    url = url + '&mt_id=' + mt_id + '&book_share_id=' + book_share_id;
+                }
+                else if (ActName == 'z3950add') {
+                    var rpn = "{%:input('rpn')%}";
+                    var z3950_id = "{%:input('z3950_id/d')%}";
+                    var curr_pos = "{%:input('curr_pos')%}";
+                    var curr_db = "{%:input('curr_db')%}";
+                    url = url + '&mt_id=' + mt_id + '&rpn=' + rpn + '&z3950_id=' + z3950_id + '&curr_pos=' + curr_pos + '&curr_db=' + curr_db;
+                }
+                location.href = url;
+            });
+
+            $('#btn_bopy_book,#btn_bopy_book1').remove();
+            $('#edit_info_show').remove();
+        } else {
+            $('#mt_id').attr('disabled', 'disabled');
+        }
+
+        if (ActName == 'edit' && has_edit_acc !== '1') {
+            $('#btn_AutoAdd,#btn_submit,#btn_SaveCatalog').remove();
+        }
+        var currIndex = bm_jd_marc;
+        if (currIndex == '1') {
+            $('#MrcTools').css('display', 'none');
+            var obj = $("#jdmarc_table input[name='isbn']");
+            var val = obj.val();
+            obj.val('');
+            obj.focus();
+            obj.val(val);
+        }
+        else if (currIndex == '2') {
+            $('#MrcTools').css('display', 'block');
+            var obj = $('#marc_table .zd_val:first');
+            var val = obj.val();
+            obj.val('');
+            obj.focus();
+            obj.val(val);
+        }
+
+        is_init = true;
+    });
+
+    function submit_form(this_obj, autoadd) {
+        if (is_on_submit) {
+            return false;
+        }
+        is_on_submit = true;
+        var currIndex = $('#tab_block').baseTabCmd('getCurrIndex');
+        if (currIndex == '1') {
+            marc_obj.tab_switch('marc');
+        }
+        else {
+            marc_obj.tab_switch('jd');
+        }
+
+        var zd_names = new Array();
+        marc_obj.marctable.find('input.zd_name').each(function (index, element) {
+            zd_names.push($.trim(this.value));
+        });
+        for (var i in zd_names) {
+            if (!zd_names[i]) {
+                alert('MARC字段名为空,请核对！');
+                is_on_submit = false;
+                return false;
+            }
+
+            if (zd_names[i].length != 3) {
+                alert('MARC字段名错误，请核对！');
+                is_on_submit = false;
+                return false;
+            }
+        }
+
+        genZd801();
+        if (currIndex == '2') {
+            var title_zd = mapper['title'];
+            var clc_zd = mapper['clc'];
+            var title = marc_obj.getZdValue(title_zd);
+            var clc = marc_obj.getZdValue(clc_zd);
+            marc_obj.tab_switch('jd');
+            if (!title) {
+                alert('题名' + title_zd + '字段不能为空！');
+                is_on_submit = false;
+                return false;
+            }
+            if (!clc) {
+                alert('分类号' + clc_zd + '字段不能为空！');
+                is_on_submit = false;
+                return false;
+            }
+        }
+
+        if (catalog_form_valid.form()) {
+            var btn_obj = $(this_obj);
+            if (bm_del_empty != '1') {
+                marc_obj.delEmpty();
+            }
+            $('#catalog_form').ajaxSubmit({
+                type: 'post', dataType: 'json', success: function (ret) {
+                    if ((autoadd != 1) || (ret.status == 0)) {
+                        alert(ret.info);
+                    }
+
+                    if (ret.status) {
+
+                        if (ActName == 'edit') {
+                            //ret_url=SITE_URL_FULL+'/Catalog/index';
+                            history.back();
+                        }
+                        else {
+                            if (in_frame) {
+                                var pop_msg = '';
+                                if (curval == 1) {
+                                    var url = SITE_URL_FULL + '/Catalog/framework?book_id=' + ret.data.book_id;
+                                    pop_msg = '是否添加馆藏数据?';
+                                }
+                                else if (curval == 2) {
+                                    var url = SITE_URL_FULL + '/Destine/framework?book_id=' + ret.data.book_id;
+                                    pop_msg = '是否添加预订数据?';
+                                }
+                                else if (curval == 3) {
+                                    var url = SITE_URL_FULL + '/Ys/framework?book_id=' + ret.data.book_id;
+                                    pop_msg == '是否添加验收数据?';
+                                }
+                                else if (curval == 4) {
+                                    var url = SITE_URL_FULL + '/Qk/framework?book_id=' + ret.data.book_id;
+                                    pop_msg = '是否添加期刊预订数据?';
+                                }
+                                else if (curval == 5) {
+                                    //var url=SITE_URL_FULL+'/Qk/index?book_id='+ret.data.book_id;
+                                    //window.location.href=url;
+                                    history.back();
+                                    return false;
+                                }
+                                else if (curval == 6) {
+                                    var url = SITE_URL_FULL + '/Qk/qk_framework?book_id=' + ret.data.book_id;
+                                    pop_msg = '是否添加期刊装订数据?';
+                                }
+
+                                //if(add_dck_msg)
+                                //{
+                                if (autoadd == 1) {
+                                    url += '&open_add=1';
+                                    window.location.href = url;
+                                    return false;
+                                }
+                                else {
+                                    window.location.href = url;
+                                    return false;
+                                }
+                                //}
+                            }
+                            else {
+                                var ret_url = SITE_URL_FULL + '/Catalog/index?book_id=' + ret.data.book_id;
+
+                                window.location.href = ret_url;
+                            }
+                        }
+
+
+                    }
+                    else {
+                    }
+
+                    is_on_submit = false;
+                }
+            });
+
+        }
+        else {
+            is_on_submit = false;
+        }
+    }
+
+    function reback() {
+        if (confirm('您确认退出编目吗?当前录入的数据将不会保存!') == true) {
+            window.history.back();
+        }
+    }
+
+    function loadDefault() {
+        if (confirm('您确认载入默认MARC模板吗?当前录入的数据将不会保存!') == true) {
+            marc_obj.loadDefault();
+        }
+    }
+
+    function delField() {
+        if (confirm('您确认删除空字段吗?') == true) {
+            marc_obj.delEmpty();
+        }
+    }
+
+    function copy_book() {
+        var url = "{%:url('Catalog/add')%}?copy_book_id={%:input('book_id')%}&in_frame=" + in_frame + "&curval=" + curval;
+        turn_to(url);
+    }
+
+    function turn_to(url) {
+        var main_frame = get_frame();
+        if (main_frame) {
+            window.top.document.getElementById('mainframe').src = url;
+        }
+        else {
+            window.location.href = url;
+        }
+    }
+
+    function getFormOptions() {
+        return {url: "{%:url('Cost/edit')%}"};
+    }
+</script>

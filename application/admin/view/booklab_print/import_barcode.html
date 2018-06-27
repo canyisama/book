@@ -1,0 +1,56 @@
+{%include file='public/header_simple' %}
+<body>
+<style>
+    input[type=file] {
+        display: inline-block;
+    }
+</style>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="alert alert-warning">
+            仅支持Txt文本格式
+        </div>
+        <div class="row ibox-content" style="padding-left: 20px;">
+            <form method="post" id="printset_form" enctype="multipart/form-data">
+                选择导入文件：<input type="file" name="marc_file">
+                <br><br>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">开始导入</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var import_beg = "{%$import_beg%}";
+    $(function () {
+        if (import_beg == "1") {
+            barcodeToTable();
+        }
+    });
+
+    function barcodeToTable() {
+        var bcode_list = {%$bcode_list%};
+        var repeat_list = new Array();
+        for (var i in bcode_list) {
+            var arr = bcode_list[i];
+            if ($("#barcode_table tbody input[value='" + arr['barcode'] + "']", parent.document).size() > 0) {
+                repeat_list.push(arr['barcode']);
+            }
+            else {
+                parent.add_barcode_item(arr);
+            }
+        }
+        if (repeat_list.length > 0) {
+            parent.layer.alert("有重复条码未导入：<br/>" + repeat_list.join("<br />"));
+            return;
+        }
+
+        parent.layer.alert("导入成功", function () {
+            parent.layer.closeAll()
+        });
+
+    }
+</script>
+</body>
+</html>

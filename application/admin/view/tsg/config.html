@@ -1,0 +1,195 @@
+{%include file='public/header_form' %}
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row m-b">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>基本配置</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal m-t" method="post" id="postForm">
+                        {%if $_user_info.is_main_tsg%}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                系统参数
+                            </div>
+                            <div class="panel-body">
+                                <div>
+                                    <label class="col-sm-3 control-label"> 数字图书馆地址</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control input-sm" name="ebook_addr" id="ebook_addr"
+                                               value="{%$syscnf.ebook_addr%}">
+                                        <p class="form-control-static">请输入前缀为http://的url格式</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {%/if%}
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                书目参数设置
+                            </div>
+                            <div class="panel-body">
+                                <div>
+                                    <label class="col-sm-3 control-label"> 索书号方案</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <span class="input-group-addon" style="border: none; padding-right: 5px;">
+                                            组配方式：分类号 /
+                                            </span>
+                                            <select name="calino_type" class="form-control" style="width: 120px;">
+                                                {%volist name="$class_types" id="type"%}
+                                                <option value="{%$key%}" {%$tsg_info.calino_type==$key?'selected':''%}>
+                                                    {%$type%}
+                                                </option>
+                                                {%/volist%}
+                                            </select>
+                                            <select name="calino_has_sep2" class="form-control" style="width: 65px;">
+                                                <option value="1" {%$tsg_info.calino_has_sep2==1?'selected':''%}>/
+                                                </option>
+                                                <option value="0" {%$tsg_info.calino_has_sep2==0?'selected':''%}>无
+                                                </option>
+                                            </select>
+                                            <span style="line-height: 35px;">
+                                                &nbsp;辅助区分号
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="col-sm-3 control-label"> 索书号设置</label>
+                                    <div class="col-sm-8">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="checkbox" value="1" name="is_calino_cf"
+                                                       {%$tsg_info.is_calino_cf==1?'checked':''%}>
+                                                索书号允许重复（格式：分类号/种次号/辅助区分号）
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="col-sm-3 control-label"> 条码号与登录号设置</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="checkbox" value="1" name="loginno_accord"
+                                                           {%$tsg_info.loginno_accord==1?'checked':''%}>
+                                                    条码号与登录号(财产编号)一致
+                                                </label>
+                                            </div>
+                                            <span class="input-group-addon" style="border: none; padding-right: 5px;">
+                                            条码长度限制为：
+                                            </span>
+                                            <input class="form-control input-sm" name="barcode_len"
+                                                   value="{%$tsg_info.barcode_len%}" style="width: 50px;">
+                                            <span style="line-height: 35px;"> &nbsp;位，空白为录入时不限制条码长度。</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                流通参数设置
+                            </div>
+                            <div class="panel-body">
+                                <div>
+                                    <label class="col-sm-3 control-label"> 欠款不能借书</label>
+                                    <div class="col-sm-8">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" value="1" name="lend_is_owe"
+                                                       {%$tsg_info.lend_is_owe==1?'checked':''%}> 是
+                                            </label>
+                                            <label>
+                                                <input type="radio" value="0" name="lend_is_owe"
+                                                       {%$tsg_info.lend_is_owe!=1?'checked':''%}> 否
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="col-sm-3 control-label"> 流通语音提示</label>
+                                    <div class="col-sm-8">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" value="1" name="lend_is_sound"
+                                                       {%$tsg_info.lend_is_sound==1?'checked':''%}> 开启
+                                            </label>
+                                            <label>
+                                                <input type="radio" value="0" name="lend_is_sound"
+                                                       {%$tsg_info.lend_is_sound!=1?'checked':''%}> 关闭
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="col-sm-3 control-label"> 馆际通借通还</label>
+                                    <div class="col-sm-8">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" value="1" name="lend_is_inter_re"
+                                                       {%$tsg_info.lend_is_inter_re==1?'checked':''%}> 开启
+                                            </label>
+                                            <label>
+                                                <input type="radio" value="0" name="lend_is_inter_re"
+                                                       {%$tsg_info.lend_is_inter_re!=1?'checked':''%}> 关闭
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="col-sm-3 control-label"> 阅览统计方式 </label>
+                                    <div class="col-sm-8">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" value="1" name="room_mode"
+                                                       {%$tsg_info.room_mode==1?'checked':''%}> 计时
+                                            </label>
+                                            <label>
+                                                <input type="radio" value="0" name="room_mode"
+                                                       {%$tsg_info.room_mode!=1?'checked':''%}> 计次
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-3 control-label"></label>
+                            <div class="col-sm-8">
+                                <button class="btn btn-primary" type="submit" id="btnSubmit">保存参数</button>
+                                <button class="btn btn-danger" type="reset">重置</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function getFormOptions() {
+        return {
+            url: "{%:url('Tsg/config')%}", success: function (result) {  // 成功回调
+                if (result.code == 1) {
+                    // 成功后刷新父级页面
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }
+        };
+    }
+</script>
+</body>
+</html>

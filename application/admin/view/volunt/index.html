@@ -1,0 +1,175 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toLt()"
+                                           class="btn btn-outline btn-default">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            出勤登记
+                                        </a>
+                                        <a href="javascript:void(0)" onclick="toComment()"
+                                           class="btn btn-outline btn-default">
+                                            <i class="fa fa-list" aria-hidden="true"></i>
+                                            批量评分
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="dz_code" type="text"
+                                               placeholder="读者证号">
+                                        <input class="form-control input-outline" id="time_beg" type="text"
+                                               readonly placeholder="签到时间-开始">
+                                        <input class="form-control input-outline" id="time_end" type="text"
+                                               readonly placeholder="签到时间-结束">
+                                        <select class="form-control" id="unit_name">
+                                            <option value="">= 读者单位 =</option>
+                                            {%volist name="unit_name_list" id="unit"%}
+                                            <option value="{%$unit.unit_name%}">{%$unit.unit_name%}</option>
+                                            {%/volist%}
+                                        </select>
+                                        <select class="form-control" id="dz_type_code">
+                                            <option value="">= 读者类型 =</option>
+                                            {%volist name="dz_type_list" id="type"%}
+                                            <option value="{%$type.dz_type_code%}">{%$type.dz_type_name%}</option>
+                                            {%/volist%}
+                                        </select>
+                                        <select class="form-control" id="lt_status">
+                                            <option value="">= 状态 =</option>
+                                            {%volist name="status_list" id="status"%}
+                                            <option value="{%$key%}">{%$status%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" id="searchBtn" class="btn btn-primary">查询</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-checkbox="true"></th>
+                                    <th data-field="volunt_id" data-visible="false">volunt_id</th>
+                                    <th data-field="dz_code">读者证号</th>
+                                    <th data-field="real_name">姓名</th>
+                                    <th data-field="volunt_type" data-sortable="true">出勤类型</th>
+                                    <th data-field="lt_status" data-sortable="true" data-formatter="statusFormatter">
+                                        状态
+                                    </th>
+                                    <th data-field="beg_time">开始时间</th>
+                                    <th data-field="end_time">签退时间</th>
+                                    <th data-field="lt_time" data-sortable="true">出勤时长</th>
+                                    <th data-field="comment_num" data-sortable="true">评分</th>
+                                    <th data-field="comment_user" data-sortable="true">评分人</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        laydate.render({
+            elem: '#time_beg' //指定元素
+            ,type: 'datetime'
+        });
+        laydate.render({
+            elem: '#time_end' //指定元素
+            ,type: 'datetime'
+        });
+
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Volunt/getJsonList')%}",
+            sortName: 'volunt_id',
+            clickToSelect: true
+        });
+    });
+
+    function toLt() {
+        myOpen({
+            type: 2,
+            title: "出勤登记",
+            /*area: ['auto', 'auto'],*/
+            content: "{%:url('Volunt/lt')%}"
+        });
+    }
+
+    function toEdit(volunt_id) {
+        layer.open({
+            type: 2,
+            title: "编辑",
+            /*area: ['auto', 'auto'],*/
+            content: "{%:url('Volunt/edit');%}?volunt_id=" + volunt_id
+        });
+    }
+
+    // 获取选中行
+    function getRows() {
+        var rows = $("#Table").bootstrapTable('getSelections');
+        if (rows.length == 0) {
+            layer.msg("没有选中行!");
+            return false;
+        }
+        var ids = [];
+        $.each(rows, function (i, row) {
+            ids.push(row.volunt_id);
+        });
+        return ids.join(',');
+    }
+
+    function toComment(volunt_id) {
+        if (!volunt_id) {
+            volunt_id = getRows();
+            if (!volunt_id) return;
+        }
+        myOpen({
+            type: 2,
+            title: "批量评分",
+            /*area: ['auto', 'auto'],*/
+            content: "{%:url('Volunt/comment');%}?volunt_id=" + volunt_id
+        });
+    }
+
+    function statusFormatter(value) {
+        switch (value) {
+            case 1:
+                return '<span class="label label-warning">签到</span>';
+            case 2:
+                return '<span class="label label-primary">完成</span>';
+            case 3:
+                return '<span class="label label-success">已评分</span>';
+        }
+    }
+
+    function opFormatter(value, row) {
+        var btns = [];
+        if(row.lt_status == 2) {
+            btns.push('<a href="javascript:void(0);" onclick="toComment(\'' + row.volunt_id + '\')" class="btn-sm text-warning"><i class="fa fa-edit"></i> 评分 </a>');
+        }
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.volunt_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

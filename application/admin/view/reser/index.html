@@ -1,0 +1,184 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+
+                                    <div class="form-group">
+                                        <button type="button" id="noticeBtn" class="btn btn-primary">批量通知</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="dz_code" type="text"
+                                               placeholder="读者证号">
+                                        <input class="form-control input-outline" id="barcode" type="text"
+                                               placeholder="图书条码">
+                                        <input class="form-control input-outline" id="real_name" type="text"
+                                               placeholder="读者姓名">
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="题名">
+                                        <input class="form-control input-outline" id="reser_time" type="text"
+                                               placeholder="预约日期">
+                                        <select class="form-control" id="reser_status">
+                                            <option value="">= 预约状态=</option>
+                                            {%volist name="status_lists" key='key' id="value"%}
+                                            <option value="{%$key-1%}">
+                                                〖{%$value%}〗
+                                            </option>
+                                            {%/volist%}
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-checkbox="true" ></th>
+                                    <th data-field="dz_code" data-sortable="true">读者证号</th>
+                                    <th data-field="real_name" data-sortable="true">读者姓名</th>
+                                    <th data-field="title" data-sortable="true">题名</th>
+                                    <th data-field="reser_status" data-formatter="stateFormatter" data-sortable="true">预约状态</th>
+                                    <th data-field="reser_time" data-sortable="true">预约日期</th>
+                                    <th data-field="book_time" data-sortable="true">到书日期</th>
+                                    <th data-field="take_time" data-sortable="true">取书日期</th>
+                                    <th data-field="barcode" data-sortable="true">到书条码</th>
+                                    <th data-field="must_time" data-sortable="true">应取书日期</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Reser/getJsonList')%}",
+            sortName: 'reser_time',
+            clickToSelect: true
+        });
+        // 时间插件
+        laydate.render({
+            elem: '#reser_time' //指定元素
+        });
+
+        $("#noticeBtn").click(function () {
+            var rows = tableObject.bootstrapTable('getSelections');
+            if(rows.length == 0){
+                layer.msg('没有选中行');
+                return false;
+            }
+            var arr = [];
+            rows.forEach(function (value,index,arr2) {
+                arr.push(value.reser_id);
+            });
+            var str = arr.join();
+            myOpen({
+                type:2,
+                title:'批量发送通知',
+                /*area: ['auto', 'auto'],*/
+                content:"{%:url('Email/sendnotice_batch')%}?tpl_type=1&pkey_ids="+str
+            });
+        });
+
+    });
+
+
+
+
+    // 取消预约
+    function dropBtn(reser_id) {
+        myConfirm("确定取消预约么？", 3, function () {
+            $.post("{%:url('Reser/drop')%}", {reserve_id: reser_id}, function (result) {
+                if (result.code == 1) {
+                    layer.msg(result.msg);
+                    location.reload();
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+    
+    function emailBtn(pkey_id) {
+        myOpen({
+            type:2,
+            title:'发送通知',
+            /*area: ['auto', 'auto'],*/
+            content:"{%:url('Email/sendnotice')%}?tpl_type=1&pkey_id="+pkey_id
+        })
+    }
+
+    //单个短信通知
+    function smsBtn(pkey_id) {
+        myOpen({
+            type:2,
+            title:'发送短信通知',
+            /*area: ['auto', 'auto'],*/
+            content:"{%:url('Sms/sendnotice')%}?tpl_type=1&pkey_id="+pkey_id
+        })
+    }
+
+    /**
+     * 格式"预订批次状态"列
+     * @param value
+     * @returns {string}
+     */
+    function stateFormatter(value) {
+        switch (value) {
+            case 1:
+                return '<span class="label label-primary">预约中</span>';
+            case 2:
+                return '<span class="label label-info">已到书</span>';
+            case 3:
+                return '<span class="label label-warning-light">已通知</span>';
+            case 4:
+                return '<span class="label label-danger">超时</span>';
+            case 5:
+                return '<span class="label label-default">取消预约</span>';
+            case 6:
+                return '<span class="label label-success">已取书</span>';
+        }
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+
+        if (row.reser_status !== 1 && row.reser_status !== 2 && row.reser_status !== 3){
+            return '-';
+        }
+        var btns = [];
+        if(row.reser_status == 2 || row.reser_status == 3){
+            btns.push('<a href="javascript:void(0);" onclick="emailBtn(\'' + row.reser_id + '\')" class="btn-sm text-success"><i class="fa fa-envelope-o fa-fw"></i> 邮件通知 </a>');
+            btns.push('<a href="javascript:void(0);" onclick="smsBtn(\'' + row.reser_id + '\')" class="btn-sm text-success"><i class="fa fa-mobile"></i> 短信通知 </a>');
+        }
+
+        btns.push('<a href="javascript:void(0);" onclick="dropBtn(\'' + row.reser_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 取消预约 </a>');
+        return btns.join("|");
+    }
+</script>
+
+</body>
+</html>

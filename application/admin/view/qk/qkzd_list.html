@@ -1,0 +1,143 @@
+<hr/>
+<div class="col-sm-12">
+
+        <div class="tab-content">
+            <!-- 预订信息 -->
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-inline" style="margin-top: -7px;">
+                                <div class="checkbox">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label title="显示所有分馆">
+                                        <input class="form-control input-outline" id="show_all_tsg" name="show_all_tsg"
+                                               {%:cookie('show_all_tsg')?'checked':''%} type="checkbox">
+                                        显示所有分馆
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <p  class="text-center">本馆(<span id="dck_cnt_self_txt">-</span>)册,总共(<span id="dck_cnt_all_txt">-</span>)册</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="pull-right">
+                                {%neq name='source' value='qk_ys'%}
+                                <button type="button" onclick="toQkzd()"
+                                        class="btn btn-sm btn-primary">
+                                    <i class="fa fa-plus"></i> 添加装订
+                                </button>
+                                {%/neq%}
+                                <button type="button" class="btn btn-sm btn-white"
+                                        onclick="qkTableInfo.refreshQkTable();" title="刷新">
+                                    <i class="fa fa-refresh"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                        </div>
+                    </div>
+                    <table id="qkzdTable">
+                        <thead>
+                        <tr>
+                            <th data-radio="true"> </th>
+                            <!--<th data-field="qkyd_id" data-visible="false">qkyd_id</th>-->
+                            <th data-field="book_id" data-visible="false">book_id</th>
+                            <th data-field="barcode" data-sortable="true">图书条码</th>
+                            <th data-field="calino" data-sortable="true">索书号</th>
+                            <th data-field="tsg_code" data-sortable="true">所在馆</th>
+                            <th data-field="price" data-sortable="true">原单价和</th>
+                            <th data-field="price_sum" data-sortable="true">总费用</th>
+                            <th data-field="add_time" data-sortable="true">入库日期</th>
+                            <th data-formatter="qkzdTableOpFormatter"
+                                data-align="center">操作
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+</div>
+
+<script src="__static__/js/logic/cf/common_table_op.js"></script>
+<script>
+
+    var height2 = ($(top.window).height() - 160) * 0.4,
+    qkzdTableInfo;// 子表高度
+
+    $(function () {
+
+        $("#show_all_tsg").click(function () {
+            var val = $(this).prop("checked") ? 1 : 0;
+            $.setCookie("show_all_tsg", val, 30, "/");
+            qkzdTableInfo.refreshTable();
+        });
+    });
+
+
+    function initQkTable(){
+        qkzdTableInfo = qkzdTableInfo || new CommonTableObject('#qkzdTable');
+        if (window.book_id){
+            var url = '{%:url("Qk/qklist")%}?book_id='+window.book_id;
+            qkzdTableInfo.showTable({
+                height: height2,
+                sortName: 'dck_id',
+                url: url,
+                onLoadSuccess: function (data) { // 数据加载成功的回调,设置本馆数量/全部数量
+                    if (!!data.data) {
+                        $("#dck_cnt_all_txt").text(data.data.dck_cnt_all);
+                        $("#dck_cnt_self_txt").text(data.data.dck_cnt_self);
+                    } else {
+                        $("#dck_cnt_all_txt").text('_');
+                        $("#dck_cnt_self_txt").text('_');
+                    }
+                },
+                onLoadError: function () {
+                    $("#dck_cnt_all_txt").text('_');
+                    $("#dck_cnt_self_txt").text('_');
+                }
+            });
+        }
+    }
+
+    // 刷新当前tab下的列表
+    function refreshCurTab() {
+        qkzdTableInfo.refreshTable();
+    }
+
+    /**
+     * 打开弹出层页面
+     */
+    function toQkzd(id) {
+        var url = "{%:url('Dck/add');%}?dt=2&book_id=" + window.book_id;
+        if (id)
+            url = "{%:url('Dck/edit');%}?dt=2&dck_id=" + id;
+        myOpen({
+            type: 2,
+            title: id ? "编辑装订" : "添加装订",
+            area: id ? ['950px', '520px'] : ['950px','700px'],
+            content: url
+        });
+    }
+
+    function delQkzd(id) {
+        qkzdTableInfo.del("{%:url('Dck/drop');%}", {dck_id: id}, function (index) {
+            if (index) {
+                qkzdTableInfo.refreshTable();
+                layer.close(index);
+            }
+        });
+    }
+    
+    function qkzdTableOpFormatter(value,row) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toQkzd(\'' + row.dck_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delQkzd(\'' + row.dck_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+
+
+</script>

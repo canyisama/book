@@ -1,0 +1,80 @@
+{%include file='public/header_simple' %}
+
+<style>
+    .form-group {
+        margin-bottom: 5px;
+    }
+</style>
+<div class="space-20"></div>
+<div class="row">
+    <form class="form-horizontal m-t" id="postForm" method="post">
+        <div class="col-sm-12">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">接收手机号:</label>
+                    <div class="col-sm-3">
+                        <p class="form-control-static">{%$info.to_mob%}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">短信内容:</label>
+                <div class="col-sm-9">
+                    <textarea id="sms_body" name="sms_body" class="form-control input-sm" style="height: 100px" readonly>{%$info.sms_body%}</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">短信发送日志:</label>
+                <div class="col-sm-9">
+                    <textarea  class="form-control input-sm" style="height: 100px" readonly>{%$info.send_log%}</textarea>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">发送状态:</label>
+                    <div class="col-sm-6">
+                        <p class="form-control-static">{%$info.send_status%}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">开始发送时间:</label>
+                    <div class="col-sm-6">
+                        <p class="form-control-static">{%$info.add_time%}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">发送错误时间:</label>
+                    <div class="col-sm-6">
+                        <p class="form-control-static">{%$info.err_time%}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">发送成功时间:</label>
+                    <div class="col-sm-6">
+                        <p class="form-control-static">{%$info.send_time%}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-danger" id="btnCancel">
+                         返回
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+
+    $(function () {
+        // 取消关闭弹出层
+        $("#btnCancel").click(function () {
+            parent.layer.closeAll('iframe');
+            return false;
+        });
+    })
+</script>

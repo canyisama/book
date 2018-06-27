@@ -1,0 +1,122 @@
+{%include file='public/header_form' %}
+
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="finance_id" value="{%$finance_info.finance_id%}">
+            <input type="hidden" name="fin_type" value="{%:input('fin_type')%}">
+            <input type="hidden" name="dz_id" value="{%:input('dz_id')%}">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 财务类型：</label>
+                <div class="col-sm-8">
+                    <p class="form-control-static">
+                        {%$finance_info.finance_id?$finance_info.fin_type:$fin_type_list[$finance_info.fin_type]%}
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span class="text-muted">*</span> 读者证号：</label>
+                <div class="col-sm-8">
+                    <input type="text" id="dz_code" name="dz_code" class="form-control input-sm"
+                           value="{%$finance_info.dz_code%}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span class="text-muted">*</span> 费用金额：</label>
+                <div class="col-sm-8">
+                    <input type="text" id="fee_money" name="fee_money" class="form-control input-sm"
+                           value="{%$finance_info.fee_money%}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 收费方式：</label>
+                <div class="col-sm-8">
+                    <select id="fee_mode" name="fee_mode" class="form-control">
+                        {%volist name="$fee_mode_list" id="fee_mode"%}
+                        <option value="{%$key%}"
+                                {%$finance_info.fee_mode==$fee_mode?'selected':''%}>
+                            {%$fee_mode%}
+                        </option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 财务方式：</label>
+                <div class="col-sm-8">
+                    <select id="fin_mode" name="fin_mode" class="form-control">
+                        {%volist name="$fin_mode_list" id="fin_mode"%}
+                        <option value="{%$key%}"
+                                {%$finance_info.fin_mode==$fin_mode?'selected':''%}>
+                            {%$fin_mode%}
+                        </option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 收费状态：</label>
+                <div class="col-sm-8">
+                    <select id="fee_type" name="fee_type" class="form-control"
+                            {%$finance_info.fee_type==1?'disabled':''%}>
+                        {%volist name="$fee_type_list" id="fee_type"%}
+                        <option value="{%$key%}" {%$finance_info.fee_type==$fee_type?'selected':''%}>
+                            {%$fee_type%}
+                        </option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 图书条码：</label>
+                <div class="col-sm-8">
+                    <input type="text" id="barcode" name="barcode" class="form-control input-sm"
+                           value="{%$finance_info.barcode%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 书目ID：</label>
+                <div class="col-sm-8">
+                    <input type="text" id="book_id" name="book_id" class="form-control input-sm"
+                           value="{%$finance_info.book_id%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 备注：</label>
+                <div class="col-sm-8">
+                    <textarea id="remark" name="remark" rows="3"
+                              class="form-control input-sm">{%$finance_info.remark%}</textarea>
+                </div>
+            </div>
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var finance_id = "{%$finance_info.finance_id%}";
+    $(function () {
+        if (finance_id) {
+            $("input[type='text'],select").attr("disabled", "disabled");
+            if ("{%$finance_info.fee_type%}" != '已支付') {
+                $("#fee_type").removeAttr("disabled");
+            }
+        }
+    });
+
+    function getFormOptions() {
+        return {url: finance_id ? "{%:url('Finance/edit')%}" : "{%:url('Finance/add')%}"};
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增">
+                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="cl-sm-12 m-b">
+                                        <div class="form-group">
+                                            <input class="form-control input-outline" id="user_name" type="text"
+                                                   placeholder="登录名">
+                                            <input class="form-control input-outline" id="real_name" type="text"
+                                                   placeholder="名称">
+                                            <input class="form-control input-outline" id="belong_tsg_code" type="text"
+                                                   placeholder="所属分馆代码">
+                                            <input class="form-control input-outline" id="email" type="text"
+                                                   placeholder="电子邮箱">
+                                        </div>
+                                    </div>
+                                    <div class="cl-sm-12 m-b">
+                                        <div class="form-group">
+                                            <input class="form-control input-outline" id="phone" type="text"
+                                                   placeholder="电话">
+                                            <input class="form-control input-outline" id="mobile" type="text"
+                                                   placeholder="手机">
+                                            <input class="form-control input-outline" id="user_post" type="text"
+                                                   placeholder="邮政编码">
+                                            <input class="form-control input-outline" id="user_dep" type="text"
+                                                   placeholder="部门">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" id="searchBtn" class="btn btn-primary">查询</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="user_id" data-visible="false">user_id</th>
+                                    <th data-field="user_name" data-sortable="true">登录名</th>
+                                    <th data-field="real_name" data-sortable="true">名称</th>
+                                    <th data-field="belong_tsg_code" data-sortable="true">所属分馆代码</th>
+                                    <th data-field="expiry_date" data-sortable="true">有效时间</th>
+                                    <th data-field="add_time" data-sortable="true">添加时间</th>
+                                    <th data-field="last_login" data-sortable="true">最后登录时间</th>
+                                    <th data-field="is_close" data-formatter="isCloseFormatter" data-sortable="true"
+                                        data-align="center">状态
+                                    </th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('User/getJsonList')%}",
+            sortName: 'user_id',
+            clickToSelect: true
+        });
+    });
+
+    function toEdit(user_id) {
+        var url = "{%:url('User/add');%}";
+        if (user_id)
+            url = "{%:url('User/edit');%}?user_id=" + user_id;
+        myOpen({
+            type: 2,
+            title: user_id ? "操作员编辑" : "操作员新增",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function delData(user_id) {
+        myConfirm("是否删除此操作员?", 0, function () {
+            $.post("{%:url('User/drop')%}", {user_id: user_id}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function isCloseFormatter(value) {
+        switch (value) {
+            case 1:
+                return '<i class="fa fa-times"></i>';
+            case 0:
+                return '<i class="fa fa-check"></i>';
+        }
+    }
+
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.user_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.user_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

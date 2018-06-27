@@ -1,0 +1,168 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="isbn" type="text"
+                                               placeholder="ISBN">
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="题名">
+                                        <input class="form-control input-outline" id="firstauthor" type="text"
+                                               placeholder="著者">
+                                        <input class="form-control input-outline" id="clc" type="text"
+                                               placeholder="分类号">
+                                        <input class="form-control input-outline" id="publisher" type="text"
+                                               placeholder="出版社">
+
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="book_id" data-sortable="true">ID</th>
+                                    <th data-field="isbn" data-sortable="true">ISBN</th>
+                                    <th data-field="clc" data-sortable="true">分类号</th>
+                                    <th data-field="title" data-sortable="true">题名</th>
+                                    <th data-field="is_verify" data-sortable="true">数据是否已审效</th>
+                                    <th data-field="pubplace" data-sortable="true">出版社</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Catalog/getJsonList')%}",
+            sortName: 'book_id',
+            //sortOrder: "asc",
+            clickToSelect: false
+        });
+
+
+        $("#btnSetState").click(function () {
+            var state = $("#set_state").val();
+            if (!state) {
+                layer.msg("请选择要设置的状态!");
+                return false;
+            }
+            // 获取选中行
+            var rows = tableObject.bootstrapTable('getSelections');
+            if (rows.length == 0) {
+                layer.msg("没有选中行!");
+                return false;
+            }
+            var destine_batch_code = rows[0].destine_batch_code;
+            $.post("{%:url('DestineBatch/setState');%}", {
+                destine_batch_code: destine_batch_code,
+                state: state
+            }, function (result) {
+                myConfirm(result.msg, result.code, function () {
+                    // 确定按钮事件
+                    if (result.code == 1) {
+                        location.reload();
+                    }
+                }, function () {
+                    // 取消按钮事件
+
+                }, ['确定']);
+            }, "json");
+        });
+    });
+
+    function toEdit(book_id) {
+        layer.open({
+            type: 2,
+            title: "编辑",
+            /*area: ['auto', 'auto'],*/
+            content: "{%:url('Catalog/edit');%}?book_id=" + book_id
+        });
+    }
+
+    function setDefault(destine_batch_code) {
+        myConfirm("是否设为默认预订批次号？", 0, function () {
+            $.post("{%:url('DestineBatch/setDefault');%}", {destine_batch_code: destine_batch_code}, function (result) {
+                console.log(result);
+                layer.msg(result.msg);
+            }, "json");
+        }, function () {
+            console.log('取消了')
+        });
+    }
+
+    function delData(destine_batch_code) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            console.log(1)
+        }, function () {
+            console.log('取消了')
+        });
+    }
+
+
+    /**
+     * 格式"预订批次状态"列
+     * @param value
+     * @returns {string}
+     */
+    function stateFormatter(value) {
+        switch (value) {
+            case 1:
+                return '预订状态';
+            case 2:
+                return '验收状态';
+            case 3:
+                return '完成状态';
+        }
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\''+row.book_id+'\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.book_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\''+row.book_id+'\')" class="btn-sm"><i class="fa fa-check-circle"></i> 审核 </a>');
+        return btns.join("|");
+
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,160 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <div class="form-inline">
+                                    <label>自动备份设置：</label>
+                                    <label>
+                                        <input type="checkbox" value="1" name="is_enable" {%$cnf.is_enable?'checked':''%}> 开启自动备份；
+                                    </label>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label>
+                                        <input type="radio" name="back_type" value="1" {%$cnf.back_type==1?'checked':''%}> 每天
+                                        <input type="text" name="day_hour" class="form-control input-outline input-sm" value="{%$cnf.day_hour%}" style="width: 50px; padding: 0 5px;"> 备份
+                                    </label>
+                                    &nbsp;&nbsp;
+                                    <label>
+                                        <input type="radio" name="back_type" value="2" {%$cnf.back_type==2?'checked':''%}> 每隔
+                                        <input type="text" name="back_interval" class="form-control input-outline input-sm" value="{%$cnf.back_interval%}" style="width: 50px; padding: 0 5px;"> 分组备份；
+                                    </label>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label>限制备份文件数量：</label>
+                                    <input type="text" name="max_file_cnt" class="form-control input-outline input-sm" value="{%$cnf.max_file_cnt%}" style="width: 50px; padding: 0 5px;" title="备份文件数量超出限制时自动删除最早备份的文件">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <div class="form-group">
+                                        <button type="button" onclick="save_cnf();" class="btn btn-primary btn-sm"><i class="fa fa-cog"></i> 保存设置</button>
+                                        <button type="button" onclick="databack();" class="btn btn-warning btn-sm"><i class="fa fa-cloud"></i> 备份</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-field="no">序号</th>
+                                    <th data-field="date">备份日期</th>
+                                    <th data-field="name">文件名称</th>
+                                    <th data-field="size">文件大小</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Databack/getJsonList')%}"
+        });
+    });
+
+    function save_cnf() {
+        var is_enable = $("input[name='is_enable']").is(":checked") ? "1" : "0";
+        var back_type = $("[name='back_type']:checked").val();
+        var day_hour = $("input[name='day_hour']").val();
+        var back_interval = $("input[name='back_interval']").val();
+        var max_file_cnt = $("input[name='max_file_cnt']").val();
+        var post_data = {
+            is_enable: is_enable,
+            back_type: back_type,
+            day_hour: day_hour,
+            back_interval: back_interval,
+            max_file_cnt: max_file_cnt
+        };
+        var url = "{%:url('Databack/save_cnf')%}";
+        $.post(url, post_data, function (result) {
+            if (result.code == 1) {
+                layer.alert(result.msg, {icon: 1}, function () {
+                    location.reload();
+                });
+            } else {
+                layer.alert(result.msg, {icon: 2});
+            }
+        }, "json");
+    }
+
+    function databack() {
+        myConfirm("请确认是否要备份系统数据？如果数据量大将会花费较长时间，请耐心等候。", 0, function () {
+            var url = "{%:url('Databack/back_beg')%}";
+            $.ajax({
+                url: url,
+                dataType: "json",
+                async: true,
+                type: "POST",
+                success: function (result) {
+                    if (result.code == 1) {
+                        layer.alert(result.msg, {icon: 1}, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.alert(result.msg, {icon: 2});
+                    }
+                }
+            });
+        });
+    }
+
+    function delData(file_name) {
+        if (!file_name) {
+            layer.msg('备份文件名不能为空!');
+            return;
+        }
+        myConfirm("是否删除此备份文件？", 2, function () {
+            $.post("{%:url('Databack/drop_file')%}", {
+                file_name: file_name
+            }, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function down_file(file_name) {
+        layer.alert("为保证系统安全，客户端禁止下载数据库文件");
+        return false;
+        if (!file_name) {
+            layer.msg("备份文件名不能为空!");
+            return;
+        }
+
+        file_name = encodeURI(file_name);
+        window.open("{%:url('Databack/down_file')%}?file_name=" + file_name);
+        return false;
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        //btns.push('<a href="javascript:void(0);" onclick="down_file(\'' + row.name + '\')" class="btn-sm"><i class="fa fa-download"></i> 下载 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.name + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

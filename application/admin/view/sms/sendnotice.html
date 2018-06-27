@@ -1,0 +1,165 @@
+{%include file='public/header_form' %}
+
+<div class="">
+    <form class="form-horizontal m-sm" id="postForm" method="post">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">通知类型:</label>
+                <div class="col-sm-5">
+                    <p class="form-control-static">{%$notice_type_list[input('tpl_type')]%}</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">选择通知方式:</label>
+                <div class="col-sm-5">
+                    <div class="checkbox">
+                        <div class="col-sm-6">
+                            <label>
+                                <input type="checkbox" disabled  checked name="tz_type" value="1"/>
+                               短信通知</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-primary" type="button" id="btnSms" disabled="disabled">发送通知</button>
+                    <button class="btn btn-danger" id="btnCan">返回</button>
+                </div>
+            </div>
+            <div id="content">
+            <hr>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">手机号码:</label>
+                    <div class="col-sm-6">
+                        <input id="to_sms" name="to_sms" class="form-control input-sm" type="text"
+                               value="">
+                    </div>
+                    <div class="col-sm-2">
+                        <span style="color: red;font-size: large">*</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">短信内容:</label>
+                    <div class="col-sm-6">
+                        <textarea id="sms_body" name="sms_body" class="form-control input-sm" style="height: 100px" ></textarea>
+                    </div>
+                    <div class="col-sm-2">
+                        <span style="color: red;font-size: large">*</span>
+                    </div>
+                </div>
+            </div>
+            <div id="sendResult" style="display: none">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">短信发送结果:</label>
+                    <div class="col-sm-5">
+                        <p class="form-control-static" id="msg"></p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+
+    var tpl_tpye = "{%:input('tpl_type')%}";
+    var pkey_id = "{%:input('pkey_id/d')%}";
+    var ori_data = null;
+
+    $(function () {
+        if(!pkey_id){
+            layer.alert('通知信息错误',{icon:2},function () {
+                parent.layer.closeAll();
+                return false;
+            })
+        }
+
+        var url = "{%:url('Reser/getinfo')%}";
+        if (tpl_tpye == 2){
+            url = "{%:url('Lend/getinfo')%}";
+        }
+        $.get(url,{pkey_id:pkey_id},function (res) {
+                if (res.code == 1){
+                    if (!res.data.phone_mob){
+                        layer.alert('读者手机号不存在',{icon:2},function () {
+                            parent.layer.closeAll();
+                        });
+                        return false;
+                    }
+                    $('#to_sms').val(res.data.phone_mob);
+                    $('#to_sms').attr('readonly',true);
+                    ori_data = res.data;
+                    $.get("{%:url('Sms/loadtpl')%}",{sms_tpl_id:"{%$sms_tpl_info.sms_tpl_id%}",data:res.data},function (result) {
+                        if (result.code == 1){
+                            $('#sms_body').val(result.data.tpl_body);
+                            $('#sms_body').attr('readonly',true);
+                            $('#btnSms').removeAttr('disabled');
+                        }else{
+                            layer.alert(result.msg,{icon:2});
+                        }
+                    },'json');
+                }
+        });
+
+        $("#postForm").validate({
+            rules: {
+                phone_mob: {
+                    length: 11,
+                    digits:true,
+                    required: true,
+                },
+                sms_body: {
+                    required: true,
+                    // max:60
+                }
+            },
+            messages: {
+                phone_mob: {
+                    digits: "必须输入整数",
+                    required: "请输入手机号码",
+                    length: "不是有效的手机号"
+                },
+                sms_body: {
+                    required: "请输入邮件内容",
+                    // max:"不能超过60个字符"
+                }
+            }
+        });
+
+        // 取消关闭弹出层
+        $("#btnCan").click(function () {
+            parent.location.reload();
+            return false;
+        });
+
+
+        $('#btnSms').click(function () {
+
+            var data = new FormData($('#postForm')[0]);
+            var url = "{%:url('Sms/sendsms')%}";
+            if (!!tpl_tpye && tpl_tpye == 1){
+                url = "{%:url('Sms/sendsms')%}?reser_id="+pkey_id;
+            }
+            ori_data['templateid'] = "{%$sms_tpl_info.templateid%}";
+            ori_data['tpl_type']  = "{%:input('tpl_type')%}";
+            ori_data['sms_body']  = data.get('sms_body');
+            ori_data['to_mob'] = data.get('to_sms');
+            $.post(url,{data:ori_data},function (ret) {
+                if (ret.code == 1){
+                    $('#content').hide();
+                    $('#sendResult').show();
+                    $('#msg').text(ret.msg);
+                    $('#btnSms').text('已发送');
+                    $('#btnSms').attr('disabled',true);
+                    return false;
+                }else{
+                    layer.alert(ret.msg);
+                    return false;
+                }
+            })
+        });
+    });
+
+
+
+</script>

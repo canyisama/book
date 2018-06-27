@@ -1,0 +1,182 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated fadeIn">
+
+    <div class="row ">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>查询条件</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm-10">
+                        <form class="form-horizontal" id="searchForm" onsubmit="return false;">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <label class="col-sm-4 control-label">馆藏地址</label>
+                                        <div class="col-sm-8">
+                                            <select name="tsg_site_code" id="tsg_site_code" class="form-control">
+                                                {%volist name='tsg_site_map' id='vo'%}
+                                                <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label class="col-sm-4 control-label">清点批次</label>
+                                        <div class="col-sm-7">
+                                            <select name="check_batch" id="check_batch_list" class="form-control">
+                                               {%volist name='check_batch_list' id='vo'%}
+                                                <option value="{%$vo.batch%}">{%$vo.batch%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <button type="button" class="btn btn-primary" id="searchBtn"> 预览</button>
+                                        <button type="submit" class="btn btn-primary" id="export"> 导出为Excel</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <label class="col-sm-4 control-label">入库时间范围</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" placeholder="开始时间" name="start_time" id="start_time" value="" class="form-control"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="col-sm-8">
+                                            <input type="text" placeholder="结束时间" name="end_time" id="end_time" value="" class="form-control"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <label class="col-sm-4 control-label">馆藏状态</label>
+                                        <div class="col-sm-8">
+                                            <select name="status" id="status" class="form-control" multiple style="height: 180px;">
+                                                {%volist name='dc_status_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$key%}</option>
+                                                {%/volist%}
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>清点处理操作</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="form-horizontal">
+                        <div class="row">
+                            <div class="col-sm-10">
+                                <form class="form-horizontal" id="postForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-sm-6 control-label">
+                                            <h3 class="text-warning"><strong>功能介绍:在【馆藏地址】和【入库时间范围】内,但不在【清点批次】内的馆藏信息批量处理</strong></h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                           <div class="col-sm-4">
+                                               <label class="col-sm-4 control-label">改变状态至</label>
+                                               <div class="col-sm-4">
+                                                   <select name="dck_status" id="dck_status" class="form-control">
+                                                       {%volist name='status_list' id='vo'%}
+                                                       <option value="{%$vo%}">{%$vo%}</option>
+                                                       {%/volist%}
+                                                   </select>
+                                               </div>
+                                               <div class="col-sm-4">
+                                                   <button type="button" class="btn btn-primary" id="save"> 开始处理</button>
+                                               </div>
+                                           </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>查询条件预览待处理书目信息</h5>
+                </div>
+                <div class="ibox-content">
+                    <table id="Table_check">
+                        <thead>
+                        <tr>
+                            <th data-field="barcode" data-sortable="true">图书条码</th>
+                            <th data-field="title" data-sortable="true">题名</th>
+                            <th data-field="isbn" data-sortable="true">ISBN</th>
+                            <th data-field="calino" data-sortable="true">索书号</th>
+                            <th data-field="status" data-formatter="statusOp" data-sortable="true">状态</th>
+                            <th data-field="publisher" data-sortable="true">出版社</th>
+                            <th data-field="pubdate" data-sortable="true">出版日期</th>
+                            <th data-field="price" data-sortable="true">单价</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script src="__static__/js/logic/cf/common_table_op.js"></script>-->
+<script src="__static__/js/logic/status/status.js" ></script>
+<script src="__static__/js/logic/dc/handle.js" ></script>
+
+<script>
+    var is_list = 0;
+
+    $(function () {
+        $('#save').click(function () {
+            if (is_ok === false){
+                layer.msg('请预览正确的数据');
+                return false;
+            }
+            myConfirm('确认开始进行清点处理吗?',{icon:3},function () {
+                var dck_status = $('#dck_status').val();
+
+                $.post("{%:url('Dcbat/handle')%}",{dck_status:dck_status,where:window.queryParams},function (result) {
+                    layer.msg(result.msg);
+                });
+
+                tableObject_check.bootstrapTable('refreshOptions',{
+                    random : Math.random()
+                });
+                layer.closeAll();
+            });
+        });
+    });
+
+
+</script>
+</body>

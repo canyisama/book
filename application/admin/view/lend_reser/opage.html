@@ -1,0 +1,294 @@
+{%include file='public/header_list' %}
+
+<body>
+<style>
+    .form-group {
+        margin-bottom: 5px;
+    }
+</style>
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row m-b">
+        <div class="col-sm-12">
+            <div class="tabs-container">
+                <div class="tab-content">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            读者信息
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="col-sm-3">
+                                                <p>
+                                                    <img id="portrait" src="__static__/img/{%$Think.PORTRAIT_NAME%}" width="170" height="255">
+                                                </p>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <div class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">读者证号:</label>
+                                                        <div class="col-sm-4">
+                                                            <input type="text" class="form-control input-sm dz_code"
+                                                                   name="dz_code"  value="{%:input('get.dz_code')%}">
+                                                            <input type="hidden" id="dz_code" value=""/>
+                                                        </div>
+                                                        <div class="col-sm-2">
+                                                            <input type="button" class="dzBtn btn btn-primary btn-sm"
+                                                                   value="确定">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">读者姓名:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="real_name" class="form-control-static">-</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">单位名称:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="unit_name"  class="form-control-static">-</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">读者类型:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="dz_type_name"  class="form-control-static unit_name">-</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">状态:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="dz_status" class="form-control-static">-</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">有效期至:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="end_time" class="form-control-static">-</p>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">预借参数:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="is_reserve" class="form-control-static">-</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            书目信息
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="col-sm-8">
+                                                <div class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <div class="col-sm-4">
+                                                            <select class="form-control" name="condition" id="condition">
+                                                                {%volist name='condition_lists' id='value'%}
+                                                                <option value="{%$key%}">{%$value%}</option>
+                                                                {%/volist%}
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <input type="text" value="{%:input('condition_value')%}"
+                                                                   name="condition_value" id="condition_value" class="search form-control input-sm">
+                                                        </div>
+                                                        <div class="col-sm-2">
+                                                            <input type="button" class="searchBtn btn btn-primary btn-sm" readonly
+                                                                   value="确定">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">题名:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="title" class="form-control-static">-</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">分类号:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="clc" class="form-control-static">-</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">第一责任人:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="firstauthor" class="form-control-static">-</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">单价:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="price" class="form-control-static">-</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">ISBN:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="isbn" class="form-control-static">-</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-4 control-label">出版社:</label>
+                                                        <div class="col-sm-8">
+                                                            <p id="publisher" class="form-control-static">-</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    图书查找列表
+                </div>
+                <div class="panel-body">
+                    <table id="Table">
+                        <thead>
+                        <tr>
+                            <th data-radio="true" ></th>
+                            <th data-field="barcode"  data-sortable="false">图书条码</th>
+                            <th data-field="isbn" data-sortable="true">ISBN</th>
+                            <th data-field="calino" data-sortable="false">索书号</th>
+                            <th data-field="title" data-sortable="true">题名</th>
+                            <th data-field="publisher" data-sortable="true">出版社</th>
+                            <th data-field="pubdate" data-sortable="true">出版日期</th>
+                            <th data-field="price_ms" data-sortable="true">价格</th>
+                            <th data-field="status" data-sortable="true">状态</th>
+                            <th data-field="is_verify" data-formatter="is_verify" data-sortable="true">审核</th>
+                            <th data-formatter="opFormatter" data-align="center">操作</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="history">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    当前预借信息
+                    <input type="hidden" id="reserve_type" value="{%$reserve_type%}">
+                </div>
+                <div class="panel-body">
+                    <table id="Table_lend">
+                        <thead>
+                        <tr>
+                            <th data-radio="true" ></th>
+                            <th data-field="dz_code" data-sortable="true">读者证号</th>
+                            <th data-field="real_name" data-sortable="true">读者姓名</th>
+                            <th data-field="barcode" data-sortable="true">图书条码</th>
+                            <th data-field="title" data-sortable="true">题名</th>
+                            <th data-field="clc" data-sortable="true">分类号</th>
+                            <th data-field="lend_reser_status" data-formatter="stateFormatter" data-sortable="true">预借状态</th>
+                            <th data-field="lend_reser_time" data-sortable="true">预借日期</th>
+                            <th data-field="must_time" data-sortable="true">应取书日期</th>
+                            <th data-formatter="lendOpFormatter" data-align="center">操作</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="__static__/js/logic/lt/reser.js" ></script>
+<script src="__static__/js/logic/status/status.js" ></script>
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('LendReser/getBookJsonList')%}",
+            sortName: 'book_id',
+            clickToSelect: true,
+            showColumns: 0,                 //是否显示所有的列
+            showRefresh: 0,                 //是否显示刷新按钮
+            height: 300,
+            onSort:(function (name,order) {
+                tableObject.bootstrapTable('refreshOptions',{
+                    url:"/admin/lend_reser/getBookJsonList?condition="+$('#condition').val()+'&condition_value='+$('#condition_value').val()+'&type='+reserve_type});
+                return false;
+            }),
+            onPageChange:(function (num,size) {
+                tableObject.bootstrapTable('refreshOptions',{
+                    url:"/admin/lend_reser/getBookJsonList?condition="+$('#condition').val()+'&condition_value='+$('#condition_value').val()+'&type='+reserve_type});
+                return false;
+            })
+        });
+
+        var tableObject2 = myBootstrapTable.initBootstrapTable("#Table_lend", {
+            url: "{%:url('lendReser/getLendReser')%}",
+            sortName: 'lend_reser_time',
+            clickToSelect: true,
+            showColumns: 0,                 //是否显示所有的列
+            showRefresh: 0,                 //是否显示刷新按钮
+            height: 300,
+            onSort:(function (name,order) {
+                tableObject2.bootstrapTable('refreshOptions',{url:"/admin/lend_reser/getLendReser?dz_code="+$('#dz_code').val()});
+                return false;
+            })
+        });
+
+    });
+
+    //更改读者显示
+    function dz_info(data='') {
+        var is_reserve = data.is_reserve === 1 ? "<i class='label label-primary'>开通</i>" : "<i class='label label-warning'>未开通</i>";
+        document.getElementById('dz_code').value = (data === '' ? '' : data.dz_code);
+        $('#real_name').html(data === '' ? '' : data.real_name);
+        $('#unit_name').html(data === '' ? '' : data.unit_name);
+        $('#dz_type_name').html(data === '' ? '' : data.dz_type_code);
+        $('#dz_status').html(data === '' ? '' : dz_status(data.dz_status));
+        $('#end_time').html(data === '' ? '' : data.end_time);
+        $('#is_reserve').html(data === '' ? '' : is_reserve+'|最大册数：'+data.max_days+'|取书天数：'+data.hold_days);
+        document.getElementById('portrait').src = (data === '' || data.portrait === '' ? '/__static__/img/{%$Think.PORTRAIT_NAME%}' : data.portrait);
+    }
+
+    /**
+     * 格式"预订批次状态"列
+     * @param value
+     * @returns {string}
+     */
+    function stateFormatter(value) {
+        switch (value) {
+            case 1:
+                return '<span class="label label-primary">预借中</span>';
+            case 2:
+                return '<span class="label label-danger">超时</span>';
+            case 3:
+                return '<span class="label label-warning">取消预借</span>';
+            case 4:
+                return '<span class="label label-success">已取书</span>';
+        }
+    }
+
+
+</script>
+</body>

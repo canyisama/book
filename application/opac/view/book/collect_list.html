@@ -1,0 +1,63 @@
+{%extend name='public/header' /%}
+{%block name='head'%}
+{__block__}
+<link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="__static__/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="__static__/js/indexpage.js"></script>
+{%/block%}
+
+{%block name='content_user'%}
+{__block__}
+
+<div>
+    <table id="Table">
+        <thead>
+        <tr>
+            <th data-radio="true"></th>
+            <th data-field="title" data-formatter="titleOp" data-sortable="true">图书题名</th>
+            <th data-field="isbn" data-sortable="true">标准编号</th>
+            <th data-field="firstauthor" data-sortable="true">著者</th>
+            <th data-field="publisher" data-sortable="true">出版社</th>
+            <th data-field="pubdate" data-sortable="true">出版日期</th>
+            <th data-field="add_time" data-sortable="true">收藏日期</th>
+            <th data-formatter="opFormatter" data-align="center">操作</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+
+<script src="__static__/js/logic/opac/table.js" ></script>
+
+<script>
+
+    var source = 'book_collect';
+    var sort_name = 'add_time';
+
+    function opFormatter(value,row) {
+       var btns = [];
+       btns.push('<a href="javascript:void(0);" onclick="drop(\'' + row.book_collect_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 取消收藏 </a>');
+       return btns.join();
+    }
+
+    function drop(id) {
+        myConfirm('是否取消收藏',3,function () {
+            $.get("{%:url('Book/dropCollect')%}",{book_collect_id:id},function (result) {
+                if (result.code == 1){
+                    layer.msg(result.msg);
+                    location.reload();
+                }else{
+                    layer.alert(result.msg,{icon:2});
+                }
+            })
+        })
+    }
+</script>
+
+
+{%/block%}

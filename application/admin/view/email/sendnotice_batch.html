@@ -1,0 +1,70 @@
+{%include file='public/header_form' %}
+
+<div class="">
+    <form class="form-horizontal m-sm"   method="post" onsubmit="return false;">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">通知类型:</label>
+                <div class="col-sm-5">
+                    <p class="form-control-static">{%$notice_type_list[input('tpl_type')]%}</p>
+                    <input type="hidden" id="tpl_type" value="{%:input('tpl_type')%}">
+                    <input type="hidden" id="templateid" value="{%$templateid%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">选择通知方式:</label>
+                <div class="col-sm-5">
+                    <div class="col-sm-5">
+                        <div class="checkbox">
+                            <label>
+                            <input type="checkbox" id="tz_email" checked name="tz_type" value="1"/>
+                            邮件通知</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="tz_sms" checked name="tz_type" value="1"/>
+                                短信通知</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-primary" type="button" id="btnBatch">发送通知</button>
+                    <button class="btn btn-danger" type="button" id="btnCancel">返回</button>
+                </div>
+            </div>
+            <div id="content">
+            <hr>
+                <table class="table items_table">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-2"> 读者证号</th>
+                            <th class="col-sm-2"> 姓名</th>
+                            <th class="col-sm-2"> 邮件</th>
+                            <th class="col-sm-2"> 短信</th>
+                            <th class="col-sm-4 text-center" > 处理结果</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {%volist name='item_list' id='vo'%}
+                        <tr class="item">
+                            <td>{%$vo.dz_code%}</td>
+                            <td>{%$vo.to_name%}</td>
+                            <td><input type="checkbox" name="is_email" value="1" checked></td>
+                            <td><input type="checkbox" name="is_sms" value="1" checked></td>
+                            <td class="op_td"> </td>
+                            <td hidden><input type="hidden" class="to_name"  value="{%$vo.to_name%}"> </td>
+                            <td hidden><input type="hidden" class="to_email" value="{%$vo.to_email%}"> </td>
+                            <td hidden><input type="hidden" class="to_mob" value="{%$vo.to_mob%}"> </td>
+                            <td hidden><input type="hidden" class="subject"  value="{%$vo.email_subject%}"> </td>
+                            <td hidden><input type="hidden" class="email_body"  value="{%$vo.email_body%}"> </td>
+                        </tr>
+                    {%/volist%}
+                    </tbody>
+                </table>
+        </div>
+        </div>
+    </form>
+</div>
+<script src="__static__/js/logic/email/send_batch.js" ></script>

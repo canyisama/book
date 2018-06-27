@@ -1,0 +1,209 @@
+{%include file='public/header_form' %}
+<style>
+    table tr {
+        cursor: pointer;
+    }
+</style>
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="dck_id" value="{%:input('dck_id')%}">
+            <input type="hidden" name="book_id" value="{%:input('book_id')%}">
+            <div class="col-sm-6">
+                <table class="table text-center">
+                    <thead>
+                    <tr>
+                        <th class="text-center" width="">选择</th>
+                        <th class="text-center">字段</th>
+                        <th>字段值</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="calino"></td>
+                        <td>索书号：</td>
+                        <td><input type="text" class="form-control input-sm" name="calino"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="tsg_site_code"></td>
+                        <td>馆藏地址：</td>
+                        <td>
+                            <select class="form-control" name="tsg_site_code">
+                                {%volist name="$site_code_list" id="site"%}
+                                <option value="{%$site.tsg_site_code%}">{%$site.site_name%}</option>
+                                {%/volist%}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="status"></td>
+                        <td>状态：</td>
+                        <td>
+                            <select class="form-control" name="status">
+                                {%volist name="$status_list" id="status"%}
+                                <option value="{%$key%}">{%$key%}</option>
+                                {%/volist%}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="price"></td>
+                        <td>单价：</td>
+                        <td><input type="text" class="form-control input-sm" name="price"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="price_sum"></td>
+                        <td>套价：</td>
+                        <td><input type="text" class="form-control input-sm" name="price_sum"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="batch_no"></td>
+                        <td>验收批次：</td>
+                        <td>
+                            <select class="form-control" name="batch_no">
+                                <option value="">= 请选择 =</option>
+                                {%volist name="$batch_list" id="batch"%}
+                                <option value="{%$batch.batch_no%}"> {%$batch.batch_no%}</option>
+                                {%/volist%}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="jz_type"></td>
+                        <td>介质类型：</td>
+                        <td>
+                            <select class="form-control" name="jz_type">
+                                {%volist name="$jz_list" id="jz"%}
+                                <option value="{%$jz.cnf_val%}"> {%$jz.cnf_val%}</option>
+                                {%/volist%}
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-6">
+                <table class="table text-center">
+                    <thead>
+                    <tr>
+                        <th class="text-center" width="">选择</th>
+                        <th class="text-center">字段</th>
+                        <th>字段值</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="jzh"></td>
+                        <td>卷册号：</td>
+                        <td><input type="text" class="form-control input-sm" name="jzh"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="lt_type"></td>
+                        <td>流通类型：</td>
+                        <td>
+                            <select class="form-control" name="lt_type">
+                                {%volist name="$ltype_list" id="ltype"%}
+                                <option value="{%$ltype.ltype_code%}">{%$ltype.ltype_code%} |
+                                    {%$ltype.ltype_name%}
+                                </option>
+                                {%/volist%}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="seller_code"></td>
+                        <td>书商代码：</td>
+                        <td>
+                            <select class="form-control" name="seller_code">
+                                <option value="">= 请选择 =</option>
+                                {%volist name="bookseller_list" id="bookseller"%}
+                                <option value="{%$bookseller.seller_code%}">
+                                    {%$bookseller.seller_code%}|{%$bookseller.seller_name%}
+                                </option>
+                                {%/volist%}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="currency"></td>
+                        <td>货币类型：</td>
+                        <td>
+                            <select class="form-control" name="currency">
+                                {%volist name="$currency_list" id="currency"%}
+                                <option value="{%$currency.cnf_val%}" title="{%$currency.remark%}">
+                                    {%$currency.cnf_val%}
+                                </option>
+                                {%/volist%}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="cost_code"></td>
+                        <td>预算代码：</td>
+                        <td>
+                            <select class="form-control" name="cost_code">
+                                <option value="">= 请选择 =</option>
+                                {%volist name="$cost_list" id="cost"%}
+                                <option value="{%$cost.cost_code%}">
+                                    {%$cost.cost_code%}|{%$cost.cost_sour%}
+                                </option>
+                                {%/volist%}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="zdlist[]" value="book_sour"></td>
+                        <td>图书来源：</td>
+                        <td>
+                            <select class="form-control" name="book_sour">
+                                {%volist name="$ly_list" id="book_ly"%}
+                                <option value="{%$book_ly.cnf_val%}" title="{%$book_ly.remark%}">
+                                    {%$book_ly.cnf_val%}
+                                </option>
+                                {%/volist%}
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 批修改
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $(function () {
+        $("table td").click(function () {
+            if ($(this).find(".form-control").length == 0) {
+                var ck = $(this).parent("tr").find("input[type='checkbox']");
+                ck.prop("checked", !ck.prop("checked"));
+            }
+        });
+    });
+
+    function getFormOptions() {
+        return {
+            url: "{%:url('Dck/edit_batch')%}", success: function (result) {
+                if (result.code == 1) {
+                    // 成功后刷新父级页面
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        parent.refreshCurTab();
+                        parent.layer.closeAll();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }
+        };
+    }
+</script>

@@ -1,0 +1,180 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                    <!--<div class="form-group">-->
+                                        <!--<button type="button" id="btnVerify" class="btn btn-primary">更新审核状态</button>-->
+                                    <!--</div>-->
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="tpl_name" type="text"
+                                               placeholder="模板名称">
+                                        <input class="form-control input-outline" id="tpl_body" type="text"
+                                               placeholder="短信内容">
+                                        <select class="form-control" id="tpl_type">
+                                            <option value="">所有模板类型</option>
+                                            {%volist name='status_lists' id='vo'%}
+                                            <option value="{%$key%}">{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-radio="radio"></th>
+                                    <th data-field="tpl_name" data-sortable="true">模板名称</th>
+                                    <th data-field="tpl_body" data-sortable="true">短信内容</th>
+                                    <th data-field="tpl_type" data-sortable="true">模板类型</th>
+                                    <th data-field="verify" data-formatter="stateFormatter" data-sortable="true">审核状态</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Sms/getList',['source'=>'sms_tpl'])%}",
+            sortName: 'sms_tpl_id',
+            clickToSelect: true
+        });
+
+        $("#btnVerify").click(function () {
+            // 获取选中行
+            var rows = tableObject.bootstrapTable('getSelections');
+            if (rows.length == 0) {
+                layer.msg("没有选中行!");
+                return false;
+            }
+            // var ids = [];
+            // var templateids = [];
+            // $.each(rows, function (i, row) {
+            //     ids.push(row.sms_tpl_id);
+            //     templateids.push(row.templateid);
+            // });
+
+            var templateid = rows[0]['templateid'];
+            $.post("{%:url('Sms/getVerify');%}", {
+                templateid: templateid
+            }, function (result) {
+                myConfirm(result.msg, result.code, function () {
+                    if (result.code == 1) {
+                        location.reload();
+                    }else{
+                        layer.closeAll();
+                    }
+                }, function () {
+                }, ['确定']);
+            }, "json");
+        });
+    });
+
+    function getVerify(templateid) {
+        var index = layer.load(1,{
+            shade:[0.1,'#fff']
+        });
+        $.post("{%:url('Sms/getVerify');%}", {
+            templateid: templateid
+        }, function (result) {
+            layer.close(index);
+            if (result.code == 1){
+                layer.msg(result.msg);
+                location.reload();
+            }else{
+                layer.alert(result.msg,{icon:2});
+            }
+        })
+    }
+
+    function toEdit(id) {
+        var url = "{%:url('Sms/addtpl');%}";
+        if (id)
+            url = "{%:url('Sms/edittpl');%}?sms_tpl_id=" + id;
+
+        myOpen({
+            type: 2,
+            title: id ? "编辑数据" : "添加数据",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function delData(id) {
+        myConfirm("确定要删除此模板吗？", 2, function () {
+            $.post("{%:url('Sms/droptpl')%}", {sms_tpl_id: id}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        if (row.verify == 1){
+            btns.push('<a href="javascript:void(0);" onclick="getVerify(\'' + row.templateid + '\')" class="btn-sm"><i class="fa fa-search"></i> 更新审核状态 </a>');
+        }
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.sms_tpl_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.sms_tpl_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+    /**
+     * 格式"预订批次状态"列
+     * @param value
+     * @returns {string}
+     */
+    function stateFormatter(value) {
+        switch (value) {
+            case 1:
+                return '<span class="label label-primary">审核中</span>';
+            case 2:
+                return '<span class="label label-success">审核成功</span>';
+            case 3:
+                return '<span class="label label-danger">审核失败</span>';
+        }
+    }
+
+</script>
+
+</body>
+</html>

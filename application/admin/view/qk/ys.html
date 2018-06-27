@@ -1,0 +1,283 @@
+{%include file='public/header_form' %}
+
+<body>
+<link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+
+<script src="__static__/js/bootstrap.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!--<script src="__static__/js/laydate/laydate.js"></script>-->
+<style>
+    .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+        padding-left: 0;
+        padding-right: 5px;
+    }
+    .qk-span {
+        margin-top: 7px;
+        margin-left: 0px;
+    }
+
+    .row {
+        padding: 0 10px;
+    }
+
+    .form-control {
+        padding: 0 3px;
+        height: 30px;
+    }
+
+    .title {
+        position: relative;
+        top: -12px;
+        background: white;
+        margin-left: 10px;
+        float: left;
+        padding: 0 5px;
+    }
+
+    .panel-body {
+        clear: both;
+        padding-top: 0px;
+    }
+
+
+</style>
+
+<select id="tsg_site_code_add" class="hide">
+    {%volist name="site_code_list" id="site_code"%}
+    <option value="{%$site_code.tsg_site_code%}">{%$site_code.site_name%}</option>
+    {%/volist%}
+</select>
+<select id='lt_type_add' class="hide">
+    {%volist name="ltype_list" id="ltype"%}
+    <option value="{%$ltype.ltype_code%}">{%$ltype.ltype_code%} | {%$ltype.ltype_name%}</option>
+    {%/volist%}
+</select>
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <form method='post' id='postForm' class="form-horizontal m-t">
+            <input type="hidden" name="ys_id" value="{%:input('ys_id')%}">
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <h4 class="title">期刊信息</h4>
+                    <div class="panel-body">
+                        <p>
+                            <span class="label label-success">题 名</span>
+                            {%$book_info.title%}{%$book_info.bl_title?' = '.$book_info.bl_title:''%}{%$book_info.othertitle?'：
+                            '.$book_info.othertitle:''%}
+                            {%$book_info.fjno?'.'.$book_info.fjno:''%}
+                            {%$book_info.fjtitle?','.$book_info.fjtitle:''%}
+                            {%$book_info.firstauthor?' / '.$book_info.firstauthor:''%}
+                        </p>
+                        <p>
+                            <!-- 出版信息 -->
+                            <span class="label label-success">出 版</span>
+                            {%$book_info.pubplace?$book_info.pubplace:''%}{%$book_info.publisher?'：'.$book_info.publisher:
+                            ''%}{%$book_info.pubdate?'，
+                            '.$book_info.pubdate:''%}
+                        </p>
+                        <span class="label label-success">ISBN</span> {%$book_info.isbn%}、
+                        <span class="label label-success">价格描述</span> {%$book_info.price_ms%}、
+                        <span class="label label-success">分类号</span> {%$book_info.clc%}
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <h4 class="title">预订信息</h4>
+                    <div class="panel-body" id="field_set_div">
+
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">预定义批次号：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.qk_batch_code%}
+                                </span>
+
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">书商代码：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.seller_code%}
+                                </span>
+
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">预算代码：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.cost_code%}
+                                </span>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">订购号：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.order_no%}
+                                </span>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">订购年份：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.order_year%}
+                                </span>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">出版周期：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.cycle_name%}
+                                </span>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">预订期数：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.qk_cnt%}
+                                </span>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">原价：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.price%}
+                                </span>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">年价：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.year_price%}
+                                </span>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">复本数：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.book_cnt%}
+                                </span>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">总价：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.amount%}
+                                </span>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">备注：</label>
+                                <span class="col-sm-6 qk-span">
+                                    {%$qk_info.remark%}
+                                </span>
+                            </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <h4 class="title">验收操作</h4>
+                    <div class="panel-body text-center">
+                        <div class="form-horizontal">
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-6 control-label">验收日期:</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="text" name="ys_time" id="ys_time" value="{%:date('Y-m-d',time())%}" disabled/>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 m-b">
+                                <label class="col-sm-6 control-label">验收期数:</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" name="qk_rel_id" id="qk_rel_id">
+                                        {%volist name='rel_list_no' id='vo'%}
+                                        <option value="{%$vo.qk_rel_id%}">{%$vo.pos%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 m-b">
+                                <label class="col-sm-6 control-label">验收册数:</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="text" name="ys_book_cnt" id="ys_book_cnt" value="{%$qk_info.book_cnt%}"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-5 m-b">
+                                <label class="col-sm-2 control-label">备注:</label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" type="text" name="remark" id="remark" value=""/>
+                                </div>
+                                <div class="col-sm-3">
+                                    <button class="btn btn-primary" id="btnSubmit" type="submit">验收</button>
+                                    <!--<input type="button" class="btn btn-primary btn-sm" onclick="ys()" value="验收">-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <h4 class="title">已验收期数</h4>
+                    <div class="panel-body">
+                        <table id="Table">
+                            <thead>
+                            <tr>
+                                <th data-field="pos" data-sortable="true">期数</th>
+                                <th data-field="order_year" data-sortable="false">订购年份</th>
+                                <th data-field="book_cnt" data-sortable="false">应到</th>
+                                <th data-field="ys_book_cnt" data-sortable="true">实到</th>
+                                <th data-field="ys_time" data-sortable="true">验收日期</th>
+                                <th data-field="ys_user" data-sortable="true">操作员</th>
+                                <th data-field="remark" data-sortable="true">备注</th>
+                                <th data-formatter="opFormatter" data-align="center">操作</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('qk/ysList',['qk_id'=>$qk_info.qk_id])%}",
+            sortName: 'qk_rel_id',
+            clickToSelect: true,
+            showColumns: 0,                 //是否显示所有的列
+            showRefresh: 0                //是否显示刷新按钮
+
+        });
+
+        // laydate.render({
+        //     elem: "#ys_time"
+        // });
+    });
+
+
+    function opFormatter(value,row) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="drop(\''+row.qk_rel_id+'\');" class="btn-sm text-danger"><i class="fa fa-times"></i>取消</a>');
+        return btns.join('|');
+    }
+
+    function drop(id) {
+        myConfirm("确定要删除吗？", 0, function () {
+            $.post("/admin/Qk/drop_ys", {qk_rel_id: id}, function (result) {
+                if (result.code == 1) {
+                    layer.msg(result.msg);
+                    location.reload();
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+    function getFormOptions() {
+        var url = "{%:url('Qk/ys')%}";
+        var options = {
+            url: url,
+            success: function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }
+        };
+        return options;
+    }
+</script>
+</body>
+</html>

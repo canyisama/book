@@ -1,0 +1,78 @@
+{%extend name='public/header' /%}
+{%block name='head'%}
+{__block__}
+<style>
+    .d1{
+        /*height:auto;*/
+        min-height: 0;
+        word-wrap: break-word;
+        word-break: break-all;
+        overflow:hidden;
+        white-space:nowrap;
+
+        /* 强制换行*/
+        text-overflow: ellipsis;
+        /*兼容性*/
+        /*-webkit-text-overflow:ellipsis;*/
+    }
+</style>
+{%/block%}
+
+{%block name='content'%}
+<div class="wrapper wrapper-content">
+    <div class="container">
+            <div class="col-sm-12">
+                <h1 class="text-center" style="margin-top: -20px;margin-bottom: 20px">馆内公告({%:cookie('tsg_name')?:'所有分馆'%})</h1>
+                {%volist name='list' id='vo'%}
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <a href="javascript:void(0)" class="info" data-id="{%$vo.annou_id%}">{%$vo.subject%}</a>
+                        </div>
+                        <div class="panel-body">
+                            <div class="d1">
+                                <div class="col-sm-11">
+                                    <p>{%$vo.body%}</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                            <button type="button" data-id="{%$vo.annou_id%}" class="btn btn-primary info">查看全文</button>
+                            </div>
+                        </div>
+                        <div class="panel-footer text-right">
+                            <span>发布公告分馆：</span>{%$tsg_map[$vo.tsg_code]%}
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span>发布日期：</span>{%$vo.add_time%}
+                        </div>
+                    </div>
+                </div>
+                {%/volist%}
+
+            </div>
+    </div>
+</div>
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+
+
+<script>
+    $(function () {
+        $('.d1').each(function () {
+           if ($(this).height() > 150){
+               $(this).css('height',150);
+           }
+        });
+
+        $('.info').click(function () {
+           var annou_id = $(this).attr('data-id');
+           window.location.href = "{%:url('Top/msg_view')%}?annou_id="+annou_id;
+        });
+    });
+
+
+</script>
+
+
+{%/block%}

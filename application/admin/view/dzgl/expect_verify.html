@@ -1,0 +1,117 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <label>设置选中项状态：</label>
+                                        <select class="form-control" id="set_state">
+                                            <option value="">= 设置状态 =</option>
+                                            {%volist name='verify_status' id='vo'%}
+                                            <option value="{%$key%}">{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" id="btnSetState" class="btn btn-primary">设置</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="书名">
+                                        <select class="form-control" id="op_user">
+                                            <option value="">= 审核用户 =</option>
+                                            {%volist name='op_user' id='vo'%}
+                                            <option value="{%$vo.user_name%}">{%$vo.user_name%}</option>
+                                            {%/volist%}
+                                        </select>
+                                        <select class="form-control" id="status">
+                                            <option value="">= 荐购状态 =</option>
+                                            {%volist name='status' id='vo'%}
+                                            <option value="{%$key%}">{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="title" data-sortable="true">书名</th>
+                                    <th data-field="firstauthor" data-sortable="true">著者</th>
+                                    <th data-field="publisher" data-sortable="true">出版社</th>
+                                    <th data-field="pubdate" data-sortable="true">出版日期</th>
+                                    <th data-field="isbn" data-sortable="true">isbn</th>
+                                    <th data-field="status" data-sortable="true">荐购状态</th>
+                                    <th data-field="add_time" data-sortable="true">荐购时间</th>
+                                    <th data-field="verify_time" data-sortable="true">审核时间</th>
+                                    <th data-field="book_time" data-sortable="true">到书时间</th>
+                                    <th data-field="op_user" data-sortable="true">审核用户</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Dzgl/expect_verify')%}",
+            sortName: 'add_time',
+            clickToSelect: true
+        });
+
+        $("#btnSetState").click(function () {
+            var state = $("#set_state").val();
+            if (!state) {
+                layer.msg("请选择要设置的状态!");
+                return false;
+            }
+            // 获取选中行
+            var rows = tableObject.bootstrapTable('getSelections');
+            if (rows.length == 0) {
+                layer.msg("没有选中行!");
+                return false;
+            }
+            if (rows[0].ori_status != 1){
+                layer.msg('只有荐购中的数据才可以审核');
+                return false;
+            }
+            var expect_log_id = rows[0].expect_log_id;
+            $.post("{%:url('Dzgl/setstatus');%}", {
+                expect_log_id: expect_log_id,
+                state: state
+            }, function (result) {
+                myConfirm(result.msg, result.code, function () {
+                    if (result.code == 1) {
+                        location.reload();
+                    }else{
+                        layer.closeAll();
+                    }
+                }, function () {
+                }, ['确定']);
+            }, "json");
+        });
+    });
+
+</script>
+
+</body>
+</html>

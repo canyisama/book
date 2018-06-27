@@ -1,0 +1,405 @@
+{%include file='public/header_list' %}
+<script src="__static__/js/jquery.form.js"></script>
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row ">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>查询条件</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <form class="form-horizontal" id="searchForm" onsubmit="return false;">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">分馆代码</label>
+                                            <div class="col-sm-8">
+                                                <select id="tsg_code" class="form-control">
+                                                    {%volist name='tsg_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">清点批次</label>
+                                            <div class="col-sm-8">
+                                                <select  id="check_batch" class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='check_batch_list' id='vo'%}
+                                                    <option value="{%$vo.batch%}">{%$vo.batch%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="col-sm-4">
+                                                <select  id="search_field_1" class="form-control">
+                                                    {%volist name='search_fields_1_arr' id='vo'%}
+                                                    <option value="{%$key%}">{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input type="text"  id="search_val_1" value="" class="form-control"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">馆藏地址</label>
+                                            <div class="col-sm-8">
+                                                <select  id="tsg_site_code" class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='site_code_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">流通类型</label>
+                                            <div class="col-sm-8">
+                                                <select  id="lt_type" class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='ltype_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="col-sm-4">
+                                                <select  id="search_field_2" class="form-control">
+                                                    {%volist name='search_fields_2_arr' id='vo'%}
+                                                    <option value="{%$key%}">{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+
+                                            <div class="col-sm-8">
+                                                <input type="text" name="search_val_2" id="search_val_2" value="" class="form-control"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">书商代码</label>
+                                            <div class="col-sm-8">
+                                                <select  id="seller_code" class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='bookseller_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">馆藏状态</label>
+                                            <div class="col-sm-8">
+                                                <select  id="status" class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='status_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$key%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">	图书条码</label>
+
+                                            <div class="col-sm-4">
+                                                <input type="text"  id="barcode_beg" value="" class="form-control"/>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <input type="text"  id="barcode_end" value="" class="form-control"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">预算代码</label>
+                                            <div class="col-sm-8">
+                                                <select  id="cost_code" class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='cost_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">验收批次</label>
+                                            <div class="col-sm-8">
+                                                <select  id="batch_no" class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='batch_list' id='vo'%}
+                                                    <option value="{%$vo.batch_no%}">{%$vo.batch_no%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">	入库时间范围</label>
+
+                                            <div class="col-sm-4">
+                                                <input type="text"  id="add_time_beg" value="" class="form-control"/>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <input type="text"  id="add_time_end" value="" class="form-control"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-6 col-sm-4">
+                                        <button type="button" class="btn btn-primary" id="searchBtn"> 预览</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>批量修改操作</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="form-horizontal">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <form class="form-horizontal" method="post" id="postForm">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">分馆代码</label>
+                                            <div class="col-sm-8">
+                                                <select name="tsg_code"  class="form-control">
+                                                    {%volist name='tsg_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">图书来源</label>
+                                            <div class="col-sm-8">
+                                                <select name="book_sour" class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='ly_list' id='vo'%}
+                                                    <option value="{%$vo.cnf_val%}">{%$vo.cnf_val%}|{%$vo.remark%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">书商代码</label>
+                                            <div class="col-sm-8">
+                                                <select name="seller_code"  class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='bookseller_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">馆藏地址</label>
+                                            <div class="col-sm-8">
+                                                <select name="tsg_site_code"  class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='site_code_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">流通类型</label>
+                                            <div class="col-sm-8">
+                                                <select name="lt_type"  class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='ltype_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">	馆藏状态</label>
+                                            <div class="col-sm-8">
+                                                <select name="status" class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='status_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$key%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">预算代码</label>
+                                            <div class="col-sm-8">
+                                                <select name="cost_code"  class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='cost_list' id='vo'%}
+                                                    <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">介质类型</label>
+                                            <div class="col-sm-8">
+                                                <select name="jz_type" class="form-control">
+                                                    <option value=""> </option>
+                                                    {%volist name='jz_list' id='vo'%}
+                                                    <option value="{%$vo.cnf_val%}">{%$vo.cnf_val%}|{%$vo.remark%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="col-sm-4 control-label">入库时间</label>
+
+                                            <div class="col-sm-8">
+                                                <input type="text" name="add_time"  value="" class="form-control"/>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-6 col-sm-4">
+                                        <button type="submit" class="btn btn-primary" id="saveBtn"> 批修改</button>
+                                    </div>
+                                </div>
+                                </form>
+                                <div id="div_hide"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>查询条件预览待处理书目信息</h5>
+                </div>
+                <div class="ibox-content">
+                    <table id="Table">
+                        <thead>
+                        <tr>
+                            <th data-field="barcode" data-sortable="true">图书条码</th>
+                            <th data-field="title" data-sortable="true">题名</th>
+                            <th data-field="isbn" data-sortable="true">ISBN</th>
+                            <th data-field="calino" data-sortable="true">索书号</th>
+                            <th data-field="status" data-formatter="statusOp" data-sortable="true">状态</th>
+                            <th data-field="price" data-sortable="true">单价</th>
+                            <th data-field="book_sour" data-sortable="true">图书来源</th>
+                            <th data-field="lt_type" data-sortable="true">流通类型</th>
+                            <th data-field="jz_type" data-sortable="true">介质类型</th>
+                            <th data-field="seller_code" data-sortable="true">书商代码</th>
+                            <th data-field="cost_code" data-sortable="true">预算代码</th>
+                            <th data-field="tsg_site_code" data-sortable="true">馆藏地址</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__static__/js/logic/status/status.js" ></script>
+<script>
+    var is_ok = false;
+
+    $(function () {
+
+       var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Dcbat/getProcList')%}",
+            sortName: 'barcode',
+            clickToSelect: true,
+            showColumns: 0,                 //是否显示所有的列
+            showRefresh: 0,                //是否显示刷新按钮
+            searchBtn: 0,                //是否显示刷新按钮
+            onLoadSuccess : function (data) {
+                    if (data.total != 0){
+                        is_ok = true;
+                    }else{
+                        is_ok = false;
+                    }
+            }
+        });
+
+        $('#saveBtn').click(function () {
+            if (is_ok === false){
+                layer.msg('请预览正确的数据');
+                return false;
+            }
+            var url ="{%:url('Dcbat/batch_proc')%}";
+            var options = {
+                url: url,
+                data : {where:window.queryParams},
+                target: "#div_hide",
+                success: function (result) {  // 成功回调
+                    if (result.code == 1) {
+                        // 成功后刷新父级页面
+                        layer.alert(result.msg, {icon: 1}, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.alert(result.msg, {icon: 2});
+                    }
+                }
+            };
+            $("#postForm").ajaxForm(options);
+        });
+
+        $('#searchBtn').click(function () {
+            tableObject.bootstrapTable('refreshOptions',{
+                url: "{%:url('Dcbat/getProcList',['is_search'=>1])%}",
+                random:Math.random()
+            });
+        });
+
+        $('#searchForm').change(function () {
+           is_ok = false;
+        })
+    });
+
+    function statusOp(value, row) {
+        return dck_status(value);
+    }
+
+
+
+
+</script>
+</body>

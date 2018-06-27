@@ -1,0 +1,119 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="cycle_name" type="text"
+                                               placeholder="周期名称">
+                                        <input class="form-control input-outline" id="cycle_cnt" type="text"
+                                               placeholder="周期出版册数">
+                                        <input class="form-control input-outline" id="remark" type="text"
+                                               placeholder="备注">
+
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="cycle_name" data-sortable="true">周期名称</th>
+                                    <th data-field="cycle_cnt" data-sortable="true">周期出版册数</th>
+                                    <th data-field="remark" data-sortable="true">备注</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('QkCycle/getJsonList')%}",
+            sortName: 'qk_cycle_id',
+            //sortOrder: "asc",
+            clickToSelect: false
+        });
+
+
+    });
+
+    function toEdit(id) {
+        var url = "{%:url('QkCycle/add');%}";
+        if (id){
+            url = "{%:url('QkCycle/edit');%}?qk_cycle_id=" + id;
+        }
+        myOpen({
+            type: 2,
+            title: id ? "编辑" : "新增",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+
+    function delData(id) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('QkCycle/drop')%}",{
+                qk_cycle_id : id
+            },function (result) {
+                myConfirm(result.msg,result.code,function () {
+                    if (result.code == 1){
+                        location.reload();
+                    }
+                },function () {
+
+                },['确定']);
+            })
+        });
+    }
+
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\''+row.qk_cycle_id+'\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.qk_cycle_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+{%extend name='public/header' /%}
+{%block name='head'%}
+{__block__}
+<link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="__static__/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="__static__/js/indexpage.js"></script>
+{%/block%}
+
+{%block name='content_user'%}
+{__block__}
+
+<div>
+    <table id="Table">
+        <thead>
+        <tr>
+            <th data-field="dz_code" data-sortable="true">登录读者证号</th>
+            <th data-field="log_time" data-sortable="true">登录时间</th>
+            <th data-field="ip_addr" data-sortable="true">登录IP地址</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+
+<script src="__static__/js/logic/opac/table.js" ></script>
+
+<script>
+    var source = 'login_list';
+    var sort_name = 'log_time';
+
+</script>
+
+{%/block%}

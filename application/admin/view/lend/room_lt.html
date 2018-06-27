@@ -1,0 +1,136 @@
+{%include file='public/header_form' %}
+<style>
+    .form-group{
+        margin-bottom: 5px;
+    }
+</style>
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-sm-1">
+    </div>
+    <div class="col-sm-4">
+        <div class="m-l" style="height: 300px; border: 1px solid #cccccc;margin-top: 15px">
+            <img id="portrait_show" src="__static__/img/{%$Think.PORTRAIT_NAME%}" width="100%" height="100%">
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <form class="form-horizontal m-t" onsubmit="return false;">
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 阅览馆藏地址：</label>
+                <div class="col-sm-8">
+                    <select name="tsg_site_code" id="tsg_site_code" class="form-control">
+                        {%volist name='tsg_lists' id='value'%}
+                        <option  value="{%$key%}">{%$value%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 读者证号：</label>
+                <div class="col-sm-8">
+                    <input type="text" id="dz_code" name="dz_code" class="form-control input-sm" required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 阅览状态：</label>
+                <div class="col-sm-4 ">
+                    <label class="control-label">
+                        <input type="radio" name="lt_status" checked  value="1">
+                        签到</label>
+                    &nbsp;&nbsp;&nbsp;
+                    <label class="control-label">
+                        <input type="radio" name="lt_status" value="2">
+                        签退</label>
+                </div>
+                <a class="btn btn-primary btn-sm" id="dzBtn" onclick="getDzInfo()">确认</a>
+                &nbsp;&nbsp;
+                <button class="btn btn-danger btn-sm" id="btnCancel">关闭</button>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 读者证号：</label>
+                <div class="col-sm-8">
+                    <p class="form-control-static" id="dz_code_html"></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 姓名：</label>
+                <div class="col-sm-8">
+                    <p class="form-control-static" id="real_name"></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 单位名称：</label>
+                <div class="col-sm-8">
+                    <p class="form-control-static" id="unit_name"></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 读者类型：</label>
+                <div class="col-sm-8">
+                    <p class="form-control-static" id="dz_type_code"></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"> 状态：</label>
+                <div class="col-sm-8">
+                    <p class="form-control-static" id="dz_status"></p>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+
+    $(function () {
+        //键盘回车事件
+        $("#dz_code").keydown(function(e) {
+            //回车
+            if(e.which == 13 ) {
+                $('#dzBtn').click();
+                return false;
+            }
+        });
+
+        $("#dz_code").focus();
+    });
+
+
+    function getDzInfo() {
+        var dz_code = $("#dz_code").val();
+        if (!dz_code) {
+            layer.alert("请输入读者证号!", {icon: 2});
+            return;
+        }
+        var url = "{%:url('lend/addRoomLt')%}";
+        var lt_status = $("input[name='lt_status']:checked").val();
+
+        if (lt_status == 2){
+            url = "{%:url('lend/editRoomLt')%}";
+        }
+        $.post(url, {dz_code: dz_code, lt_status:lt_status,tsg_site_code:$('#tsg_site_code').val()}, function (result) {
+            if (result.code) {
+                layer.msg(result.msg);
+                $("#dz_code").val("");
+                var dzInfo = result.data;
+                $("#dz_code_html").text(dzInfo.dz_code);
+                $("#real_name").text(dzInfo.real_name);
+                $("#unit_name").text(dzInfo.unit_name);
+                $("#dz_type_code").text(dzInfo.dz_type_code);
+                $("#dz_status").text(dzInfo.dz_status);
+                $("#portrait_show").attr("src", dzInfo.portrait ? dzInfo.portrait : '/__static__/img/{%$Think.PORTRAIT_NAME%}');
+            } else {
+                $("#portrait_show").attr("src",'/__static__/img/{%$Think.PORTRAIT_NAME%}');
+                $("#dz_code_html,#real_name,#unit_name,#dz_type_code,#dz_status").text("");
+                layer.alert(result.msg, {icon: 2});
+            }
+        }, "json");
+    }
+
+    $("#btnCancel").click(function () {
+        parent.location.reload();
+        return false;
+    });
+
+</script>

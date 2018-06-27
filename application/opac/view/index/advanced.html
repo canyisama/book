@@ -1,0 +1,143 @@
+{%extend name='public/header' /%}
+
+{%block name='content'%}
+<div class="wrapper wrapper-content">
+    <div class="container">
+        <form action="{%:url('Index/search')%}" class="form-horizontal m-b">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h1 class="text-center">高级检索</h1>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-offset-2 col-sm-8">
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <select name="gwbeg" id="gwbeg" class="form-control">
+                                        <option value=""></option>
+                                        <option value="0">(</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select name="zd[]" class="form-control">
+                                        {%volist name='fields' id='vo'%}
+                                        <option value="{%$key%}" {%$i==1?'selected="selected"':''%}>{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="text" name="val[]" class="form-control" value=""/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <select name="l[]"  class="form-control">
+                                        <option value="AND">并且</option>
+                                        <option value="OR">或者</option>
+                                        <option value="XOR">非</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select name="zd[]" class="form-control">
+                                        {%volist name='fields' id='vo'%}
+                                        <option value="{%$key%}" {%$i==2?'selected="selected"':''%}>{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="text" name="val[]" class="form-control" value=""/>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select name="gwend" id="gwend" class="form-control">
+                                        <option value=""></option>
+                                        <option value="1">)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <select name="l[]"  class="form-control">
+                                        <option value="AND">并且</option>
+                                        <option value="OR">或者</option>
+                                        <option value="XOR">非</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select name="zd[]" class="form-control">
+                                        {%volist name='fields' id='vo'%}
+                                        <option value="{%$key%}" {%$i==3?'selected="selected"':''%}>{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="text" name="val[]" class="form-control" value=""/>
+                                </div>
+                            </div>
+                            <!--<div class="form-group">-->
+                                <!--<div class="radio">-->
+                                    <!--<div class="col-sm-3">-->
+                                    <!--<label class="control-label">-->
+                                        <!--<input type="radio" id="dt_name_all" checked value="" name="doctype"/>-->
+                                    <!--全部馆藏资料</label>-->
+                                    <!--</div>-->
+                                    <!--{%volist name='doctype_list' id='vo'%}-->
+                                    <!--<div class="col-sm-2">-->
+                                        <!--<label class="control-label">-->
+                                            <!--<input type="radio" name="doctype" value="{%$vo.mdt_name%}">-->
+                                            <!--{%$vo.dt_name%}</label>-->
+
+                                    <!--</div>-->
+                                    <!--{%/volist%}-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <div class="form-group" style="margin-left: -70px">
+                                <label class="col-sm-2 control-label">出版年份</label>
+                                <div class="col-sm-3">
+                                    <select name="pubdate_beg" class="form-control">
+                                        <option value="">出版年份开始</option>
+                                        {%volist name='pubdate_list' id='vo'%}
+                                        <option value="{%$vo%}">{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <select name="pubdate_end" class="form-control">
+                                        <option value="">出版年份结束</option>
+                                        {%volist name='pubdate_list' id='vo'%}
+                                        <option value="{%$vo%}">{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-left: -70px">
+                                <label class="col-sm-2 control-label">排序选项</label>
+                                <div class="col-sm-3">
+                                    <select name="order_zd" class="form-control">
+                                        {%volist name='order_list' id='vo'%}
+                                        <option value="{%$key%}">{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                                <label class="col-sm-2 control-label">排序方式</label>
+                                <div class="col-sm-3">
+                                    <select name="order_seq" class="form-control">
+                                        <option value="desc">降序排列</option>
+                                        <option value="asc">升序排列</option>
+                                    </select>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer text-center">
+                <div class="row">
+                    <div class="col-sm-offset-2 col-sm-3"><button class="btn btn-primary" type="submit" id="search">开始检索</button></div>
+                    <div class="col-sm-5"><input class="btn btn-success" type="reset" id="reset" value="清空检索条件"/></div>
+                </div>
+
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+{%/block%}

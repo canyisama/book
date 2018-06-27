@@ -1,0 +1,23 @@
+{%extend name='public/header' /%}
+
+{%block name='head'%}
+{__block__}
+
+<link rel="stylesheet" href="__static__/css/base.css"/>
+
+{%/block%}
+
+{%block name='content'%}
+    <div class="mainLogin_inputBox">
+        <strong style="color: #2E2D3C">检索</strong>
+        <div class="ajax_inputBox">
+            <form action="{%:url('Index/search')%}" method="get">
+                <input type="text" placeholder="请输入检索条件"  name="title" value=""/>
+                <button type="submit">检索</button>
+                <button type="button" onclick="$(function() {
+                  window.location.href = '/opac/Index/advanced';
+                })" style="margin-top: 33px">高级检索</button>
+            </form>
+        </div>
+    </div>
+{%/block%}

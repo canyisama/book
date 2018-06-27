@@ -1,0 +1,232 @@
+{%include file='public/header_form' %}
+
+<div class="space-20"></div>
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">读者证号: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.dz_code%}" readonly>
+                    </div>
+
+                    <label class="col-sm-2 control-label">读者姓名: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.real_name%}" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">书名: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.title%}" readonly>
+                    </div>
+
+                    <label class="col-sm-2 control-label">图书条码: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.barcode%}" readonly>
+                    </div>
+                </div>
+            </div>
+            {%eq name='finance_type' value='3'%}
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">借阅日期: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.add_time%}" readonly>
+                    </div>
+
+                    <label class="col-sm-2 control-label">应还日期: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.must_time%}" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">超期天数: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.out_days%}" readonly>
+                    </div>
+
+                    <label class="col-sm-2 control-label">读者单位名称: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.unit_name%}" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">超期每日罚金: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.out_money%}" readonly>
+                    </div>
+
+                    <label class="col-sm-2 control-label">超期最大罚金: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.out_max_fine%}" readonly>
+                    </div>
+                </div>
+            </div>
+            {%else%}
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">单价: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.price%}" readonly>
+                    </div>
+
+                    <label class="col-sm-2 control-label">套价: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.price_sum%}" readonly>
+                </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">罚款方式: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$finance_type == 4 ? $info.lose_mode_txt : $info.dirty_mode_txt%}" readonly>
+                    </div>
+
+                    <label class="col-sm-2 control-label">罚款类型: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$finance_type == 4 ? $info.lose_type_txt : $info.dirty_type_txt%}" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">{%$type|default=''%}超期罚金: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$finance_type == 4
+                                    ? $info.lose_fee_money_show
+                                    : $info.dirty_fee_money_show%}元/{%$info.fee_money%}元" readonly>
+                    </div>
+
+                    <label class="col-sm-2 control-label">{%$type|default=''%}罚款倍率: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$finance_type == 4 ? $info.lose_rate : $info.dirty_rate%}" readonly>
+                    </div>
+                </div>
+            </div>
+            {%/eq%}
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">{%$type|default=''%}罚款金额: </label>
+                    <div class="col-sm-3">
+                        <input name="fee_money" id="fee_money"  class="form-control" type="text" value="{%$info.finally_fee_money%}">
+                    </div>
+
+                    <label class="col-sm-2 control-label">{%$type|default=''%}收费方式: </label>
+                    <div class="col-sm-3">
+                        <input  class="form-control" type="text" value="{%$info.fee_mode%}" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">收费状态: </label>
+                    <div class="col-sm-3">
+                        <select name="fee_type" class="form-control">
+                            {%volist name="fee_type_list" id="value"%}
+                            <option value="{%$key%}">
+                                {%$value%}
+                            </option>
+                            {%/volist%}
+                        </select>
+                    </div>
+
+                    <label class="col-sm-2 control-label">财务方式: </label>
+                    <div class="col-sm-3">
+                        <select name="fin_mode" class="form-control">
+                            {%volist name="fin_mode_list" id="value"%}
+                            <option value="{%$key%}">
+                                {%$value%}
+                            </option>
+                            {%/volist%}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">备注: </label>
+                    <div class="col-sm-10">
+                        <textarea name="remark" style="width:583px; height:80px;" class="form-control">{%$info.remark|default=''%}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                        <input type="hidden" value="{%$info.lend_id%}" name="lend_id"/>
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+<div id="div_hide"></div>
+
+<script>
+
+    $(function () {
+        $('#postForm').validate({
+            rules:{
+                fee_money : {
+                    required : true,
+                    number:true
+                }
+            },
+            messages:{
+                fee_money : {
+                    required : '罚款金额不能为空',
+                    number: '罚款金额必须为数字'
+                }
+            }
+        });
+    });
+
+    function getFormOptions() {
+        var  type = "{%$finance_type%}";
+        var url = '/admin/fineman/lendOut';
+        if (type === '4'){
+            url = '/admin/fineman/lendLose';
+        }else if(type === '5'){
+            url = '/admin/fineman/lendDirty';
+        }
+
+        var options = {
+            url: url,
+            success: function (result) {
+                if (result.code == 1) {
+                    layer.msg(result.msg);
+
+                    parent.$('.dz_code').value = "{%$info.dz_code%}";
+                    parent.$('.dzBtn').click();
+                    parent.layer.closeAll('iframe');
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }
+        };
+
+        return options;
+    }
+
+
+</script>

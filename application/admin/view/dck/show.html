@@ -1,0 +1,297 @@
+{%include file='public/header_list' %}
+
+<style>
+    .form-group {
+        margin-bottom: 0px;
+    }
+</style>
+<div class="row">
+    <form class="form-horizontal m-t" id="postForm" method="post">
+        <div class="col-sm-12">
+            <div id="showTop">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">ISBN:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.isbn%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">系统记录号:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.book_id%}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l('clc')%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.clc%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">书目类型:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.mt_code%}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l("title")%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.title%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">审核:</label>
+                            <div class="col-sm-6 form-control-static">
+                                <input type="checkbox" class="" {%$info.is_verify==1?"checked":''%} disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l("bl_title")%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.bl_title%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">书目所有馆:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.tsg_code%}</p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l("othertitle")%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.othertitle%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">编目人:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.cataloger%}</p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l("fjtitle")%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.fjtitle%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l('firstauthor')%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.firstauthor%}</p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l("fjno")%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.fjno%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l('series')%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.series%}</p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l("otherauthor")%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.otherauthor%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l('publisher')%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.publisher%}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l("seriesauthor")%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.seriesauthor%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l('pubdate')%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.pubdate%}</p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l("pubplace")%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.pubplace%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l('edition')%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.edition%}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l("pages")%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.pages%}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-sm-4 control-label">{%:l('charts')%}:</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{%$info.charts%}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="hide" style="display: none">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                <label class="col-sm-4 control-label">{%:l('accessories')%}:</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{%$info.accessories%}</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="col-sm-4 control-label">{%:l('lags')%}:</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{%$info.lags%}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                <label class="col-sm-4 control-label">{%:l('binding')%}:</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{%$info.binding%}</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="col-sm-4 control-label">{%:l('price_ms')%}:</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{%$info.price_ms%}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                <label class="col-sm-4 control-label">{%:l('size')%}:</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{%$info.size%}</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="col-sm-4 control-label">{%:l('subject')%}:</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{%$info.subject%}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-left: 4px;">
+                        <label class="col-sm-2 control-label">{%:l('abstract')%}:</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-static">{%$info.abstract%}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    <div class="col-sm-12">
+                        <a href="javascript:void(0)" id="show" >显示书目详细信息</a>
+                    </div>
+
+                </div>
+                <hr>
+            </div>
+            <div class="col-sm-12">
+                <table id="Table">
+                    <thead>
+                    <tr>
+                        <th data-field="barcode" data-sortable="true">图书条码</th>
+                        <th data-field="type_str" data-sortable="true">类型</th>
+                        <th data-field="calino" data-sortable="true">索书号</th>
+                        <th data-field="status" data-sortable="true">状态</th>
+                        <th data-field="tsg_code_has" data-sortable="true">所属馆</th>
+                        <th data-field="tsg_code" data-sortable="true">所在馆</th>
+                        <th data-field="tsg_site_code" data-sortable="true">馆藏地址</th>
+                        <th data-field="lt_type" data-sortable="true">流通类型</th>
+                        <th data-field="price" data-sortable="true">单价</th>
+                        <th data-field="add_time" data-sortable="true">入库日期</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn  btn-danger" id="btnCancel" style="margin-top: 10px">
+                         返回
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="__static__/js/logic/cf/common_table_op.js"></script>
+<script>
+
+    var height = $(top.window).height()*0.22;
+
+    $(function () {
+        var tableObject = new CommonTableObject('#Table',{
+            url:"{%:url('Dck/showList',['book_id'=>$info.book_id])%}",
+            sortName : 'add_time',
+            height: height
+        });
+
+        tableObject.showTable();
+
+        // 取消关闭弹出层
+        $("#btnCancel").click(function () {
+            parent.layer.closeAll('iframe');
+            return false;
+        });
+    });
+
+    $('#show').click(function () {
+        if ($(this).attr('data-id') == 1){
+            $('#hide').hide();
+            $(this).text('显示书目详细信息').attr('data-id',0);
+        }else{
+            $('#hide').show();
+            $(this).text('隐藏书目详细信息').attr('data-id',1);
+        }
+    });
+</script>

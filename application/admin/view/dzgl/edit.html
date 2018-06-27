@@ -1,0 +1,348 @@
+{%include file='public/header_form' %}
+
+<script src="__static__/js/laydate/laydate.js"></script>
+<div class="row">
+    <form class="form-horizontal m-t" id="postForm" method="post">
+        <input type="hidden" name="dz_id" value="{%$dz_info.dz_id%}">
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 读者证号：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="dz_code" name="dz_code" class="form-control input-sm"
+                           value="{%$dz_info.dz_code%}"
+                           {%$dz_info?'disabled="disabled"':'required="required"'%}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 读者类型：</label>
+                <div class="col-sm-6">
+                    <select id="dz_type_code" name="dz_type_code" class="form-control">
+                        {%volist name="dz_type_list" id="dz_type"%}
+                        <option value="{%$dz_type.dz_type_code%}"
+                                {%$dz_type.dz_type_code==$dz_info.dz_type_code?'selected':''%}>
+                            {%$dz_type.dz_type_name%}
+                        </option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 状态：</label>
+                <div class="col-sm-6">
+                    <select class="form-control" id="dz_status" name="dz_status">
+                        {%volist name="$dz_status_list" id="status"%}
+                        <option value="{%$status%}" {%$status==$dz_info.dz_status?'selected':''%}>{%$status%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 读者姓名：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="real_name" class="form-control input-sm" value="{%$dz_info.real_name%}"
+                           required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 启用日期：</label>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm input-outline" id="beg_time" name="beg_time" type="text"
+                           value="{%$dz_info.beg_time?:date('Y-m-d')%}" placeholder="启用日期" required="required" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 有效期至：</label>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm input-outline" id="end_time" type="text" name="end_time"
+                           value="{%$dz_info.end_time%}" placeholder="有效期至" required="required" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 办证日期：</label>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm input-outline" id="dz_add_time" name="dz_add_time" type="text"
+                           value="{%$dz_info.dz_add_time?:date('Y-m-d')%}" readonly placeholder="办证日期">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 密码：</label>
+                <div class="col-sm-6">
+                    <input type="password" name="pwd" class="form-control input-sm">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 单位名称：</label>
+                <div class="col-sm-6">
+                    <select class="form-control" name="unit_name">
+                        <option value="">= 请选择单位 =</option>
+                        {%volist name="unit_name_list" id="dz_unit"%}
+                        <option value="{%$dz_unit.unit_name%}"
+                                {%$dz_unit.unit_name==$dz_info.unit_name?'selected':''%}>
+                            {%$dz_unit.unit_name%}
+                        </option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 读者照片：</label>
+                <div class="col-sm-6 text-center">
+                    <!--<div class="hide" id="btnUploadImg"></div>-->
+                    <input type="hidden" id="portrait" name="portrait" value="{%$dz_info.portrait%}">
+                    <!--<img id="img_avatar" onclick="$('input[type=\'file\']').click();" width="160" height="200" title="点击上传头像" style="cursor: pointer;"-->
+                         <!--src="{%$dz_info.portrait?get_img_full_path($dz_info.portrait):'__static__/img/dz_default2.jpg'%}">-->
+                    <img id="portrait_show"  width="160" height="200" style="cursor: pointer;"
+                         src="{%$dz_info.portrait?get_img_full_path($dz_info.portrait):'__static__/img/dz_default2.jpg'%}">
+                    <button class="btn btn-primary" type="button" id="portrait_set" style="margin-top: 10px"> 设置头像</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 证件类型：</label>
+                <div class="col-sm-6">
+                    <select class="form-control" id="cred_type" name="cred_type">
+                        {%volist name="$cred_type_list" id="cred"%}
+                        <option value="{%$cred%}" {%$cred==$dz_info.cred_type?'selected':''%}>{%$cred%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 证件号码：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="cred_num" class="form-control input-sm" value="{%$dz_info.cred_num%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 联系地址：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="address" class="form-control input-sm" value="{%$dz_info.address%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 出生日期：</label>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm input-outline" id="birthday" name="birthday" type="text"
+                           value="{%$dz_info.birthday%}" readonly placeholder="出生日期">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> email：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="email" class="form-control input-sm" value="{%$dz_info.email%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 性别：</label>
+                <div class="col-sm-6">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="gender" value="男" {%$dz_info.gender=='男'?'checked':''%}> 男
+                        </label>&nbsp;&nbsp;&nbsp;
+                        <label>
+                            <input type="radio" name="gender" value="女" {%$dz_info.gender!='男' ?'checked':''%}> 女
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 邮编：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="zip_code" class="form-control input-sm" value="{%$dz_info.zip_code%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 手机：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="phone_mob" class="form-control input-sm" value="{%$dz_info.phone_mob%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 电话：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="phone_tel" class="form-control input-sm" value="{%$dz_info.phone_tel%}">
+                </div>
+            </div>
+            <div class="form-group" id="portrait_report" style="display: none">
+                {%$flash_html%}
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 历史违章次数：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="all_violate_cnt" class="form-control input-sm"
+                           value="{%$dz_info.all_violate_cnt%}" disabled="disabled">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 当前违章次数：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="violate_cnt" class="form-control input-sm"
+                           value="{%$dz_info.violate_cnt%}" disabled="disabled">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 积分：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="integral" name="integral" class="form-control input-sm"
+                           value="{%$dz_info.integral%}" disabled="disabled">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 借阅次数：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="lend_num" name="lend_num" class="form-control input-sm"
+                           value="{%$dz_info.lend_num%}" disabled="disabled">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 预约次数：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="reser_num" name="reser_num" class="form-control input-sm"
+                           value="{%$dz_info.reser_num%}" disabled="disabled">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 欠款：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="owe_money" name="owe_money" class="form-control input-sm"
+                           value="{%$dz_info.owe_money%}" disabled="disabled">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 押金：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="ple_money" name="ple_money" class="form-control input-sm"
+                           value="{%$dz_info.ple_money%}" disabled="disabled">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 续借次数：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="renew_num" name="renew_num" class="form-control input-sm"
+                           value="{%$dz_info.renew_num%}" disabled="disabled">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 备注：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="remark" name="remark" class="form-control input-sm"
+                           value="{%$dz_info.remark%}">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group text-center">
+            <div class="col-sm-12">
+                <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                    <i class="fa fa-check"></i> 保存
+                </button>
+                <a class="btn btn-outline btn-danger" id="btnCancel">
+                    <i class="fa fa-times"></i> 取消
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        laydate.render({
+            elem: '#beg_time' //指定元素
+        });
+        laydate.render({
+            elem: '#end_time' //指定元素
+        });
+        laydate.render({
+            elem: '#birthday' //指定元素
+        });
+    });
+
+    function getFormOptions(){
+        var dz_id = "{%$dz_info.dz_id%}";
+        return {url: dz_id ? "{%:url('Dzgl/edit')%}":"{%:url('Dzgl/add')%}"};
+    }
+</script>
+
+<!--<script src="__static__/js/plugins/webuploader/webuploader.min.js"></script>-->
+<script>
+    // var webUploader
+    //     , BASE_URL = '__static__/js/webuploader'
+    //
+    //   , UPLOAD_PATH = "{%:url('Common/upload')%}?folder=dzgl";
+
+    var time_id= {%$time_id%};
+
+    $(function () {
+        $('#portrait_set').click(function () {
+            if ($('#portrait_report').css('display') == 'none'){
+                $(this).text('隐藏界面');
+                $('#portrait_report').show();
+            }else{
+                $(this).text('设置照片');
+                $('#portrait_report').hide();
+            }
+        });
+
+        // if (!WebUploader.Uploader.support())
+        //     throw alert("Web Uploader 不支持您的浏览器！如果你使用的是IE浏览器，请尝试升级 flash 播放器"),
+        //         new Error("WebUploader does not support the browser you are using.");
+        // webUploader = WebUploader.create({
+        //     pick: {id: "#btnUploadImg", label: "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"},
+        //     paste: document.body,
+        //     accept: {title: "Images", extensions: "gif,jpg,jpeg,bmp,png", mimeTypes: "image/*"},
+        //     swf: BASE_URL + "/Uploader.swf",
+        //     disableGlobalDnd: !0,
+        //     chunked: !0,
+        //     server: UPLOAD_PATH,
+        //     fileNumLimit: 1,
+        //     multiple: false,
+        //     fileSizeLimit: 5242880,
+        //     fileSingleSizeLimit: 1048576
+        // }), webUploader.onUploadSuccess = function (file, result) {
+        //     // 上传成功回调函数
+        //     uploadCallBack(file, result);
+        // }, webUploader.onFileQueued = function (a) {
+        //     // 开始上传
+        //     webUploader.upload();
+        // }, webUploader.onError = function (e) {
+        // }
+    });
+
+    function updateavatar() {
+        var url="/admin/Dzgl/get_dz_port/time_id/"+time_id;
+        $.ajax({
+            url:url,
+            dataType:"json",
+            async:false,
+            type:"POST",
+            success: function(ret){
+                if(ret.code == 1)
+                {
+                    $("#portrait").val(ret.data.file_name);
+                    $("#portrait_show").attr("src",ret.data.re_url+'?t='+Math.random());
+                }
+                else
+                {
+
+                }
+            }});
+    }
+
+
+    // function uploadCallBack(file, result) {
+    //     if (result.code != 400) {
+    //         $("#img_avatar").attr("src", result.data.filePath);
+    //         $("#portrait").val(result.data.fileName);
+    //     } else {
+    //         alert(result.msg);
+    //     }
+    // }
+</script>
+
+</body>
+</html>

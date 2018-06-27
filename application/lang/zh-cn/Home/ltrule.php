@@ -1,0 +1,5 @@
+<?php
+
+return array("ltrule" => "ltrule", "form_title_add" => "添加特殊流通规则", "form_title_edit" => "编辑特殊流通规则", "is_close" => "状态", "ltype_code" => "图书流通类型", "tsg_site_code" => "馆藏地址", "dz_type_code" => "读者类型", "rule_type" => "规则类型", "lend_num" => "最大借阅册数", "lend_days" => "最大借书天数", "lose_mode" => "丢书罚款方式", "lose_type" => "丢书罚款类型", "lose_rate" => "丢书罚款倍率", "dirty_mode" => "污损罚款方式", "dirty_type" => "污损罚款类型", "dirty_rate" => "污损罚款倍率", "renew_mode" => "续借计算方式", "renew_cnt" => "最大续借次数", "renew_days" => "续借天数", "out_max_fine" => "超期最大罚金额", "out_fine" => "超期每天罚金", "remark" => "备注", "is_close_required" => "必须输入流通状态", "rule_type_required" => "必须输入规则类型", "lend_num_required" => "必须输入最大借阅册数", "lend_days_required" => "必须输入最大借书天数", "lose_mode_required" => "必须输入丢书罚款方式", "lose_type_required" => "必须输入丢书罚款类型", "lose_rate_required" => "必须输入丢书罚款倍率", "renew_mode_required" => "必须输入续期计算方式", "renew_cnt_required" => "必须输入最大续借次数", "renew_days_required" => "必须输入续借天数", "out_max_fine_required" => "必须输入超期最大罚金额", "out_fine_required" => "必须输入超期每天罚金", "rule_exist" => "特殊流通规则重复,请确认是否已添加该读者类型和图书流通类型范围内的规则", "remark_required" => "必须输入备注");
+
+?>

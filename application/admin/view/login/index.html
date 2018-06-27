@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>创启云图书馆</title>
+    <link rel="stylesheet" href="__static__/css/base.css"/>
+    <script src="__static__/js/jquery.min.js?v=2.1.4"></script>
+    <script>
+        if (window.top !== window.self) {
+            window.top.location = window.location;
+        }
+    </script>
+</head>
+<body>
+<div class="loginBox">
+    <div class="mainLogin_inputBox">
+        <strong>创启云图书管理系统</strong>
+        <div class="ajax_inputBox">
+            <form action="{%:url('login/index')%}" method="post">
+                <input type="text" placeholder="请输入用户名" id="admin_name" name="admin_name" value="{%:$admin_name%}"/>
+                <input type="password" placeholder="请输入密码" id="userPassword" name="password"/>
+                <button type="submit" id="Login_system">登录系统</button>
+                <!-- 错误提示 -->
+                <p id="outputP" style="color: red;">{%:$error%}</p>
+            </form>
+        </div>
+    </div>
+    <div class="login_foot">© 2017-2018 创启云图书管理系统</div>
+</div>
+<script>
+    var admin_name = $('#admin_name'),
+        userPassword = $('#userPassword'),
+        outputP = $('#outputP');
+    setTimeout(function () {
+        admin_name.focus();
+        $('.loginBox').addClass('loginBox_norScale');
+    }, 900);
+    // 点击
+    $('#Login_system').click(function () {
+        if (admin_name.val() == '') {
+            admin_name.focus();
+            outputP.addClass('am_jitter').html('请输入您的用户名！');
+            jitter(outputP);
+            return false;
+        }
+        else if (userPassword.val() == '') {
+            userPassword.focus();
+            outputP.addClass('am_jitter').html('请输入您的密码！');
+            jitter(outputP);
+            return false;
+        }
+    });
+    // 失焦
+    admin_name.blur(function () {
+        if ($(this).val() != '') {
+            outputP.html('');
+        }
+    });
+    userPassword.blur(function () {
+        if ($(this).val() != '') {
+            outputP.html('');
+        }
+    });
+
+    // 抖动动画
+    function jitter(outputP) {
+        setTimeout(function () {
+            outputP.removeClass('am_jitter')
+        }, 300);
+    }
+</script>
+</body>
+</html>

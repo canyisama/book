@@ -1,0 +1,130 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <!--<div role="group">-->
+                                <!--<form class="form-inline" onsubmit="return false;">-->
+                                    <!--<div class="form-group">-->
+                                        <!--<a href="javascript:void(0)" onclick="sendSms()"-->
+                                           <!--class="btn btn-outline btn-default" title="发送短信">-->
+                                            <!--<i class="glyphicon glyphicon-plus" aria-hidden="true"></i>-->
+                                            <!--发短信-->
+                                        <!--</a>-->
+                                    <!--</div>-->
+                                <!--</form>-->
+                            <!--</div>-->
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="to_mob" type="text"
+                                               placeholder="收件人号码">
+                                        <input class="form-control input-outline" id="sms_body" type="text"
+                                               placeholder="发送内容">
+                                        <input class="form-control input-outline" id="add_time" type="text"
+                                               placeholder="开始发送时间">
+                                        <input class="form-control input-outline" id="op_user" type="text"
+                                               placeholder="操作用户">
+                                        <select class="form-control" id="send_status">
+                                            <option value="">所有短信状态</option>
+                                            {%volist name='status_lists' id='vo'%}
+                                            <option value="{%$key%}">{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="to_mob" data-sortable="true">收件人号码</th>
+                                    <th data-field="sms_body" data-sortable="true">短信内容</th>
+                                    <th data-field="add_time" data-sortable="true">开始发送时间</th>
+                                    <th data-field="op_user" data-sortable="true">操作用户</th>
+                                    <th data-field="send_status" data-sortable="true" data-formatter="stateFormatter">
+                                        发送状态
+                                    </th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Sms/getList')%}",
+            sortName: 'add_time',
+            clickToSelect: true
+        });
+    });
+
+   /* function sendSms() {
+        var url = "{%:url('Sms/sendsms');%}";
+        myOpen({
+            type: 2,
+            title: "发送短信",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }*/
+
+    function info(id) {
+        if (!id){
+            return layer.msg('短信id为空');
+        }
+        var url = "{%:url('Sms/show')%}?sms_id="+id;
+        myOpen({
+            type: 2,
+            title: "短信信息查看",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    /**
+     * 格式"预订批次状态"列
+     * @param value
+     * @returns {string}
+     */
+    function stateFormatter(value) {
+        switch (value) {
+            case 1:
+                return '<span class="label label-success">发送中</span>';
+            case 2:
+                return '<span class="label label-danger">发送失败</span>';
+            case 3:
+                return '<span class="label label-primary">发送成功</span>';
+        }
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="info(\'' + row.sms_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 查看 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

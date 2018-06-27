@@ -1,0 +1,340 @@
+{%include file='public/header_form' %}
+<style>
+    .tab-pane .panel-body {
+        height: 380px;
+        overflow-y: scroll;
+    }
+
+    .panel-body .acl_list {
+        height: 200px;
+        overflow-y: scroll;
+    }
+</style>
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="tsg_code" value="{%$role_info.tsg_code%}">
+            <input type="hidden" name="role_code" value="{%$role_info.role_code%}">
+
+            <div class="">
+                <label class="col-sm-3 control-label">分馆代码：</label>
+                <div class="col-sm-8">
+                    {%if $_user_info.is_main_tsg%}
+                    {%if $role_info.role_code%}
+                    <p class="form-control-static">{%$role_info.tsg_code%}〖{%$tsg_list[$role_info.tsg_code]%}〗</p>
+                    {%else /%}
+                    <select class="form-control" id="tsg_code" name="tsg_code">
+                        {%volist name="tsg_list" id="tsg"%}
+                        <option value="{%$key%}" {%$_user_info.tsg_code==$key?'selected':''%}>{%$key%} | {%$tsg%}
+                        </option>
+                        {%/volist%}
+                    </select>
+                    {%/if%}
+                    {%else /%}
+                    <p class="form-control-static">{%$_user_info.tsg_code%}〖{%$_user_info.tsg_name%}〗</p>
+                    {%/if%}
+                </div>
+            </div>
+            <div class="">
+                <label class="col-sm-3 control-label"><span class="text-muted">*</span> 角色代码：</label>
+                <div class="col-sm-8">
+                    {%if $role_info.role_code%}
+                    <p class="form-control-static">{%$role_info.role_code%}</p>
+                    {%else /%}
+                    <input id="role_code" name="role_code" class="form-control input-sm" type="text"
+                           required="required"
+                           placeholder="请输入角色代码" value="">
+                    {%/if%}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span class="text-muted">*</span> 角色名称：</label>
+                <div class="col-sm-8">
+                    <input id="role_name" name="role_name" class="form-control input-sm" type="text"
+                           required="required"
+                           placeholder="请输入角色名称" value="{%$role_info.role_name%}">
+                </div>
+            </div>
+
+            <div class="tabs-container wrapper-content m-t">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#tab-menu_cf"
+                                          aria-expanded="true">{%:l("menu_cf")%}</a></li>
+                    <li><a data-toggle="tab" href="#tab-menu_bm" aria-expanded="false">{%:l("menu_bm")%}</a></li>
+                    <li><a data-toggle="tab" href="#tab-menu_dc" aria-expanded="false">{%:l("menu_dc")%}</a></li>
+                    <li><a data-toggle="tab" href="#tab-menu_dz" aria-expanded="false">{%:l("menu_dz")%}</a></li>
+                    <li><a data-toggle="tab" href="#tab-menu_lt" aria-expanded="false">{%:l("menu_lt")%}</a></li>
+                    <li><a data-toggle="tab" href="#tab-menu_qk" aria-expanded="false">{%:l("menu_qk")%}</a></li>
+                    <li><a data-toggle="tab" href="#tab-menu_sys" aria-expanded="false">{%:l("menu_sys")%}</a></li>
+                </ul>
+                <div class="tab-content" style="">
+
+                    <div id="tab-menu_cf" class="tab-pane active">
+                        <div class="panel-body">
+                            {%volist name="acl_list.cf" id="acl_item" key="index"%}
+                            <div class="col-sm-3">
+                                <div class="panel panel-default acl_block">
+                                    <div class="panel-heading">
+                                        <label>
+                                            <input type="checkbox" name="acl_all_select" value="1">
+                                            {%$mod_split_map['cf'][$index]%}
+                                        </label>
+                                    </div>
+                                    <div class="panel-body acl_list">
+                                        {%volist name="acl_item" id="item"%}
+                                        <label>
+                                            <input type="checkbox" item="child" name="acl_item[]" value="{%$item.acl_id%}"
+                                                   {%if in_array($item.acl_id,$role_acl_list_exist)%}checked="checked"
+                                                   {%/if%}
+                                            {%$item.no_has_acl==1?'disabled':''%} >
+                                            {%$item.acl_name%}
+                                        </label>
+                                        <br/>
+                                        {%/volist%}
+                                    </div>
+                                </div>
+                            </div>
+                            {%/volist%}
+                        </div>
+                    </div>
+
+                    <div id="tab-menu_bm" class="tab-pane">
+                        <div class="panel-body">
+                            {%volist name="acl_list.bm" id="acl_item" key="index"%}
+                            <div class="col-sm-3">
+                                <div class="panel panel-default acl_block">
+                                    <div class="panel-heading">
+                                        <label>
+                                            <input type="checkbox" name="acl_all_select" value="1">
+                                            {%$mod_split_map['bm'][$index]%}
+                                        </label>
+                                    </div>
+                                    <div class="panel-body acl_list">
+                                        {%volist name="acl_item" id="item"%}
+                                        <label>
+                                            <input type="checkbox" item="child" name="acl_item[]" value="{%$item.acl_id%}"
+                                                   {%if in_array($item.acl_id,$role_acl_list_exist)%}checked="checked"
+                                                   {%/if%}
+                                            {%$item.no_has_acl==1?'disabled':''%} >
+                                            {%$item.acl_name%}
+                                        </label>
+                                        <br/>
+                                        {%/volist%}
+                                    </div>
+                                </div>
+                            </div>
+                            {%/volist%}
+                        </div>
+                    </div>
+
+                    <div id="tab-menu_dc" class="tab-pane">
+                        <div class="panel-body">
+                            {%volist name="acl_list.dc" id="acl_item" key="index"%}
+                            <div class="col-sm-3">
+                                <div class="panel panel-default acl_block">
+                                    <div class="panel-heading">
+                                        <label>
+                                            <input type="checkbox" name="acl_all_select" value="1">
+                                            {%$mod_split_map['dc'][$index]%}
+                                        </label>
+                                    </div>
+                                    <div class="panel-body acl_list">
+                                        {%volist name="acl_item" id="item"%}
+                                        <label>
+                                            <input type="checkbox" item="child" name="acl_item[]" value="{%$item.acl_id%}"
+                                                   {%if in_array($item.acl_id,$role_acl_list_exist)%}checked="checked"
+                                                   {%/if%}
+                                            {%$item.no_has_acl==1?'disabled':''%} >
+                                            {%$item.acl_name%}
+                                        </label>
+                                        <br/>
+                                        {%/volist%}
+                                    </div>
+                                </div>
+                            </div>
+                            {%/volist%}
+                        </div>
+                    </div>
+
+                    <div id="tab-menu_dz" class="tab-pane">
+                        <div class="panel-body">
+                            {%volist name="acl_list.dz" id="acl_item" key="index"%}
+                            <div class="col-sm-3">
+                                <div class="panel panel-default acl_block">
+                                    <div class="panel-heading">
+                                        <label>
+                                            <input type="checkbox" name="acl_all_select" value="1">
+                                            {%$mod_split_map['dz'][$index]%}
+                                        </label>
+                                    </div>
+                                    <div class="panel-body acl_list">
+                                        {%volist name="acl_item" id="item"%}
+                                        <label>
+                                            <input type="checkbox" item="child" name="acl_item[]" value="{%$item.acl_id%}"
+                                                   {%if in_array($item.acl_id,$role_acl_list_exist)%}checked="checked"
+                                                   {%/if%}
+                                            {%$item.no_has_acl==1?'disabled':''%} >
+                                            {%$item.acl_name%}
+                                        </label>
+                                        <br/>
+                                        {%/volist%}
+                                    </div>
+                                </div>
+                            </div>
+                            {%/volist%}
+                        </div>
+                    </div>
+
+                    <div id="tab-menu_lt" class="tab-pane">
+                        <div class="panel-body">
+                            {%volist name="acl_list.lt" id="acl_item" key="index"%}
+                            <div class="col-sm-3">
+                                <div class="panel panel-default acl_block">
+                                    <div class="panel-heading">
+                                        <label>
+                                            <input type="checkbox" name="acl_all_select" value="1">
+                                            {%$mod_split_map['lt'][$index]%}
+                                        </label>
+                                    </div>
+                                    <div class="panel-body acl_list">
+                                        {%volist name="acl_item" id="item"%}
+                                        <label>
+                                            <input type="checkbox" item="child" name="acl_item[]" value="{%$item.acl_id%}"
+                                                   {%if in_array($item.acl_id,$role_acl_list_exist)%}checked="checked"
+                                                   {%/if%}
+                                            {%$item.no_has_acl==1?'disabled':''%} >
+                                            {%$item.acl_name%}
+                                        </label>
+                                        <br/>
+                                        {%/volist%}
+                                    </div>
+                                </div>
+                            </div>
+                            {%/volist%}
+                        </div>
+                    </div>
+
+                    <div id="tab-menu_qk" class="tab-pane">
+                        <div class="panel-body">
+                            {%volist name="acl_list.qk" id="acl_item"%}
+                            <div class="col-sm-3">
+                                <div class="panel panel-default acl_block">
+                                    <div class="panel-heading">
+                                        <label>
+                                            <input type="checkbox" name="acl_all_select" value="1">
+                                            {%$mod_split_map['qk'][$key]%}
+                                        </label>
+                                    </div>
+                                    <div class="panel-body acl_list">
+                                        {%volist name="acl_item" id="item"%}
+                                        <label>
+                                            <input type="checkbox" item="child" name="acl_item[]" value="{%$item.acl_id%}"
+                                                   {%if in_array($item.acl_id,$role_acl_list_exist)%}checked="checked"
+                                                   {%/if%}
+                                            {%$item.no_has_acl==1?'disabled':''%} >
+                                            {%$item.acl_name%}
+                                        </label>
+                                        <br/>
+                                        {%/volist%}
+                                    </div>
+                                </div>
+                            </div>
+                            {%/volist%}
+                        </div>
+                    </div>
+
+                    <div id="tab-menu_sys" class="tab-pane">
+                        <div class="panel-body">
+                            {%volist name="acl_list.sys" id="acl_item"%}
+                            <div class="col-sm-3">
+                                <div class="panel panel-default acl_block">
+                                    <div class="panel-heading">
+                                        <label>
+                                            <input type="checkbox" name="acl_all_select" value="1">
+                                            {%$mod_split_map['sys'][$key]%}
+                                        </label>
+                                    </div>
+                                    <div class="panel-body acl_list">
+                                        {%volist name="acl_item" id="item"%}
+                                        <label>
+                                            <input type="checkbox" item="child" name="acl_item[]" value="{%$item.acl_id%}"
+                                                   {%if in_array($item.acl_id,$role_acl_list_exist)%}checked="checked"
+                                                   {%/if%}
+                                            {%$item.no_has_acl==1?'disabled':''%} >
+                                            {%$item.acl_name%}
+                                        </label>
+                                        <br/>
+                                        {%/volist%}
+                                    </div>
+                                </div>
+                            </div>
+                            {%/volist%}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="__static__/js/bootstrap.min.js"></script>
+<script>
+    $(function () {
+
+        var is_edit_admin = "{%$is_edit_admin%}"
+            , is_supper = "{%$is_supper%}";
+        if(is_edit_admin=="1")
+        {
+            $(".acl_block input[type='checkbox']").attr("checked","checked");
+            $(".acl_block input[type='checkbox']").attr("disabled","disabled");
+        }
+
+        if(is_supper=="1" && is_edit_admin!="1")
+        {
+            $(".acl_block input[type='checkbox']").removeAttr("disabled");
+        }
+
+        $("input[name='acl_all_select']").click(function () {
+            $(this).parents(".panel-default").find("input[item='child']").prop("checked", $(this).prop("checked"));
+        });
+
+        $("input[item='child']").click(function () {
+            var count = $(this).parents(".acl_list").find("input[item='child']").length
+                , count1 = $(this).parents(".acl_list").find("input[item='child']:checked").length;
+            if (count == count1) {
+                $(this).parents(".panel-default").find("input[name='acl_all_select']").prop("checked", true);
+            }else{
+                $(this).parents(".panel-default").find("input[name='acl_all_select']").prop("checked", false);
+            }
+        });
+
+        $("input[name='acl_all_select']").each(function () {
+            var par = $(this).parents(".panel-default");
+            var count = par.find("input[item='child']").length
+                , count1 = par.find("input[item='child']:checked").length;
+            if (count == count1) {
+                $(this).prop("checked", true);
+            }else{
+                $(this).prop("checked", false);
+            }
+        });
+
+    });
+
+    function getFormOptions() {
+        var role_code = "{%$role_info.role_code%}";
+        return {url: role_code ? "{%:url('Role/edit')%}" : "{%:url('Role/add')%}"};
+    }
+</script>

@@ -1,0 +1,5 @@
+<?php
+
+return array("form_title" => "操作员修改", "belong_tsg_code" => "所属分馆代码", "user_name" => "登录名", "user_pwd" => "密码", "real_name" => "名称", "expiry_date" => "有效日期", "is_close" => "状态", "user_dep" => "部门", "user_post" => "邮政编码", "phone" => "电话", "mobile" => "手机", "user_idcard" => "部门", "email" => "电子邮箱", "user_addr" => "联系地址", "last_login" => "最后登录时间", "add_time" => "添加时间", "belong_tsg_code_require" => "必须输入分馆代码", "real_name_require" => "必须输入名称", "expiry_date_require" => "必须输入有效日期", "is_close_require" => "必须输入状态", "user_dep_require" => "必须输入部门", "user_post_require" => "必须输入邮政编码", "phone_require" => "必须输入电话", "mobile_require" => "必须输入手机", "user_idcard_require" => "必须输入部门", "email_require" => "必须输入电子邮箱", "user_addr_require" => "必须输入联系地址", "last_login_require" => "必须输入最后登录时间", "add_time_require" => "请输入添加时间", "user_name_exist" => "该登录名已存在,请换个名字再保存!", "user_name_require" => "请输入登录名！", "user_pwd_length" => "密码必须为3-20位！", "user_name_length" => "用户名必须为2-10位！", "expiry_date_format" => "有效日期格式错误,请重新输入!", "add_role_code_fail" => "增加用户角色失败!", "edit_role_code_fail" => "编辑用户角色失败!");
+
+?>

@@ -1,0 +1,191 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="cl-sm-12 m-b">
+                                        <div class="form-group">
+                                            <input class="form-control input-outline" id="barcode_beg" type="text"
+                                                   placeholder="图书条码范围">
+                                            <input class="form-control input-outline" id="barcode_end" type="text"
+                                                   placeholder="图书条码范围">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" id="searchBtn" class="btn btn-primary">查询</button>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" id="btnExport" class="btn btn-primary">导出结果到文本
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="cl-sm-12 m-b">
+                                        <span style="display:none;" class="msg" id="search_info">&nbsp;</span>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading text-center">
+                            图书条码
+                        </div>
+                        <div class="panel-body">
+                            <form id="barcode_form" action="{%:url('BarcodeCq/export_barcode')%}" method="post">
+                                <table id="barcode_table" class="table table-striped">
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("#btnExport").click(function () {
+            $("#barcode_form").submit();
+        });
+        $("#searchBtn").click(function () {
+            var barcode_beg = $("#barcode_beg").val();
+            var barcode_end = $("#barcode_end").val();
+            if (!barcode_beg && !barcode_end) {
+                layer.msg("请输入图书条码范围!");
+                $("#barcode_beg").focus();
+                return;
+            }
+            $("#barcode_table tbody tr").remove();
+            $.post("{%:url('BarcodeCq/getbarcode')%}", {
+                barcode_beg: barcode_beg,
+                barcode_end: barcode_end
+            }, function (result) {
+                if (result.code) {
+                    var exists_arr = [];
+                    for (var i in result.data) {
+                        exists_arr.push(result.data[i]['barcode']);
+                    }
+                    var all_barcode = getBarcodeArr(barcode_beg + "-" + barcode_end);		//获取所有图书条码
+
+                    var tr_arr = [];
+                    for (var i in all_barcode) {
+                        var bcode = all_barcode[i];
+                        if ($.inArray(bcode, exists_arr) == -1) {
+                            var tr_html = '<tr><td align="center"><input type="hidden" name="barcode[]" value="' + bcode + '" />' + bcode + '</td></tr>';
+                            tr_arr.push(tr_html);
+                        }
+                    }
+                    $("#barcode_table tbody").append(tr_arr.join(""));
+                    var msg = '图书条码范围总计 ' + all_barcode.length + ' 个图书条码，查询到 ' + exists_arr.length + ' 个图书条码，空缺图书条码 ' + (all_barcode.length - exists_arr.length) + ' 个';
+                    $("#search_info").html(msg);
+                    $("#search_info").show();
+                } else {
+                    layer.msg(result.msg);
+                }
+
+            }, "json");
+
+        });
+    });
+
+    //解析图书条码
+    function getBarcodeArr(barcode_str) {
+        var bcode_arr = new Array();
+        if (barcode_str.indexOf("-") == -1 && barcode_str.indexOf("+") == -1) {
+            bcode_arr.push(barcode_str);
+        }
+        else if (barcode_str.indexOf("+") != -1) {
+            var tmp_arr = barcode_str.split("+");
+            var bcode_beg = tmp_arr[0];
+            var bcode_end = tmp_arr[1];
+
+            if (!bcode_end || bcode_beg.search(/\d+$/) == -1 || isNaN(bcode_end)) {
+                bcode_arr.push(bcode_beg);
+            }
+            else {
+                bcode_end = parseInt(bcode_end);
+
+                for (var tmp_i = 0; tmp_i < bcode_end; tmp_i++) {
+                    bcode_arr.push(bcode_beg);
+                    bcode_beg = addBarcodeOne(bcode_beg);
+                }
+            }
+        }
+        else if (barcode_str.indexOf("-") != -1) {
+            var tmp_arr = barcode_str.split("-");
+            var bcode_beg = tmp_arr[0];
+            var bcode_end = tmp_arr[1];
+
+            var march1 = bcode_beg.match(/^\D+/);
+            var bcode_head = "";
+            if (march1 != null) {
+                bcode_head = march1[0];
+            }
+
+
+            if (bcode_beg) {
+                bcode_beg = bcode_beg.replace(/^\D+/, "");
+            }
+
+
+            if (bcode_end) {
+                bcode_end = bcode_end.replace(/^\D+/, "");
+            }
+            var beg_int = parseInt(bcode_beg, 10);
+            var end_int = parseInt(bcode_end, 10);
+            if (!bcode_beg || bcode_beg.search(/\d+$/) == -1 || beg_int >= end_int) {
+                bcode_arr.push(bcode_beg);
+            }
+            else {
+                for (; beg_int <= end_int; beg_int++) {
+                    bcode_arr.push(bcode_head + bcode_beg);
+                    bcode_beg = addBarcodeOne(bcode_beg);
+                }
+            }
+        }
+        return bcode_arr;
+    }
+
+    //将图书条码增加一
+    function addBarcodeOne(bcode) {
+        var pos = bcode.search(/\d+$/);
+        var end_str = bcode.substr(pos);
+
+        if (pos == -1) {
+            return bcode;
+        }
+
+        var head_str = bcode.substr(0, pos);
+        var end_str_int = parseInt(end_str, 10);
+        end_str_int++;
+        end_str_int = end_str_int.toString();
+        var tmp_cnt = end_str.length - end_str_int.length;
+        if (tmp_cnt > 0) {
+            for (var i = 0; i < tmp_cnt; i++) {
+                end_str_int = "0" + end_str_int;
+            }
+        }
+
+        return head_str + end_str_int;
+
+    }
+</script>
+
+</body>
+</html>

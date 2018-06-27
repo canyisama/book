@@ -1,0 +1,32 @@
+{%include file='public/header_simple' %}
+<body>
+<style>
+    input[type=file] {
+        display: inline-block;
+    }
+</style>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="alert alert-warning">
+            仅支持Txt文本格式,每行数据格式:分类号 最大种次号 中间用Tab制表符分隔
+        </div>
+        <div class="row ibox-content" style="padding-left: 20px;">
+            <form method="post" enctype="multipart/form-data">
+                选择导入文件：<input type="file" name="marc_file"><br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;重复覆盖：
+                <label>
+                    <input type="radio" name="is_fugai" value="1"> 是
+                </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                <label>
+                    <input type="radio" name="is_fugai" value="0" checked> 否
+                </label>
+                <br><br>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">开始导入</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

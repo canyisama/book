@@ -1,0 +1,47 @@
+{%include file='public/header_form' %}
+
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="pinyin_id" value="{%$info.pinyin_id%}">
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 汉字：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="hz" name="hz" class="form-control" value="{%$info.hz%}" maxlength="2" required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 拼音：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="py2" name="py2" class="form-control" value="{%$info.py2%}"
+                           required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> 四角号码：</label>
+                <div class="col-sm-5">
+                    <input type="text" id="sjcode" name="sjcode" class="form-control" value="{%$info.sjcode%}"
+                           required="required">
+                </div>
+            </div>
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function getFormOptions() {
+        var id = "{%$info.pinyin_id%}";
+        return {url: id ? "{%:url('Pinyinman/edit')%}" : "{%:url('Pinyinman/add')%}"};
+    }
+</script>

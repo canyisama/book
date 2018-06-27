@@ -1,0 +1,107 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="seller_name" type="text"
+                                               placeholder="书商名称">
+                                        <input class="form-control input-outline" id="contact" type="text"
+                                               placeholder="联系人">
+                                        <input class="form-control input-outline" id="tel" type="text"
+                                               placeholder="电话">
+                                        <input class="form-control input-outline" id="phone" type="text"
+                                               placeholder="手机">
+                                        <input class="form-control input-outline" id="email" type="text"
+                                               placeholder="电子邮箱">
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="seller_code" data-sortable="true">书商代码</th>
+                                    <th data-field="tsg_code" data-sortable="true">分馆代码</th>
+                                    <th data-field="seller_name" data-sortable="true">书商名称</th>
+                                    <th data-field="contact" data-sortable="true">联系人</th>
+                                    <th data-field="tel" data-sortable="true">电话</th>
+                                    <th data-field="phone" data-sortable="true">手机</th>
+                                    <th data-field="email" data-sortable="true">电子邮箱</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Bookseller/getJsonList')%}",
+            sortName: 'seller_code',
+            clickToSelect: true
+        });
+    });
+
+    function toEdit(seller_code) {
+        var url = "{%:url('Bookseller/add');%}";
+        if (seller_code)
+            url = "{%:url('Bookseller/edit');%}?seller_code=" + seller_code;
+        myOpen({
+            type: 2,
+            title: seller_code ? "编辑信息" : "添加信息",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function delData(seller_code) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('Bookseller/drop')%}", {seller_code: seller_code}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function opFormatter(value, row) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.seller_code + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.seller_code + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

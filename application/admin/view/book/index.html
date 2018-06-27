@@ -1,0 +1,272 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg m-b">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="checkbox">
+                                        <label title="启用Z39.50协议联机查重书目，需要开通套数据的账号！">
+                                            <input class="form-control input-outline" id="search_type"
+                                                   {%:cookie('search_type')?'checked':''%} name="search_type"
+                                            type="checkbox">
+                                            启用Z39.50协议联机查重书目(需要开通套数据的账号)
+                                        </label>
+                                    </div>
+
+                                    <div class="checkbox" style="float: right;">
+                                        <label title="{%$source=='ys'?'标识验收':'标识预订'%}">
+                                            <input class="form-control input-outline" id="bs_book"
+                                                   {%:cookie('bs_book')?'checked':''%} type="checkbox">
+                                            {%$source=='ys'?'标识验收':($source=='dck'?'标记本馆图书':'标识预订')%}
+                                        </label>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="isbn" type="text"
+                                               placeholder="ISBN">
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="题名">
+                                        <input class="form-control input-outline" id="clc" type="text"
+                                               placeholder="分类号">
+                                        <input class="form-control input-outline" id="publisher" type="text"
+                                               placeholder="出版社">
+                                        <input class="form-control input-outline" id="subject" type="text"
+                                               placeholder="主题词">
+                                        <!--
+                                        <input class="form-control input-outline" id="firstauthor" type="text"
+                                               placeholder="著者">
+                                        <input class="form-control input-outline" id="barcode" type="text"
+                                               placeholder="图书条码">
+                                        <input class="form-control input-outline" id="calino" type="text"
+                                               placeholder="索书号">
+                                        -->
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-width="110" data-field="book_id" data-visible="false">ID</th>
+                                    <th data-width="110" data-field="tsg_code" data-visible="false">tsg_code</th>
+                                    <th data-width="110" data-field="ys_count" data-visible="false">验收记录数</th>
+                                    <th data-width="110" data-field="destine_count" data-visible="false">预订记录数</th>
+                                    <th data-width="110" data-field="isbn" data-sortable="true">ISBN</th>
+                                    <th data-width="110" data-field="clc" data-sortable="true">分类号</th>
+                                    <th data-width="110" data-field="title" data-sortable="true">题名</th>
+                                    <th data-width="110" data-field="publisher" data-sortable="true">出版社</th>
+                                    <th data-width="110" data-field="pubdate" data-sortable="true">出版日期</th>
+                                    <th data-width="110" data-field="price_ms" data-sortable="true">价格</th>
+                                    <th data-width="110" data-field="is_verify" data-formatter="verifyFormatter" data-sortable="true" data-align="center">书目审核</th>
+                                    <th data-width="200" data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="table_panel" style="display: none;">
+                {%switch name='source'%}
+                {%case value='qk_ys' break='0'%}{%/case%}
+                {%case value='qk'%}{%include file='qk/qkyd_list'%}{%/case%}
+                {%case value='qk_zd'%}{%include file='qk/qkzd_list'%}{%/case%}
+                {%case value='none'%} <!-- 没有子表 --> {%/case%}
+                {%default /%}{%include file='public/dck_ys_destine_common' %}
+                {%/switch%}
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    window.source = "{%$source%}";
+    window.book_id = 0;
+    window.ys_type = 2; // 验收类型,1预订验收,2直接验收
+    var height = ($(top.window).height() - 160);  // 父表高度
+
+    window.searchCallBack = function () {
+        if (window.book_id) {
+            $("#table_panel").hide();
+            window.book_id = 0;
+            var url = "{%:url('Destine/getJsonList');%}?book_id=0";
+            if (window.source == 'qk') {
+                url = "{%:url('qk/getJsonList');%}?book_id=0";
+                qkTableInfo.refreshQkTable({url: url});
+            } else {
+                destineTable.refreshTable({url: url});
+            }
+        }
+    };
+
+    $(function () {
+        // 表格初始化配置
+        var config = {
+            url: "{%:url('Book/getJsonList')%}",
+            sortName: 'book_id',
+            sortOrder: 'asc',
+            clickToSelect: true,
+            pageSize: 10,
+            pageList: [10, 20, 50, 100],
+        };
+        if (window.source != 'none') {
+            config.height = height;
+            config.onClickRow = function (row, obj) {
+                // console.log(obj);
+                // 点击操作列时不加载子表
+                if (obj.prevObject) {
+                    if (obj.prevObject.find("a").length) {
+                        return false;
+                    }
+                }
+                $("#table_panel").show();
+                window.book_id = row.book_id;
+
+                switch (window.source) {
+                    case "dck":
+                        $(".nav-tabs li a[href='#tab_dck']").click();
+                        break;
+                    case "ys":
+                        $(".nav-tabs li a[href='#tab_ys']").click();
+                        break;
+                    case "destine":
+                        $(".nav-tabs li a[href='#tab_destine']").click();
+                        break;
+                    case 'qk_ys':
+                    case 'qk':
+                    case 'qk_zd':
+                        initQkTable();
+                        break;
+                }
+            }
+        }
+
+        // 初始化表格
+        myBootstrapTable.initBootstrapTable("#Table", config);
+
+        $("#search_type").click(function () {
+            var val = $(this).prop("checked") ? 1 : 0;
+            $.setCookie("search_type", val, 3, "/");
+        });
+
+        $("#bs_book").click(function () {
+            var val = $(this).prop("checked") ? 1 : 0;
+            $.setCookie("bs_book", val, 30, "/");
+
+            // 刷新表格
+            $("#Table").bootstrapTable('refreshOptions', {
+                random: Math.random()
+            });
+        });
+    });
+
+    function toEdit(type, id) {
+        switch (type) {
+            case 'book_edit':
+                var url = "{%:url('Catalog/add');%}";
+                if (id)
+                    url = "{%:url('Catalog/edit');%}?book_id=" + id;
+                location.href = url;
+                break;
+        }
+    }
+
+    function delData(book_id) {
+        myConfirm("是否删除此条书目数据?", 0, function () {
+            $.post("{%:url('Catalog/drop')%}", {book_id: book_id}, function (result) {
+                if (result.code) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    /**
+     * 标识背景色
+     */
+    function fnSetStyle(row, index) {
+        if (window.source == "destine") {
+            if ($("#bs_book").prop("checked") && row.destine_count > 0) {
+                return {classes: 'identifying-row'};
+            }
+        } else if (window.source == "ys") {
+            if ($("#bs_book").prop("checked") && row.ys_count > 0) {
+                return {classes: 'identifying-row'};
+            }
+        } else if (window.source == 'dck') {
+            if ($("#bs_book").prop("checked") && row.tsg_code == "{%$tsg_code%}") {
+                return {classes: 'identifying-row'};
+            }
+        } else if (window.source == 'qk' || window.source == 'qk_ys' || window.source == 'qk_zd') {
+            if ($("#bs_book").prop("checked") && row.qk_count > 0) {
+                return {classes: 'identifying-row'};
+            }
+        }
+        return {};
+    }
+
+    function verifyFormatter(value) {
+        if (value == 1) {
+            return '<input type="checkbox" checked disabled>';
+        }
+        return '<input type="checkbox" disabled>';
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'book_edit\',\'' + row.book_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.book_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        if (row.is_verify == 1) {
+            btns.push('<a href="javascript:void(0);" onclick="toVerify(\'' + row.book_id + '\', 0);" class="btn-sm text-warning"><i class="fa fa-minus-circle"></i> 重审 </a>');
+        } else {
+            btns.push('<a href="javascript:void(0);" onclick="toVerify(\'' + row.book_id + '\', 1);" class="btn-sm text-navy"><i class="fa fa-check-circle"></i> 审核 </a>');
+        }
+        return btns.join("|");
+    }
+
+    // 图书审批
+    function toVerify(book_id, is_verify) {
+        var title = is_verify ? '是否【审核】此条书目数据？' : '是否【重审】此条书目数据？';
+        myConfirm(title, 0, function () {
+            $.post("{%:url('Catalog/verify');%}", {book_id: book_id, is_verify: is_verify}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+</script>
+
+</body>
+</html>

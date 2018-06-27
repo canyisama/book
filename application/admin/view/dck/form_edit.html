@@ -1,0 +1,298 @@
+{%include file='public/header_form' %}
+
+<style>
+    .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+        padding-left: 0;
+        padding-right: 5px;
+    }
+
+    .row {
+        padding: 0 10px;
+    }
+
+    .form-control {
+        padding: 0 3px;
+        height: 30px;
+    }
+
+    .title {
+        position: relative;
+        top: -12px;
+        background: white;
+        margin-left: 10px;
+        float: left;
+        padding: 0 5px;
+    }
+
+    .panel-body {
+        clear: both;
+        padding-top: 0px;
+    }
+
+    input[type=checkbox], input[type=radio] {
+        margin-top: 7px;
+    }
+
+</style>
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <form method='post' id='postForm'>
+            <input type="hidden" name="dck_id" value="{%$dck_info.dck_id%}">
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <h4 class="title">书目信息（{%$mt_info.mt_code%}）</h4>
+                    <div class="panel-body">
+                        <p>
+                            <span class="label label-success">题 名</span>
+                            {%$book_info.title%}{%$book_info.bl_title?' =
+                            '.$book_info.bl_title:''%}{%$book_info.othertitle?'：
+                            '.$book_info.othertitle:''%}
+                            {%$book_info.fjno?'.'.$book_info.fjno:''%}
+                            {%$book_info.fjtitle?','.$book_info.fjtitle:''%}
+                            {%$book_info.firstauthor?' / '.$book_info.firstauthor:''%}
+                        </p>
+                        <p>
+                            <!-- 出版信息 -->
+                            <span class="label label-success">出 版</span>
+                            {%$book_info.pubplace?$book_info.pubplace:''%}{%$book_info.publisher?'：'.$book_info.publisher:
+                            ''%}{%$book_info.pubdate?'，
+                            '.$book_info.pubdate:''%}
+                        </p>
+                        <span class="label label-success">ISBN</span> {%$book_info.isbn%}、
+                        <span class="label label-success">价格描述</span> {%$book_info.price_ms%}、
+                        <span class="label label-success">分类号</span> {%$book_info.clc%}
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <h4 class="title">馆藏信息编辑</h4>
+                    <div class="panel-body" id="field_set_div">
+                        <div class="form-horizontal">
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 图书条码：</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" name="barcode" value="{%$dck_info.barcode%}" required>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label">登录号：</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" name="login_no" value="{%$dck_info.login_no%}">
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 索书号：</label>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" entype="calino" name="calino" required value="{%$dck_info.calino%}">
+                                </div>
+                                <div class="col-sm-2">
+                                    {%if $tsg_info.calino_type==1 %}
+                                    <input type="button" class="btn btn-primary btn-sm" onclick='zchCha()' title='种次号查缺'
+                                           value="查缺">
+                                    {%elseif $tsg_info.calino_type==2 %}
+                                    <input type="button" class="btn btn-primary btn-sm"
+                                           onclick="get_author_code('{%$book_info.firstauthor%}')" title="生成著者号"
+                                           value="著者号">
+                                    {%elseif $tsg_info.calino_type==3 %}
+                                    <input type="button" class="btn btn-primary btn-sm"
+                                           onclick="get_sjcode('{%$book_info.firstauthor%}')" value="四角码">
+                                    {%/if%}
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label">卷册号：</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" name="jzh" value="{%$dck_info.jzh%}">
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label">馆藏地址：</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="tsg_site_code">
+                                        {%volist name="$site_code_list" id="site"%}
+                                        <option value="{%$site.tsg_site_code%}" {%$dck_info.tsg_site_code==$site.tsg_site_code?'selected':''%}>{%$site.site_name%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label">流通类型：</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="lt_type">
+                                        {%volist name="$ltype_list" id="ltype"%}
+                                        <option value="{%$ltype.ltype_code%}" {%$dck_info.lt_type==$ltype.ltype_code?'selected':''%}>{%$ltype.ltype_code%} |
+                                            {%$ltype.ltype_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label">状态：</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="status">
+                                        {%volist name="$status_list" id="status"%}
+                                        <option value="{%$key%}" {%$dck_info.status==$key?'selected':''%}>{%$key%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label">书商代码：</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="seller_code">
+                                        {%volist name="bookseller_list" id="bookseller"%}
+                                        <option value="{%$bookseller.seller_code%}"
+                                                {%$dck_info.seller_code==$bookseller.seller_code?'selected':''%}>
+                                            {%$bookseller.seller_code%}|{%$bookseller.seller_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 单价：</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" name="price" required value="{%$dck_info.price%}">
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label">货币类型：</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="currency">
+                                        {%volist name="$currency_list" id="currency"%}
+                                        <option value="{%$currency.cnf_val%}" title="{%$currency.remark%}" {%$dck_info.currency==$currency.cnf_val?'selected':''%}>
+                                            {%$currency.cnf_val%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 套价：</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" name="price_sum" required value="{%$dck_info.price_sum%}">
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label">预算代码：</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="cost_code" id="cost_code" name="cost_code">
+                                        {%volist name="$cost_list" id="cost"%}
+                                        <option value="{%$cost.cost_code%}"
+                                                {%$dck_info.cost_code==$cost.cost_code?'selected':''%}>
+                                            {%$cost.cost_code%}|{%$cost.cost_sour%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-4 control-label">验收批次：</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" name="batch_no">
+                                        {%volist name="$batch_list" id="batch"%}
+                                        <option value="{%$batch.batch_no%}"
+                                                {%$dck_info.batch_no==$batch.batch_no?'selected':''%}>
+                                            {%$batch.batch_no%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label">图书来源：</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="book_sour">
+                                        {%volist name="$ly_list" id="book_ly"%}
+                                        <option value="{%$book_ly.cnf_val%}" title="{%$book_ly.remark%}" {%$dck_info.book_sour==$book_ly.cnf_val?'selected':''%}>
+                                            {%$book_ly.cnf_val%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 m-b">
+                                <label class="col-sm-5 control-label">介质类型：</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="jz_type">
+                                        {%volist name="$jz_list" id="jz"%}
+                                        <option value="{%$jz.cnf_val%}" title="{%$jz.remark%}" {%$dck_info.jz_type==$jz.cnf_val?'selected':''%}>
+                                            {%$jz.cnf_val%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="form-group text-center">
+                    <div class="col-sm-12">
+                        <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                            <i class="fa fa-check"></i> 保存
+                        </button>
+                        <a class="btn btn-outline btn-danger" id="btnCancel">
+                            <i class="fa fa-times"></i> 取消
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function getFormOptions() {
+        return {
+            url: "{%:url('Dck/edit')%}", success: function (result) {
+                if (result.code == 1) {
+                    // 成功后刷新父级页面
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        parent.refreshCurTab();
+                        parent.layer.closeAll();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }
+        };
+    }
+    var SITE_URL_FULL = '/admin';
+    var index = '';
+    //获取当前输入框的分类号
+    function getCurrClc() {
+        var clc = $("#field_set_div [entype='calino']").val();
+        if (clc.indexOf("/") != -1) {
+            clc = clc.substr(0, clc.indexOf("/"));
+        }
+        return clc;
+    }
+
+    //种次号查缺
+    function zchCha() {
+
+        var clc = getCurrClc();
+        var url = SITE_URL_FULL + "/Dck/showzch/clc_str/" + clc;
+
+        index = layer.open({
+            title:'种次查缺',
+            type:2,
+            /*area: ['auto', 'auto'],*/
+            content:url,
+        });
+        // var chaWin = window.open(url);
+        // var timer1 = setInterval(function () {
+        //     if (chaWin.dest_win) {
+        //         clearInterval(timer1);
+        //     }
+        //     else {
+        //         chaWin.dest_win = window;
+        //     }
+        //
+        // }, 100);
+    }
+</script>
+</body>
+</html>

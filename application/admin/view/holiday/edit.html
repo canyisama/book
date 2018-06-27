@@ -1,0 +1,68 @@
+{%include file='public/header_form' %}
+
+<body>
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            {%:token('__token__', 'sha1')%}
+            <input type="hidden" name="holiday_id" value="{%$info.holiday_id|default=''%}">
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span class="text-muted">*</span>假期名称 ：</label>
+                <div class="col-sm-8">
+                    <input id="ho_name" name="ho_name" class="form-control" type="text"
+                           required="required"
+                           placeholder="假期名称" value="{%$info.ho_name|default=''%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">假期开始时间：</label>
+                <div class="col-sm-8">
+                    <input id="date_beg" name="date_beg" class="form-control" type="text"
+                           required="required"
+                           placeholder="假期开始时间" value="{%$info.date_beg|default=''%}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">假期结束时间：</label>
+                <div class="col-sm-8">
+                    <input id="date_end" name="date_end" class="form-control" type="text"
+                           required="required"
+                           placeholder="假期结束时间" value="{%$info.date_end|default=''%}">
+                </div>
+            </div>
+
+
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="div_hide"></div>
+<script src="__static__/js/laydate/laydate.js"></script>
+<script>
+    $(function () {
+        laydate.render({
+            elem: '#date_beg'//指定元素
+        });
+
+        laydate.render({
+            elem: '#date_end'//指定元素
+        });
+    });
+
+    function getFormOptions() {
+        return {url:"{%:url('holiday/edit')%}"};
+    }
+
+</script>

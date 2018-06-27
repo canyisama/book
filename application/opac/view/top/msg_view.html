@@ -1,0 +1,35 @@
+{%extend name='public/header' /%}
+
+
+{%block name='content'%}
+<div class="wrapper wrapper-content">
+    <div class="container">
+            <div class="col-sm-12">
+                <h1 class="text-center" style="margin-top: -20px;margin-bottom: 20px">馆内公告({%:cookie('tsg_name')?:'所有分馆'%})</h1>
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <span>{%$info.subject%}</span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="d1">
+                                <div class="col-sm-11" style="word-wrap: break-word;word-break: break-all;">
+                                    <p>{%$info.body%}</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                            <button type="button" class="btn btn-primary info"><a href="{%:url('Top/msg')%}" style="color: white">返回公告列表</a></button>
+                            </div>
+                        </div>
+                        <div class="panel-footer text-right">
+                            <span>发布公告分馆：</span>{%$info.tsg_name%}
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span>发布日期：</span>{%$info.add_time%}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    </div>
+</div>
+{%/block%}

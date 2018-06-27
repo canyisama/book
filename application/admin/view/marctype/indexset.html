@@ -1,0 +1,82 @@
+{%include file='public/header_simple' %}
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>MARC索引配置</h5>
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal m-t" method="post">
+                    <div class="form-group">
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">MARC类型：</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" id="mt_id" name="mt_id">
+                                        {%volist name="mt_list" id="mt"%}
+                                        <option value="{%$mt.mt_id%}" {%$mt_id==$mt.mt_id?'selected':''%}>{%$mt.mt_code%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">题名：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="title" value="{%$cnf_list.title%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">ISBN：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="isbn" value="{%$cnf_list.isbn%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">分类号：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="clc" value="{%$cnf_list.clc%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">责任者：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="firstauthor" value="{%$cnf_list.firstauthor%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">出版社：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="publisher" value="{%$cnf_list.publisher%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">主题词：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="subject" value="{%$cnf_list.subject%}">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"> </label>
+                                <div class="col-sm-8">
+                                    <button class="btn btn-primary" type="submit">确认</button>
+                                    <button class="btn btn-warning" type="reset">重置</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $("#mt_id").change(function () {
+                location.href = "{%:url('Marctype/indexset')%}?mt_id=" + $(this).val();
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

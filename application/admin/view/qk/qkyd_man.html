@@ -1,0 +1,130 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <select class="form-control" id="qk_batch_code">
+                                            <option value="">= 预订批次号 =</option>
+                                            {%volist name="qk_batch_list" id="batch"%}
+                                            <option value="{%$batch.qk_batch_code%}">
+                                                {%$batch.qk_batch_code%}
+                                            </option>
+                                            {%/volist%}
+                                        </select>
+                                        <select class="form-control" id="status">
+                                            <option value="">= 状态 =</option>
+                                            <option value="1">预订</option>
+                                            <option value="2">退订</option>
+                                        </select>
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="题名">
+                                        <input class="form-control input-outline" id="clc" type="text"
+                                               placeholder="分类号">
+                                        <input class="form-control input-outline" id="publisher" type="text"
+                                               placeholder="出版社">
+                                        <input class="form-control input-outline" id="order_no" type="text"
+                                               placeholder="订购号">
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+                            <table id="qkTable">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"> </th>
+                                    <th data-field="qk_id" data-visible="false">qk_id</th>
+                                    <th data-field="book_id" data-visible="false">book_id</th>
+                                    <th data-field="title">题名</th>
+                                    <th data-field="clc">分类号</th>
+                                    <th data-field="publisher">出版社</th>
+                                    <th data-field="status" data-sortable="true"
+                                        data-formatter="qkTableInfo.qkTableStateFormatter">状态
+                                    </th>
+                                    <th data-field="order_year" data-sortable="true">订购年份</th>
+                                    <th data-field="price" data-sortable="true">原价</th>
+                                    <th data-field="year_price" data-sortable="true">年价</th>
+                                    <th data-field="qk_cnt" data-sortable="true">预订期数</th>
+                                    <th data-field="ys_cnt" data-sortable="false">已验收册数</th>
+                                    <th data-field="book_cnt" data-sortable="true">复本数</th>
+                                    <th data-field="cycle_name" data-sortable="true">出版周期</th>
+                                    <th data-formatter="qkTableInfo.qkTableOpFormatter"
+                                        data-align="center">操作
+                                    </th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {%eq name='source' value='qk_zd'%}
+                <div class="row" id="table_panel" style="display: none;">
+                    {%include file='qk/qkzd_list'%}
+                </div>
+                {%/eq%}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__static__/js/logic/cf/qk.js"></script>
+<script>
+    window.source = "{%$source%}";
+    var height = undefined;
+    if (window.source == 'qk_zd'){
+        height = ($(top.window).height() - 160) * 0.6;
+    }
+
+    $(function () {
+        qkTableInfo.url = "{%:url('qk/getJsonList');%}?source="+window.source;
+        qkTableInfo.showQkTable({
+            url: "{%:url('Qk/getJsonList');%}?source="+window.source,
+            toolbar: "#Toolbar",
+            showColumns: !0,
+            showRefresh: !0,
+            pagination: !0,
+            icons: {refresh: "glyphicon-repeat", columns: "glyphicon-list"},
+            pageSize: 20,
+            pageList: [20, 50, 100],
+            height: height,
+            // 单击行事件
+            onClickRow: function (row) {
+                if (window.source == 'qk_zd'){
+                    $("#table_panel").show();
+                    window.book_id = row.book_id;
+                    initQkTable();
+                }
+            }
+        });
+    });
+    function toOpenPage(qk_id) {
+        myOpen({
+            type: 2,
+            title: "编辑数据",
+            /*area: ['auto', 'auto'],*/
+            content: "{%:url('Qk/edit');%}?qk_id=" + qk_id
+        });
+    }
+    /**
+     *验收
+     */
+    function qkYs(id) {
+        var url = "{%:url('qk/ys');%}?qk_id="+id;
+        myOpen({
+            type: 2,
+            title: '期刊验收',
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+</script>
+
+</body>
+</html>

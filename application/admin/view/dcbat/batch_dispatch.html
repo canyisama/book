@@ -1,0 +1,161 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row ">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>批量调拨</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                    <div class="col-sm-10">
+                        <form action="javascript:void 0" class="form-horizontal" id="postForm" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <label class="col-sm-4 control-label">馆藏来源馆:</label>
+                                    <div class="col-sm-8">
+                                        <select name="tsg_code_sour" id="tsg_code_sour" class="form-control">
+                                            {%volist name='tsg_list_old' id='vo'%}
+                                            <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="col-sm-4 control-label">目标馆藏地址：</label>
+                                    <div class="col-sm-6">
+                                        <select name="tsg_site_code" id="tsg_site_code" class="form-control">
+                                            {%volist name='tsg_site_map' id='vo'%}
+                                            <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="reg"> 批量调拨</button>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <label class="col-sm-4 control-label">馆藏目标馆:</label>
+                                    <div class="col-sm-8">
+                                        <select name="tsg_code_dest" id="tsg_code_dest" class="form-control">
+                                            {%volist name='tsg_list' id='vo'%}
+                                            <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="col-sm-4 control-label">目标流通类型：</label>
+                                    <div class="col-sm-6">
+                                        <select name="lt_type" id="lt_type" class="form-control">
+                                            {%volist name='lt_type_list' id='vo'%}
+                                            <option value="{%$key%}">{%$key%}|{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-5" style="margin-left: -42px">
+                                    <label class="col-sm-4 control-label">图书条码文件载入</label>
+                                    <div class="col-sm-8">
+                                        <input type="file" class="file-box" name="barcode_file" value="选择文件"/>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <div class="col-sm-12">
+                                        <button type="submit" class="btn btn-primary" id="batch_reg">载入文件</button>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <span class="text-warning">文件必须为txt文本格式,每行一个图书条码</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>批量入藏图书条码列表，每行一个图书条码</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="form-horizontal">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                        <textarea class="form-control" name="barcode_list" style="height: 300px" id="barcode_list"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__static__/js/logic/status/status.js" ></script>
+<script>
+
+    $('#batch_reg').click(function () {
+        var formData = new FormData($('#postForm')[0]);
+        var url = "{%:url('Ajaxinfo/read_txt')%}";
+        $.ajax({
+            type: 'post',
+            url: url,
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+        }).success(function (result) {
+            if (result.code == 1){
+                var data = result.data.replace(/,/g,"\r\n");
+                data=$("#barcode_list").val() ? $("#barcode_list").val()+"\r\n"+data : data;
+                $("#barcode_list").val(data);
+                layer.msg(result.msg);
+            }else{
+                layer.alert(result.msg);
+            }
+        }).error(function () {
+            layer.alert("上传失败");
+        });
+    });
+
+    $('#reg').click(function () {
+       // var data = $('#postForm').serialize();
+       var barcode_list = $('#barcode_list').val();
+       var tsg_site_code = $('#tsg_site_code').val();
+       var tsg_code_sour = $('#tsg_code_sour').val();
+       var tsg_code_dest = $('#tsg_code_dest').val();
+       var lt_type = $('#lt_type').val();
+
+       if(!barcode_list){
+           layer.alert('图书条码列表不能为空!');
+           return false;
+       }
+
+       myConfirm('是否执行批量调拨操作？',3,function () {
+           $.post("{%:url('Dcbat/batch_dispatch')%}",{
+               barcode_list:barcode_list,tsg_site_code:tsg_site_code,tsg_code_sour:tsg_code_sour,tsg_code_dest:tsg_code_dest,lt_type:lt_type},function (result) {
+               if (result.code == 1){
+                   layer.msg(result.msg);
+               }else{
+                   layer.alert(result.msg);
+               }
+           })
+       })
+    });
+
+
+</script>
+</body>

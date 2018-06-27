@@ -1,0 +1,88 @@
+{%include file='public/header_list' /%}
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-sm-offset-1 col-sm-10">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                种次号查缺(请不要刷新本页面)
+            </div>
+            <div class="panel-body">
+                <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                    <form class="form-inline" id="searchForm" onsubmit="return false;">
+                        <div class="form-group">
+                            <select class="form-control" id="mt_id">
+                                {%volist name='mt_list' id='vo'%}
+                                <option value="{%$vo.mt_id%}" {%$_GET['mt_id']==$vo.mt_id?'selected="selected"':''%}>{%$vo.mt_code%}</option>
+                                {%/volist%}
+                            </select>
+                            <input class="form-control input-outline" id="clc" type="text" value="{%:input('clc_str')%}"
+                                   placeholder="分类号">  
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="searchBtn" class="btn btn-primary">搜索</button>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="btnSetState" class="btn btn-primary">设置</button>
+                        </div>
+                    </form>
+                </div>
+                <table id="Table" data-row-style="fnSetStyle">
+                    <thead>
+                    <tr>
+                        <th data-radio="true"></th>
+                        <th data-field="title" >正题名</th>
+                        <th data-field="clc" >分类号</th>
+                        <th data-field="zch" >种次号</th>
+                        <th data-field="fzno" >辅助区分号</th>
+                        <th data-field="status">状态</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var height = $(window.top).height()*0.45;
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Dck/showzch')%}",
+            height:height,
+            sortable: false,
+            clickToSelect: true,
+            pagination:true,
+            pageSize: 1000,                       //每页的记录行数（*）
+            pageList: [1000],            //可供选择的每页的行数（*）
+            showColumns:false,
+            showRefresh:false
+        });
+
+        $("#btnSetState").click(function () {
+            // 获取选中行
+            var rows = tableObject.bootstrapTable('getSelections');
+            if (rows.length == 0) {
+                layer.msg("没有选中行!");
+                return false;
+            }
+            if (rows[0].status == '占用'){
+                layer.msg('请先选择一行种次号空缺的数据!');
+                return false;
+            }
+
+            var clc = rows[0].clc,
+                zch = rows[0].zch;
+
+            $("input[name='calino']",window.parent.document).val(clc+'/'+zch);
+            layer.alert('设置成功，点击确定返回上一页',{icon:1},function () {
+                parent.layer.close(parent.index);
+            });
+        });
+    });
+
+    function fnSetStyle(row, index) {
+        if (!row.title) {
+            return {classes: 'identifying-row'};
+        }
+        return {};
+    }
+</script>

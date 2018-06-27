@@ -1,0 +1,299 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row m-b">
+        <div class="col-sm-12">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs">
+                    <li data-id="1" class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">检索打印</a>
+                    </li>
+                    <li data-id="2" class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">补缺打印</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            检索范围设置
+                                        </div>
+                                        <div class="panel-body">
+                                            <form class="form-horizontal m-t" action="{%:url('BooklabPrint/printset')%}"
+                                                  id="postForm" method="post">
+                                                <input type="hidden" name="search_type" value="1">
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">图书条码范围</label>
+                                                    <div class="col-sm-2">
+                                                        <input type="text" class="form-control" id="barcode_beg"
+                                                               name="barcode_beg">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input type="text" class="form-control" id="barcode_end"
+                                                               name="barcode_end">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">验收批次号</label>
+                                                    <div class="col-sm-4">
+                                                        <select class="form-control" name="batch_no">
+                                                            <option value="">= 全部验收批次 =</option>
+                                                            {%volist name="batch_list" id="batch"%}
+                                                            <option value="{%$batch.batch_no%}">{%$batch.batch_no%}
+                                                            </option>
+                                                            {%/volist%}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">入库时间范围</label>
+                                                    <div class="col-sm-2">
+                                                        <input type="text" class="form-control" id="dck_add_time_beg"
+                                                               readonly name="dck_add_time_beg"
+                                                               value="{%$date_arr.beg%}">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input type="text" class="form-control" id="dck_add_time_end"
+                                                               readonly name="dck_add_time_end"
+                                                               value="{%$date_arr.end%}">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">排序方式：</label>
+                                                    <div class="col-sm-6">
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <select class="form-control" name="order_type">
+                                                                    <option value="">= 排序列 =</option>
+                                                                    {%volist name="order_list" id="order"%}
+                                                                    <option value="{%$key%}">{%$order%}</option>
+                                                                    {%/volist%}
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <select class="form-control" name="order_seq">
+                                                                    <option value="">= 排序 =</option>
+                                                                    <option value="asc">升序</option>
+                                                                    <option value="desc">降序</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"></label>
+                                                    <div class="col-sm-6">
+                                                        <button type="submit" class="btn btn-primary">书标打印</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-2" class="tab-pane">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            补缺参数设置
+                                        </div>
+                                        <div class="panel-body">
+                                            <form class="form-horizontal m-t" id="buque_form"
+                                                  action="{%:url('BooklabPrint/printset');%}" method="post">
+                                                <input type="hidden" name="search_type" value="2">
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label"> </label>
+                                                    <div class="col-sm-8">
+                                                        <button type="button" class="btn btn-primary"
+                                                                onclick="sumbit_buque()">书标打印
+                                                        </button>
+                                                        &nbsp;&nbsp;
+                                                        <button type="button" class="btn btn-primary"
+                                                                onclick="import_barcode()">外部导入
+                                                        </button>
+                                                        &nbsp;&nbsp;
+                                                        <button type="button" class="btn btn-primary"
+                                                                onclick="export_barcode()">导出条码
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">图书条码</label>
+                                                    <div class="col-sm-2">
+                                                        <input type="text" class="form-control" id="barcode_add"
+                                                               name="barcode_add">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <button type="button" class="btn btn-primary"
+                                                                onclick="add_bcode()">添加
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">指定分类段 </label>
+                                                    <div class="col-sm-4">
+                                                        <input type="text" class="form-control" id="class_range"
+                                                               name="class_range"
+                                                               value="A,B,C,D,E,F,G,H,I,J,K,N,O,P,Q,R,S,T,U,V,X,Z">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">已选图书条码</label>
+                                                    <div class="col-sm-4">
+                                                        <table class="table table-bordered" id="barcode_table">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>添加顺序</th>
+                                                                <th>图书条码</th>
+                                                                <th>索书号</th>
+                                                                <th>操作</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $("#barcode_add").keydown(function (e) {
+            //回车
+            if (e.which == 13) {
+                add_bcode();
+                return false;
+            }
+        });
+    });
+
+    //添加数据到图书条码列表
+    function add_barcode_item(data) {
+        var cnt = parseInt($("#barcode_table tbody tr").size()) + 1;
+        var tr_str = '<tr><td>' + cnt + '<input type="hidden" name="barcode[]" entype="barcode" value="' + data.barcode + '"  /> <input type="hidden" name="calino[]" entype="calino" value="' + data.calino + '"  /><input type="hidden" name="class_no[]" entype="class_no" value="' + data.clc + '"  /><input type="hidden" name="zch[]" entype="zch" value="' + data.zch + '"  /> <input type="hidden" name="fzno[]" entype="fzno" value="' + data.fzno + '"  /><input type="hidden" name="sj_code[]" entype="sj_code" value="' + data.sj_code + '"  /><input type="hidden" name="author_code[]" entype="author_code" value="' + data.author_code + '"  /><input type="hidden" name="calino_type[]" entype="calino_type" value="' + data.calino_type + '"  /></td><td>' + data.barcode + '</td><td>' + data.calino + '</td><td><a class="op_btn" onclick="del_bcode(this)">删除</a>&nbsp;<a class="op_btn" onclick="bcode_move_up(this)">上移</a>&nbsp;<a class="op_btn" onclick="bcode_move_down(this)">下移</a></td></tr>';
+        $("#barcode_table tbody").append(tr_str);
+    }
+
+    //补缺打印添加一个图书条码
+    function add_bcode() {
+        var bcode_str = $("#barcode_add").val();
+        var class_range = $("#class_range").val();
+        if (!bcode_str) {
+            layer.msg("图书条码不能为空");
+            $("#barcode_add").focus();
+            return false;
+        }
+
+        if ($("#barcode_table tbody input[value='" + bcode_str + "']").val()) {
+            layer.msg("该图书条码已经添加,请勿重复添加!");
+            $("#barcode_add").focus();
+            return false;
+        }
+        if (!class_range) {
+            layer.msg("指定分类段不能为空!");
+            $("#barcode_add").focus();
+            return false;
+        }
+        var url = "{%:url('BooklabPrint/get_calino')%}";
+        var data = {barcode: bcode_str, class_range: class_range};
+        $.ajax({
+            type: "post", url: url, data: data, dataType: "json", success: function (ret) {
+                if (ret.code) {
+                    add_barcode_item(ret.data);
+                    $("#barcode_add").val("");
+                    $("#barcode_add").focus();
+                } else {
+                    layer.msg(ret.msg);
+                }
+            }
+        });
+
+        $("#barcode_table tbody").append();
+    }
+
+    //补缺打印删除一个图书条码
+    function del_bcode(this_obj) {
+        myConfirm('确认删除此图书条码吗?', 0, function () {
+            $(this_obj).parent().parent().remove();
+            layer.msg('删除成功');
+        });
+    }
+
+    //补缺打印向上移动一个图书条码
+    function bcode_move_up(this_obj) {
+        $(this_obj).parent().parent().after($(this_obj).parent().parent().prev().clone());
+        $(this_obj).parent().parent().prev().remove();
+    }
+
+    //补缺打印向下移动一个图书条码
+    function bcode_move_down(this_obj) {
+        $(this_obj).parent().parent().before($(this_obj).parent().parent().next().clone());
+        $(this_obj).parent().parent().next().remove();
+    }
+
+    function sumbit_buque() {
+        myConfirm('是否确认图书条码添加完毕进入打印设置界面?', 0, function () {
+            var url = "{%:url('BooklabPrint/printset')%}";
+            $("#buque_form").attr("action", url);
+            $("#buque_form").submit();
+        });
+    }
+
+    function import_barcode() {
+        var url = "{%:url('BooklabPrint/import_barcode')%}";
+        myOpen({type:2, content: url, title: '条码导入', area: ['500px', '300px']});
+    }
+
+    function export_barcode() {
+        if ($('#barcode_table tbody tr').size() <= 0) {
+            layer.msg("条码列表为空无法导出!");
+            return;
+        }
+        var url = "{%:url('BooklabPrint/export_barcode')%}";
+        $("#buque_form").attr("action", url);
+        $("#buque_form").submit();
+    }
+
+    function on_submit() {
+        var barcode_beg_str = $("#barcode_beg").val();
+        var barcode_end_str = $("#barcode_end").val();
+        if (barcode_beg_str.length != barcode_end_str.length) {
+            layer.msg("图书起始条码和结束条码的位数必须一致");
+            $("#barcode_beg").focus();
+            return false;
+        }
+        return true;
+    }
+</script>
+
+<script>
+    laydate.render({
+        elem: '#dck_add_time_beg',
+        type: 'datetime'
+    });
+    laydate.render({
+        elem: '#dck_add_time_end',
+        type: 'datetime'
+    });
+</script>
+</body>
+</html>

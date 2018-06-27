@@ -1,0 +1,206 @@
+{%include file='public/header_form' %}
+<div class="row">
+    <form class="form-horizontal m-t" id="postForm" method="post">
+        <input type="hidden" name="hide_code" value="{%$info.dz_type_code%}">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <input type="hidden" id="tsg_code" name="tsg_code" class="form-control input-sm" value="999">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 读者类型代码：</label>
+                <div class="col-sm-6">
+                    {%if $info%}
+                    <p class="form-control-static">{%$info.dz_type_code%}</p>
+                    {%else /%}
+                    <input type="text" id="dz_type_code" name="dz_type_code" class="form-control input-sm"
+                           required="required">
+                    {%/if%}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 读者类型名称：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="dz_type_name" name="dz_type_name" class="form-control input-sm"
+                           value="{%$info.dz_type_name%}" required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 读者证有效天数：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="valid_days" name="valid_days" class="form-control input-sm"
+                           value="{%$info.valid_days%}" required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 最大借书量：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="max_lend_num" name="max_lend_num" class="form-control input-sm"
+                           value="{%$info.max_lend_num%}" required="required" title="最大借书量=馆际最大借书量+本馆借书量">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"><span class="text-muted">*</span> 读者证押金：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="dz_ple_money" name="dz_ple_money" class="form-control input-sm"
+                           value="{%$info.dz_ple_money%}" required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label">馆际借还: </label>
+                <div class="col-sm-6">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="is_inter" value="1" {%$info.is_inter!=0?'checked':''%}> 开通
+                        </label>&nbsp;&nbsp;&nbsp;
+                        <label>
+                            <input type="radio" name="is_inter" value="0" {%$info.is_inter==0?'checked':''%}> 关闭
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 馆际最大借书量：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="inter_lend_num" name="inter_lend_num" class="form-control input-sm"
+                           value="{%$info.inter_lend_num%}" title="最大借书量=馆际最大借书量+本馆借书量">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 工本费：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="gongben_fee" name="gongben_fee" class="form-control input-sm"
+                           value="{%$info.gongben_fee%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 服务费：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="serv_fee" name="serv_fee" class="form-control input-sm"
+                           value="{%$info.serv_fee%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 验证费：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="ver_fee" name="ver_fee" class="form-control input-sm"
+                           value="{%$info.ver_fee%}">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="col-sm-5 control-label">超期可借: </label>
+                <div class="col-sm-6">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="is_out_can" value="1" {%$info.is_out_can!=0?'checked':''%}> 是
+                        </label>&nbsp;&nbsp;&nbsp;
+                        <label>
+                            <input type="radio" name="is_out_can" value="0" {%$info.is_out_can==0?'checked':''%}> 否
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label">开通预约: </label>
+                <div class="col-sm-6">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="is_reser" value="1" {%$info.is_reser!=0?'checked':''%}> 是
+                        </label>&nbsp;&nbsp;&nbsp;
+                        <label>
+                            <input type="radio" name="is_reser" value="0" {%$info.is_reser==0?'checked':''%}> 否
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 最大预约册数：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="reser_max_days" name="reser_max_days" class="form-control input-sm"
+                           value="{%$info.reser_max_days%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 预约取书天数：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="reser_hold_days" name="reser_hold_days" class="form-control input-sm"
+                           value="{%$info.reser_hold_days%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label">开通预借: </label>
+                <div class="col-sm-6">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="is_lend_reser" value="1" {%$info.is_lend_reser!=0?'checked':''%}>
+                            是
+                        </label>&nbsp;&nbsp;&nbsp;
+                        <label>
+                            <input type="radio" name="is_lend_reser" value="0" {%$info.is_lend_reser==0?'checked':''%}>
+                            否
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 最大预借册数：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="lend_reser_max_days" name="lend_reser_max_days" class="form-control input-sm"
+                           value="{%$info.lend_reser_max_days%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 预借取书天数：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="lend_reser_hold_days" name="lend_reser_hold_days"
+                           class="form-control input-sm"
+                           value="{%$info.lend_reser_hold_days%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 欠款限额：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="max_own_money" name="max_own_money" class="form-control input-sm"
+                           value="{%$info.max_own_money%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 违章停借次数：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="vr_stop_cnt" name="vr_stop_cnt" class="form-control input-sm"
+                           value="{%$info.vr_stop_cnt%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label"> 外借图书总额限制：</label>
+                <div class="col-sm-6">
+                    <input type="text" id="lend_money_limit" name="lend_money_limit" class="form-control input-sm"
+                           value="{%$info.lend_money_limit%}">
+                </div>
+            </div>
+        </div>
+        <div class="form-group text-center">
+            <div class="col-sm-12">
+                <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                    <i class="fa fa-check"></i> 保存
+                </button>
+                <a class="btn btn-outline btn-danger" id="btnCancel">
+                    <i class="fa fa-times"></i> 取消
+                </a>
+            </div>
+        </div>
+
+    </form>
+</div>
+<script>
+    function getFormOptions() {
+        var dz_id = "{%$dz_info.dz_id%}";
+        return {url: dz_id ? "{%:url('DzType/edit')%}" : "{%:url('DzType/add')%}"};
+    }
+</script>
+</body>
+</html>

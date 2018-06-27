@@ -1,0 +1,111 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <select class="form-control" id="destine_batch_code">
+                                            <option value="">= 验收批次号 =</option>
+                                            {%volist name="batch_list" id="batch"%}
+                                            <option value="{%$batch.batch_no%}">
+                                                {%$batch.batch_no%}
+                                            </option>
+                                            {%/volist%}
+                                        </select>
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="题名">
+                                        <input class="form-control input-outline" id="clc" type="text"
+                                               placeholder="分类号">
+                                        <input class="form-control input-outline" id="publisher" type="text"
+                                               placeholder="出版社">
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="destine_id" data-visible="false">destine_id</th>
+                                    <th data-field="book_id" data-visible="false">book_id</th>
+                                    <th data-field="title">题名</th>
+                                    <th data-field="clc">分类号</th>
+                                    <th data-field="publisher">出版社</th>
+                                    <th data-field="ys_type" data-align="center" data-formatter="ysTypeFormatter">验收类型
+                                    </th>
+                                    <th data-field="ys_cnt" data-align="center" data-sortable="true">复本数</th>
+                                    <th data-field="ori_price" data-sortable="true">原价</th>
+                                    <th data-field="discount" data-sortable="true">折扣</th>
+                                    <th data-field="price" data-sortable="true">折后价</th>
+                                    <th data-field="ys_user" data-sortable="true">验收人</th>
+                                    <th data-field="ys_time" data-sortable="true">验收时间</th>
+                                    <th data-sortable="true" data-align="center" data-formatter="opFormatter">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Ys/getYsManList')%}",
+            sortName: 'ys_time'
+        });
+    });
+
+    function toEdit(ys_id, ys_type) {
+        myOpen({
+            type: 2,
+            title: ys_type == 1 ? "编辑预订验收(附加馆藏)" : "编辑直接验收(附加馆藏)",
+            /*area: ['auto', 'auto'],*/
+            content: "{%:url('Ys/edit')%}?ys_id=" + ys_id
+        });
+    }
+
+    function toDel(ys_id) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('ys/drop')%}", {ys_id: ys_id}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        $("#Table").bootstrapTable('refreshOptions', {
+                            random: Math.random()
+                        });
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function ysTypeFormatter(value) {
+        if (value == 1) {
+            return '<span class="label label-warning">预订验收</span>';
+        } else {
+            return '<span class="label label-primary">直接验收</span>';
+        }
+    }
+
+    function opFormatter(value, row) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.ys_id + '\',\'' + row.ys_type + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="toDel(\'' + row.ys_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+</script>
+
+</body>
+</html>

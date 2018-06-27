@@ -1,0 +1,259 @@
+{%extend name='public/header' /%}
+
+{%block name='head'%}
+{__block__}
+<script src="__static__/js/jquery.form.js"></script>
+<script src="__static__/js/laydate/laydate.js"></script>
+<script src="__static__/js/indexpage.js"></script>
+<style>
+    .form-control{
+        height: 29px;
+    }
+
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+        border-top: 1px solid #e7eaec;
+        line-height: 1.42857;
+        padding: 6px;
+        vertical-align: middle;
+    }
+    dd, dt {
+        line-height: 1.76923;
+    }
+    .user_info {
+        padding: 18px;
+    }
+    .wrapper .wrapper-content{
+        margin-top: -33px;
+    }
+</style>
+{%/block%}
+
+{%block name='content_user'%}
+{__block__}
+<dl class="contDl">
+    <dt>个人信息</dt>
+    <div class="clear user_info">
+        <form method="post"  id="postForm" class="form-horizontal" enctype="multipart/form-data">
+            <div class="col-sm-12">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                    <label class="control-label" style="margin-top: 50%">当前读者照片:</label>
+                            </div>
+                            <div class="col-sm-10">
+                                <div class="fl Head_portrait" style="margin-right: 20px">
+                                    <input type="hidden" id="portrait" name="portrait" value="{%$info.portrait%}">
+                                    <img id="portrait_show"  width="160" height="200" style="cursor: pointer;"
+                                         src="{%$info.portrait?get_img_full_path($info.portrait):'__static__/img/dz_default2.jpg'%}">
+                                    <div style="margin-top: 10px">
+                                        <button type="button" id="portrait_set" > 设置头像</button>
+                                        <button type="button"  id="drop">删除照片</button>
+                                    </div>
+                                </div>
+                                <div id="portrait_report" style="display: none">
+                                    {%$flash_html%}
+                                </div>
+                            </div>
+                            <!--<hr>-->
+                        </div>
+                <table class="table table-bordered" >
+                    <tbody>
+                            <tr>
+                                <th class="col-sm-2">读者证号：</th>
+                                <th class="col-sm-3">{%$info.dz_code%}</th>
+                                <th class="col-sm-3">证件类型：</th>
+                                <th class="col-sm-4">
+                                    <select name="cred_type" class="form-control">
+                                        {%volist name='cred_type_list' id='vo'%}
+                                        <option value="{%$vo%}" {%$info.cred_type==$vo?'selected="selected"':''%}>{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">读者类型：</th>
+                                <th class="col-sm-3">{%$info.dz_type_name%}</th>
+                                <th class="col-sm-3">证件号码：</th>
+                                <th class="col-sm-4">
+                                    <input type="text" name="cred_num" value="{%$info.cred_num%}" class="form-control"/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">状态：</th>
+                                <th class="col-sm-3">{%$info.dz_status%}</th>
+                                <th class="col-sm-3">联系地址：</th>
+                                <th class="col-sm-4">
+                                    <input type="text" name="address" value="{%$info.address%}" class="form-control"/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">读者姓名：</th>
+                                <th class="col-sm-3">{%$info.real_name%}</th>
+                                <th class="col-sm-3">出生日期：</th>
+                                <th class="col-sm-4">
+                                    <input type="text" name="birthday" value="{%$info.birthday%}" class="form-control" id="bir_time" readonly/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">性别：</th>
+                                <th class="col-sm-3">
+                                    <div class="radio col-sm-6">
+                                        <label>
+                                            <input type="radio" value="男" name="gender" {%$info.gender=='男'?'checked="checked"':''%}>
+                                            男
+                                        </label>
+                                    </div>
+                                    <div class="radio col-sm-6">
+                                        <label>
+                                            <input type="radio" value="女" name="gender" {%$info.gender=='女'?'checked="checked"':''%}>
+                                            女
+                                        </label>
+                                    </div>
+                                </th>
+                                <th class="col-sm-3">email：</th>
+                                <th class="col-sm-4">
+                                    <input type="text" name="email" value="{%$info.email%}" class="form-control"/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">启用日期：</th>
+                                <th class="col-sm-3">{%$info.add_time%}</th>
+                                <th class="col-sm-3">邮编：</th>
+                                <th class="col-sm-4">
+                                    <input type="text" name="zip_code" value="{%$info.zip_code%}" class="form-control"/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">有效期至：</th>
+                                <th class="col-sm-3">{%$info.end_time%}</th>
+                                <th class="col-sm-3">手机：</th>
+                                <th class="col-sm-4">
+                                    <input type="text" name="phone_mob" value="{%$info.phone_mob%}" class="form-control"/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">单位名称：</th>
+                                <th class="col-sm-3">{%$info.unit_name%}</th>
+                                <th class="col-sm-3">续借次数：</th>
+                                <th class="col-sm-4">{%$info.renew_num%}</th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">历史违章次数：</th>
+                                <th class="col-sm-3">{%$info.all_violate_cnt%}</th>
+                                <th class="col-sm-3">当前违章次数：</th>
+                                <th class="col-sm-4">{%$info.violate_cnt%}</th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">积分：</th>
+                                <th class="col-sm-3">{%$info.integral%}</th>
+                                <th class="col-sm-3">借阅次数：</th>
+                                <th class="col-sm-4">{%$info.lend_num%}</th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">预约次数：</th>
+                                <th class="col-sm-3">{%$info.reser_num%}</th>
+                                <th class="col-sm-3">欠款：</th>
+                                <th class="col-sm-4">{%$info.owe_money%}</th>
+                            </tr>
+                            <tr>
+                                <th class="col-sm-2">押金：</th>
+                                <th class="col-sm-3">{%$info.ple_money%}</th>
+                                <th class="col-sm-3">备注：</th>
+                                <th class="col-sm-4">{%$info.remark%}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="4"><button type="submit" class="btn btn-primary center-block" id="btnSubmit">保存</button></th>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</dl>
+<div id="div_hide"></div>
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+<script>
+    $(function () {
+        // 异步提交表单
+        $("#btnSubmit").click(function () {
+
+            // 自定义表单提交参数
+            var options = {
+                url : "{%url('User/info')%}",
+                target: "#div_hide",
+                success: function (result) {  // 成功回调
+                    if (result.code == 1) {
+                        // 成功后刷新父级页面
+                        layer.alert(result.msg, {icon: 1}, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.alert(result.msg, {icon: 2});
+                    }
+                }
+            };
+
+            $("#postForm").ajaxForm(options);
+
+        });
+
+        $('#portrait').click(function () {
+            $('#file').click();
+        });
+
+        $('#drop').click(function () {
+            $.get("{%:url('User/dropPortrait')%}",{dz_id:"{%$info.dz_id%}"},function (result) {
+                if(result.code == 1){
+                    layer.msg(result.msg);
+                    location.reload();
+                }else {
+                    layer.alert(result.msg,{icon:2});
+                }
+            });
+        });
+
+        laydate.render({
+            elem: "#bir_time"
+        });
+
+    });
+
+</script>
+<script>
+    var time_id= {%$time_id%};
+    $(function () {
+        $('#portrait_set').click(function () {
+            if ($('#portrait_report').css('display') == 'none'){
+                $(this).text('隐藏界面');
+                $('#portrait_report').show();
+            }else{
+                $(this).text('设置照片');
+                $('#portrait_report').hide();
+            }
+        });
+    });
+
+    function updateavatar() {
+        var url="/opac/User/get_dz_port/time_id/"+time_id;
+        $.ajax({
+            url:url,
+            dataType:"json",
+            async:false,
+            type:"POST",
+            success: function(ret){
+                if(ret.code == 1)
+                {
+                    $("#portrait").val(ret.data.file_name);
+                    $("#portrait_show").attr("src",ret.data.re_url+'?t='+Math.random());
+                }
+                else
+                {
+
+                }
+            }});
+    }
+
+</script>
+{%/block%}

@@ -1,0 +1,67 @@
+{%include file='public/header_form' %}
+
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="volunt_id" value="{%:input('volunt_id')%}">
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr>
+                    <th class="text-center"></th>
+                    <th class="text-center">评价方面</th>
+                    <th class="text-center">分值</th>
+                </tr>
+                </thead>
+                <tbody>
+                {%volist name="volunt_ct_list" id="item"%}
+                <tr>
+                    <td><input type="checkbox" name="volunt_ct_id[]" class="volunt_ct_id" value="{%$item.ct_cnt%}"></td>
+                    <td>{%$item.ct_name%}</td>
+                    <td>{%$item.ct_cnt%}</td>
+                </tr>
+                {%/volist%}
+                </tbody>
+            </table>
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-default btn-sm" id="btnSubmit" type="submit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-default btn-sm" id="check1">
+                        <i class="fa fa-check-square-o"></i> 全选
+                    </a>
+                    <a class="btn btn-outline btn-default btn-sm" id="check2">
+                        <i class="fa fa-minus-circle"></i> 反选
+                    </a>
+                    <a class="btn btn-outline btn-danger btn-sm" id="btnCancel">
+                        <i class="fa fa-times"></i> 关闭
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("table tbody tr").click(function () {
+            var ck = $(this).find(".volunt_ct_id");
+            ck.prop("checked", !ck.prop("checked"));
+        });
+
+        $("#check1").click(function () {
+            $(".volunt_ct_id").prop("checked", true);
+        });
+
+        $("#check2").click(function () {
+            $(".volunt_ct_id").each(function () {
+                $(this).prop("checked", !$(this).prop("checked"));
+            });
+        });
+    });
+
+    function getFormOptions() {
+        return {url: "{%:url('Volunt/comment')%}"};
+    }
+</script>

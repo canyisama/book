@@ -1,0 +1,210 @@
+{%include file='public/header_form' %}
+<link href="__static__/css/plugins/switchery/switchery.css" rel="stylesheet">
+<script src="__static__/js/plugins/switchery/switchery.js"></script>
+<body>
+<!-- 编辑数据 -->
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-sm-offset-2 col-sm-6">
+            <div class="tab-content">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="text-center">配置邮箱参数</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form id="postForm" method="post" class="form-horizontal m-b">
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">SMTP服务器:</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control input-sm" name="smtp_host" value="{%$info.smtp_host%}"/>
+
+                                </div>
+                                <div class="col-sm-1">
+                                    <span style="color: red;font-size: large">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">SMTP服务器端口:</label>
+                                <div class="col-sm-7">
+                                    <select name="smtp_port" class="form-control input-sm">
+                                        {%volist name='smtp_port_list' id='vo'%}
+                                        <option value="{%$vo%}" {%$info.smtp_port==$vo?"selected='selected'":""%}>{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                    <span class="help-block">常用SMTP服务器的SSl安全协议端口为465</span>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span style="color: red;font-size: large">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">SMTP服务器用户名:</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control input-sm" name="smtp_user" value="{%$info.smtp_user%}">
+                                    <span class="help-block">常用SMTP服务器的SSl安全协议端口为465</span>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span style="color: red;font-size: large">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">SMTP服务器密码:</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control input-sm" name="smtp_pass" value="{%$info.smtp_pass%}">
+                                    <span class="help-block">如SMTP服务器要求验证,则必须输入密码</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">发件人Email:</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control input-sm" name="from_email" value="{%$info.from_email%}">
+                                </div>
+                                <div class="col-sm-1">
+                                    <span style="color: red;font-size: large">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">发件人:</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control input-sm" name="from_name" value="{%$info.from_name%}">
+                                </div>
+                                <div class="col-sm-1">
+                                    <span style="color: red;font-size: large">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">回复Email:</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control input-sm" name="reply_email" value="{%$info.reply_email%}">
+                                    <span class="help-block">留空则为发件人EMAIL</span>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">回复名称:</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control input-sm" name="reply_name" value="{%$info.reply_name%}">
+                                    <span class="help-block">留空则为发件人名称</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">图书预约自动提醒:</label>
+                                <div class="col-sm-7">
+                                    <div class="col-sm-12">
+                                        <input class="js-switch" type="checkbox" {%$info.is_email==1?"checked":""%}
+                                               id="is_email" name="is_email" value="{%$info.is_email%}"/>
+                                        <label class="js-check-change-field control-label">{%$info.is_email==1?"启用":"禁用"%}</label>
+                                    </div>
+                                    <span class="help-block" style="margin-top: 40px">在图书借还界面当书归还时如有预约自动提醒</span>
+                                </div>
+                                <div class="col-sm-2">
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">测试Email:</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control input-sm" name="test_email" id="test_email" value="{%$info.test_email%}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-6 text-right">
+                                    <button type="submit" id="btnSubmit" class="btn btn-primary">保存参数</button>
+                                </div>
+                                <div class="col-sm-6">
+                                    <button type="button" id="test" class="btn btn-success">测试邮箱</button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        var elem = document.querySelector('.js-switch');
+
+        var init = new Switchery(elem);
+
+        elem.onchange = function () {
+            $('.js-check-change-field').html(elem.checked ? '启用' : '禁用');
+             $('#is_email').val(elem.checked ? 1 : 0);
+        };
+
+        $('#postForm').validate({
+            rules:{
+                smtp_host: {
+                    required : true
+                },
+                smtp_port: {
+                    required : true
+                },
+                smtp_user: {
+                    required : true
+                },
+                from_email: {
+                    required : true
+                },
+                from_name: {
+                    required : true
+                }
+            },
+            messages:{
+                smtp_host : {
+                    required : 'SMTP服务器不能为空'
+                },
+                smtp_port : {
+                    required : 'SMTP服务器端口不能为空'
+                },
+                smtp_user : {
+                    required : 'SMTP服务器用户名不能为空'
+                },
+                from_email : {
+                    required : '发件人Email不能为空'
+                },
+                from_name : {
+                    required : '发件人不能为空'
+                }
+            }
+        });
+
+        $('#test').click(function () {
+            var email = $('#test_email').val();
+            if (!email){
+                return layer.msg('测试邮箱不能为空');
+            }
+            $.get("{%:url('Email/test')%}",{to_email:email},function (result) {
+                if (result.code == 1){
+                    layer.msg(result.msg);
+                }else{
+                    layer.alert(result.msg,{icon:2});
+                }
+            })
+        });
+    });
+
+    function getFormOptions() {
+        var options = {
+            url:"{%:url('Email/config')%}",
+            success : function (result) {
+                if (result.code == 1) {
+                    // 成功后刷新父级页面
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }
+        };
+        return options;
+    }
+
+
+</script>
+</body>
+
+</html>

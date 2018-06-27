@@ -1,0 +1,481 @@
+{%include file='public/header_form' %}
+<style>
+    select[multiple], select[size] {
+        height: 500px;
+    }
+    .move {
+        font-size: 25px;
+        width: 50px;
+
+    }
+    .move-button {
+        margin-top: 11px;
+    }
+
+    .move-button-top {
+
+        margin-top: 123%;
+    }
+</style>
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row m-b">
+        <div class="col-sm-12">
+            <form class="form-horizontal m-t" id="postForm"  method="post" >
+                <div class="tabs-container">
+                    <ul class="nav nav-tabs">
+                        <li data-id="1" class="active"><a data-toggle="tab" aria-expanded="true">基本配置</a></li>
+                        <li data-id="3" class=""><a data-toggle="tab" aria-expanded="false">编目隐藏字段</a></li>
+                        <li data-id="2" class=""><a data-toggle="tab" aria-expanded="false">联机检索设置</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="tab-1" class="tab-pane active">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                基本配置
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">默认分编格式</label>
+                                                    <div class="col-sm-4">
+                                                        <select class="form-control" id="default_mt" name="default_mt">
+                                                            {%volist name="$mt_list" id="mt"%}
+                                                            <option value="{%$mt.mt_id%}"
+                                                                    {%$default_mt==$mt.mt_id?'selected':''%}>
+                                                                {%$mt.mt_code%}
+                                                            </option>
+                                                            {%/volist%}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">默认编目方式</label>
+                                                    <div class="col-sm-4">
+                                                        <div class="radio">
+                                                            <label>
+                                                                <input type="radio" value="1" id="bm_jd_marc_1"
+                                                                       name="bm_jd_marc"
+                                                                       {%$user_info.bm_jd_marc==1?'checked':''%}>
+                                                                简单编目</label>
+                                                            &nbsp;&nbsp;&nbsp;
+                                                            <label>
+                                                                <input type="radio" value="2" id="bm_jd_marc_2"
+                                                                       name="bm_jd_marc"
+                                                                       {%$user_info.bm_jd_marc==2?'checked':''%}>
+                                                                MARC专业编目</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">Z39.50检索方式 </label>
+                                                    <div class="col-sm-4">
+                                                        <select class="form-control" id="z3950_stype" name="z3950_stype">
+                                                            {%volist name="$stype_list" id="stype"%}
+                                                            <option value="{%$key%}"
+                                                                    {%$z3950_stype==$key?'selected':''%}> {%$stype%}
+                                                            </option>
+                                                            {%/volist%}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">套录书目时分类号截取长度</label>
+                                                    <div class="col-sm-4">
+                                                        <input class="form-control" id="limit_clc_len" name="limit_clc_len"
+                                                               value="{%$user_info.limit_clc_len%}">
+                                                        <p class="form-control-static">为0则不截取</p>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">从MARC数据中提取索书号</label>
+                                                    <div class="col-sm-4">
+                                                        <input class="form-control" maxlength="4" id="mzd_calino"
+                                                               name="mzd_calino" value="{%$user_info.mzd_calino%}">
+                                                        <p class="form-control-static">MARC字段格式为906f,空则不启用</p>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">编目保存时删除空字段</label>
+                                                    <div class="col-sm-4">
+                                                        <div class="radio">
+                                                            <label>
+                                                                <input type="radio" value="0" id="bm_del_empty_1"
+                                                                       name="bm_del_empty"
+                                                                       {%$bm_del_empty!=1?'checked':''%}>
+                                                                是</label>
+                                                            &nbsp;&nbsp;&nbsp;
+                                                            <label>
+                                                                <input type="radio" value="1" id="bm_del_empty_2"
+                                                                       name="bm_del_empty"
+                                                                       {%$bm_del_empty==1?'checked':''%}>
+                                                                否</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                Marc加注拼音字段配置
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">拼音字段配置</label>
+                                                    <div class="col-sm-6">
+                                                        <input class="form-control" name="pinyin_config" value="{%$user_info.pinyin_config%}">
+                                                        <p class="form-control-static">输入格式:源字段|目标字段 多字段用英文逗号,隔开</p>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">拼音首字母大写</label>
+                                                    <div class="col-sm-4">
+                                                        <div class="radio">
+                                                            <label>
+                                                                <input type="radio" value="1" id="pinyin_dx_0"
+                                                                       name="pinyin_dx"
+                                                                       {%$user_info.pinyin_dx==1?'checked':''%}>
+                                                                是</label>
+                                                            &nbsp;&nbsp;&nbsp;
+                                                            <label>
+                                                                <input type="radio" value="0" id="pinyin_dx_1"
+                                                                       name="pinyin_dx"
+                                                                       {%$user_info.pinyin_dx!=1?'checked':''%}>
+                                                                否</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="tab-3" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <div class="col-sm-4">
+                                            <div class="col-sm-12">
+                                                <h4> 简单编目字段列表 </h4>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <select class="form-control" name="goods_list_select" id="goods_list_select" multiple >
+                                                    {%volist name='fields_nosel' id='vo'%}
+                                                    <option value="{%$key%}" title="{%$vo%}">{%$vo%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="col-sm-12  text-center">
+                                                <h4>操作</h4>
+                                            </div>
+                                            <div class="col-sm-12 text-center">
+                                                <ul class="list-unstyled goods_select">
+                                                    <li>
+                                                        <button type="button" data-op="lmall" class="btn btn-primary move-button-top" >
+                                                            <i class="fa fa-angle-double-left move"> </i>
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" data-op="lm" class="btn btn-primary move-button" >
+                                                            <i class="fa fa-angle-left move"> </i>
+                                                        </button>
+                                                    </li>
+                                                    <li >
+                                                        <button type="button" data-op="rmall" class="btn btn-primary move-button">
+                                                            <i class="fa fa-angle-double-right move"> </i>
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" data-op="rm" class="btn btn-primary move-button">
+                                                            <i class="fa fa-angle-right move"> </i>
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-4">
+                                                <div class="col-sm-12">
+                                                    <h4> 隐藏字段列表 </h4>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control" name="fields_hide[]" id="goods_list" multiple>
+                                                        {%volist name='fields_sel' id='vo'%}
+                                                        <option value="{%$key%}"
+                                                                title="{%$vo%}">{%$vo%}</option>
+                                                        {%/volist%}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-8 user_z3950">
+                                        <div class="col-sm-4">
+                                            <div class="col-sm-12">
+                                                <h4>联机检索设置</h4>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <select class="form-control" name="z39_list_select" id="z39_list_select" multiple >
+                                                    {%volist name='z3950_list' id='vo'%}
+                                                    {%neq name='vo.is_checked' value='1'%}
+                                                    <option value="{%$vo.z3950_id%}" title="{%$vo.z3950_name%}">{%$vo.z3950_name%}</option>
+                                                    {%/neq%}
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="col-sm-12  text-center">
+                                                <h4>操作</h4>
+                                            </div>
+                                            <div class="col-sm-12 text-center">
+                                                <ul class="list-unstyled z39_select">
+                                                    <li>
+                                                        <button type="button" data-op="lmall" class="btn btn-primary move-button-top" >
+                                                            <i class="fa fa-angle-double-left move"> </i>
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" data-op="lm" class="btn btn-primary move-button" >
+                                                            <i class="fa fa-angle-left move"> </i>
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" data-op="rmall" class="btn btn-primary move-button" >
+                                                            <i class="fa fa-angle-double-right move"> </i>
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" data-op="rm" class="btn btn-primary move-button">
+                                                            <i class="fa fa-angle-right move"> </i>
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="col-sm-12">
+                                                <h4> 已选Z39.50服务器列表 </h4>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <select class="form-control" name="z3950_id[]" id="z39_list" multiple>
+                                                    {%volist name='user_z3950_list' id='vo'%}
+                                                    <option value="{%$z3950_list[$vo.z3950_id]['z3950_id']%}"
+                                                            title="{%$z3950_list[$vo.z3950_id]['z3950_name']%}">{%$z3950_list[$vo.z3950_id]['z3950_name']%}</option>
+                                                    {%/volist%}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <div>
+                                                <ul class="list-unstyled z39_select">
+                                                    <li>
+                                                        <button type="button" data-op="mvup" class="btn btn-primary" style="margin-top: 400%;">
+                                                            <i class="fa fa-angle-up move"> </i>
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" data-op="mvdown" class="btn btn-primary move-button" >
+                                                            <i class="fa fa-angle-down move"> </i>
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 25px">
+                    <div class="col-sm-1 col-sm-offset-3">
+                        <button class="btn btn-primary" type="submit" id="btnSubmit">保存参数</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <input class="btn btn-default " type="button" id="reset" value="重置参数"/>
+
+                        <input id="reset_hide" type="reset"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+<script>
+
+    var tab_id = '1';
+    var htmls = [];
+    $(function() {
+        $('#reset_hide').hide();
+        // 内容块切换 - 借还操作
+        $('.nav-tabs li').click(function() {
+            // 当前添加类名并移除兄弟级
+            $(this).addClass('active').siblings().removeClass('active');
+            tab_id = $(this).attr('data-id');
+            $('.tab-pane').removeClass('active');
+            switch (tab_id){
+                case '1' :
+                    $('#tab-1').addClass('active');
+                    break;
+                case '2' :
+                    $('#tab-2').addClass('active');
+                    break;
+                case '3' :
+                    $('#tab-3').addClass('active');
+                    break;
+            }
+        });
+
+        //z39.50服务器选择 列表点击项目测试服务器
+        $("div.user_z3950 select").dblclick(function() {
+            var z39_id=$(this).find("option:selected").val();
+            if(!z39_id)
+            {
+                layer.alert('无效的Z39.50服务器,请双击有效的服务器进行测试!',{icon:2});
+                return;
+            }
+            z3950_test(z39_id);
+        });
+
+        $("ul.goods_select li button").click(function(){
+            var op=$(this).attr("data-op");
+            var lsel_obj=$("#goods_list_select");
+            var rsel_obj=$("#goods_list");
+            switch(op)
+            {
+                case "rmall":
+                    rsel_obj.append(lsel_obj.find("option"));
+                    lsel_obj.find("option").remove();
+                    break;
+                case "rm":
+                    rsel_obj.append(lsel_obj.find("option:selected"));
+                    lsel_obj.find("option:selected").remove();
+                    break;
+                case "lm":
+                    lsel_obj.append(rsel_obj.find("option:selected"));
+                    rsel_obj.find("option:selected").remove();
+                    break;
+                case "lmall":
+                    lsel_obj.append(rsel_obj.find("option"));
+                    rsel_obj.find("option").remove();
+                    break;
+            }
+        });
+
+
+        $("ul.z39_select li button").click(function(){
+
+            var op=$(this).attr("data-op");
+
+            var lsel_obj=$("#z39_list_select");
+            var rsel_obj=$("#z39_list");
+            switch(op)
+            {
+                case "rmall":
+                    rsel_obj.append(lsel_obj.find("option"));
+                    lsel_obj.find("option").remove();
+                    break;
+                case "rm":
+                    rsel_obj.append(lsel_obj.find("option:selected"));
+                    lsel_obj.find("option:selected").remove();
+                    break;
+                case "lm":
+                    lsel_obj.append(rsel_obj.find("option:selected"));
+                    rsel_obj.find("option:selected").remove();
+                    break;
+                case "lmall":
+                    lsel_obj.append(rsel_obj.find("option"));
+                    rsel_obj.find("option").remove();
+                    break;
+                case "mvup":
+                    rsel_obj.find("option:selected:last").after(rsel_obj.find("option:selected:first").prev());
+                    break;
+                case "mvdown":
+                    rsel_obj.find("option:selected:first").before(rsel_obj.find("option:selected:last").next());
+                    break;
+            }
+        });
+    });
+
+    $('#btnSubmit').click(function () {
+        $('#z39_list,#goods_list').find('option').prop('selected','selected');
+    });
+
+    function getFormOptions() {
+        var options = {
+            url : "{%:url('CatalogParam/index')%}",
+            success : function (result) {
+                if (result.code == 1){
+                    layer.alert(result.msg,{icon:1},function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.alert(result.msg,{icon:2});
+                }
+            }
+        };
+
+        return options;
+    }
+
+    function z3950_test(z3950_id)
+    {
+        myConfirm('是否测试此z39.50服务器?(测试时间1-3分钟)',3,function () {
+            $.post("{%:url('Z3950/test')%}",{
+                z3950_id : z3950_id
+            },function (result) {
+                layer.alert(result.msg,{icon:result.code},function () {
+                    layer.closeAll();
+                });
+            },'json')
+        });
+    }
+
+    $('#reset').click(function () {
+        layer.confirm('确定重置参数吗？',{icon:3},function() {
+            $('#reset_hide').click();
+            layer.closeAll();
+        });
+        return false;
+    });
+
+    // $('#reset_hide').click(function () {
+    //     if (htmls){
+    //
+    //         var i = 0;
+    //         $('.check-reset').each(function () {
+    //             $(this).html(htmls[i]);
+    //             i++;
+    //         });
+    //
+    //         $('.i-checks').iCheck({checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green"});
+    //     }
+    //
+    //    return true;
+    // });
+
+</script>
+</body>

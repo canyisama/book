@@ -1,0 +1,126 @@
+{%include file='public/header_form' %}
+
+<div class="space-20"></div>
+<div class="row">
+    <form class="form-horizontal m-t" id="postForm" method="post">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">模板名称:</label>
+                <div class="col-sm-6">
+                    <input id="tpl_name" name="tpl_name" class="form-control input-sm" type="text"
+                           placeholder="请输入模板名称" value="{%$info.tpl_name%}">
+                </div>
+                <div class="col-sm-2">
+                    <span style="color: red;font-size: large">*</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">模板类型:</label>
+                <div class="col-sm-6">
+                    <select name="tpl_type" id="tpl_type" class="form-control input-sm">
+                        <option value=""></option>
+                        {%volist name='tpl_type_lists' id='vo'%}
+                        <option value="{%$key%}" {%$key==isset($info.tpl_type)&&$info->getData('tpl_type')?"selected='selected'":''%}>{%$vo%}</option>
+                        {%/volist%}
+                    </select>
+                    <span class="help-block">设置类型默认模板,唯一</span>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">模板标签列表:</label>
+                <div class="col-sm-6">
+                    <select name="tpl_label" id="tpl_label" class="form-control input-sm">
+                        <option value=""></option>
+                        {%volist name='tpl_label_lists' id='vo'%}
+                        <option value="{%$key%}">{%$vo%}</option>
+                        {%/volist%}
+                    </select>
+                    <span class="help-block">当前可用的模板标签</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">标签内容:</label>
+                <div class="col-sm-6">
+                    <input id="tpl_label_txt" name="tpl_label_txt" class="form-control input-sm" type="text" value="">
+                    <span class="help-block">复制内容到短信标题、内容中,发短信时标签会被解析</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">短信内容:</label>
+                <div class="col-sm-6">
+                    <textarea id="tpl_body" name="tpl_body" class="form-control input-sm" style="height: 100px">{%$info.tpl_body%}</textarea>
+                </div>
+                <div class="col-sm-2">
+                    <span style="color: red;font-size: large">*</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group text-center">
+            <div class="col-sm-12">
+                <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                    <i class="fa fa-check"></i> 保存
+                    <input type="hidden" name="sms_tpl_id" value="{%$info.sms_tpl_id%}" id="sms_tpl_id">
+                </button>
+                <a class="btn btn-outline btn-danger" id="btnCancel">
+                    <i class="fa fa-times"></i> 取消
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        $("#postForm").validate({
+            rules: {
+                tpl_name: {
+                    required: true,
+                },
+                tpl_body: {
+                    required: true,
+                }
+            },
+            messages: {
+                tpl_name: {
+                    required: "请输入模板名称"
+                },
+                tpl_body: {
+                    required: "请输入模板内容",
+                }
+            }
+        });
+
+        $('#tpl_type').change(function () {
+            var tpl_type=$(this).val();
+            $.get("{%:url('Sms/getLabelLists')%}",{tpl_type:tpl_type},function (result) {
+                if (result.code == 1){
+
+                    $("#tpl_label option").remove();
+
+                    $("#tpl_label").append('<option value=""></option>');
+                    for(var i in result.data)
+                    {
+                        $("#tpl_label").append('<option value="'+i+'">'+result.data[i]+'</option>');
+                    }
+                }
+            });
+        });
+
+        $('#tpl_label').change(function () {
+            var label = $(this).val();
+            $('#tpl_label_txt').val(label);
+        });
+
+
+    });
+
+    function getFormOptions() {
+        var id = $('#sms_tpl_id').val();
+        var url = "{%:url('Sms/addtpl')%}";
+        if (!!id){
+            url = "{%:url('Sms/edittpl')%}?sms_tpl_id"+id;
+        }
+        return {url:url};
+    }
+</script>

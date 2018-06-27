@@ -1,0 +1,185 @@
+{%extend name='public/header' /%}
+
+{%block name='head'%}
+{__block__}
+<link href="__static__/css/plugins/jsTree/style.min.css" rel="stylesheet">
+<link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="__static__/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="__static__/js/indexpage.js"></script>
+<style>
+    /* jsTree 文字溢出 */
+    #clcTree {
+        font-size: 12px;
+    }
+
+    #clcTree .jstree-node {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+{%/block%}
+{%block name='content'%}
+<!--<div class="wrapper wrapper-content" >-->
+    <div class="container" style="width: 100%">
+            <div class="col-sm-12">
+                <form action="{%:url('Index/search')%}" method="get" class="form-horizontal">
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="col-sm-6">
+
+                                    <div class="col-sm-4" >
+                                        <select name="zd[]" id="search_type" class="form-control" style="margin-left: -31px">
+                                            {%volist name='fields' id='vo'%}
+                                            <option value="{%$key%}">{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" value="" name="val[]" id="search_txt"/>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <div class="col-sm-6">
+                                            <button class="btn btn-primary" type="submit">检索</button>
+                                            <input type="hidden" name="clc" id="clc" value="">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <button class="btn btn-primary" id="advance" type="button">高级检索</button>
+                                        </div>
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row row-lg">
+                                <div class="col-sm-2">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            中国图书馆分类法第五版
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row form-horizontal m-b">
+                                                <!--<div class="form-group">-->
+                                                    <!--<label class="col-sm-4 control-label">图书类型:</label>-->
+                                                    <!--<div class="col-sm-8">-->
+                                                        <!--<select name="dt_name" id="dt_name" class="form-control">-->
+                                                            <!--<option value="">所有图书类型</option>-->
+                                                            <!--{%volist name='dt_list' id='vo'%}-->
+                                                            <!--<option value="{%$vo.mdt_name%}">{%$vo.dt_name%}</option>-->
+                                                            <!--{%/volist%}-->
+                                                        <!--</select>-->
+                                                    <!--</div>-->
+                                                <!--</div>-->
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">推荐日期:</label>
+                                                    <div class="col-sm-8">
+                                                        <select name="date_val" id="date_val" class="form-control">
+                                                            <option value="1">一天以内</option>
+                                                            <option value="2">两天以内</option>
+                                                            <option value="7">一周以内</option>
+                                                            <option value="14">两周以内</option>
+                                                            <option value="30">一个月以内</option>
+                                                            <option value="60">两个月以内</option>
+                                                            <option selected="selected" value="90">三个月以内</option>
+                                                            <option value="180">半年以内</option>
+                                                            <option value="360">一年以内</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="clcTree"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-10">
+                                    <div class="example-wrap">
+                                        <div class="example" id="clcTable" style="display: none">
+                                            <table id="Table">
+                                                <thead>
+                                                <tr>
+                                                    <th data-field="book_id" data-visible="false">ID</th>
+                                                    <th data-field="isbn">ISBN</th>
+                                                    <th data-field="clc">分类号</th>
+                                                    <th data-field="title" data-formatter="titleOp">题名</th>
+                                                    <th data-field="pubplace">出版社</th>
+                                                    <th data-field="pubdate">出版日期</th>
+                                                    <th data-field="price_ms">价格</th>
+                                                </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+    </div>
+<!--</div>-->
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+
+<script src="__static__/js/plugins/jsTree/jstree.min.js"></script>
+<script>
+    $(function () {
+        $("#clcTree").jstree({
+            "core": {
+                'data': {
+                    'url': "{%:url('Index/getClcList')%}",
+                    'dataType': 'json',
+                    'data': function (node) { // 传给服务端点击的节点
+                        return {id: node.id == "#" ? "0" : node.id};
+                    }
+                }
+            }
+        });
+
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Index/getJsonList')%}",
+            showColumns: 0,
+            showRefresh: 0
+        });
+
+        // 单击树,刷新列表
+        $('#clcTree').bind("activate_node.jstree", function (e, data) {
+            var currentNode = data.node;
+            var original = currentNode.original;  // 后台对象自定义属性
+
+            $('#clc').val(original.clc);
+            console.log($('#clc').val());
+
+            $('#clcTable').show();
+            $("#Table").bootstrapTable('refreshOptions', {
+                random: Math.random(),
+                pageNumber: 1,
+                url: "{%:url('Index/getJsonList')%}?clc=" + original.clc
+            });
+        });
+
+        $('#advance').click(function () {
+            window.location.href = "{%:url('Index/advanced')%}";
+        });
+
+    });
+
+    function titleOp(value,row) {
+        return "<a href='/opac/Index/book_view?book_id="+ row.book_id +"' target='_blank'> "+value+" </a>";
+    }
+</script>
+
+
+{%/block%}

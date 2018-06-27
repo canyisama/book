@@ -1,0 +1,5 @@
+<?php
+
+return array("lend_reser" => "lend_reser", "form_title_add" => "添加数据", "form_title_edit" => "编辑数据", "dz_code" => "读者证号", "dz_type_code" => "读者类型代码", "real_name" => "读者姓名", "unit_name" => "单位名称", "phone_mob" => "手机号码", "email" => "预借邮箱", "title" => "题名", "dz_status" => "状态", "dz_type" => "读者类型", "author" => "著者", "end_time" => "有效期至", "clc" => "分类号", "isbn" => "标准编号", "book_id" => "预借书目ID", "lend_reser_status" => "预借状态", "lend_reser_time" => "预借日期", "must_time" => "应取书日期", "take_time" => "取书日期", "price_ms" => "价格描述", "dz_code_required" => "必须输入读者证号", "dz_type_code_required" => "必须输入读者类型代码", "real_name_required" => "必须输入读者姓名", "unit_name_required" => "必须输入单位名称", "phone_mob_required" => "必须输入手机号码", "email_required" => "必须输入预借邮箱", "title_required" => "必须输入题名", "clc_required" => "必须输入分类号", "isbn_required" => "必须输入标准编号", "book_id_required" => "必须输入预借书目ID", "lend_reser_status_required" => "必须输入预借状态", "lend_reser_time_required" => "必须输入预借日期", "must_time_required" => "必须输入应取书日期", "take_time_required" => "必须输入取书时间", "price_ms_required" => "必须输入价格描述");
+
+?>

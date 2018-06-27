@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>{%$web_title%}</title>
+    <!--[if lt IE 8]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+    <link href="__static__/css/bootstrap.min.css" rel="stylesheet">
+    <link href="__static__/css/font-awesome.min.css" rel="stylesheet">
+    <link href="__static__/css/animate.min.css" rel="stylesheet">
+    <link href="__static__/css/style.min.css" rel="stylesheet">
+
+    <script src="__static__/js/jquery.min.js"></script>
+    <script src="__static__/js/plugins/layer/layer.min.js"></script>
+    <script src="__static__/js/jquery.form.js"></script>
+    <script src="__static__/js/indexpage.js"></script>
+    <script src="__static__/js/plugins/validate/jquery.validate.min.js"></script>
+
+    <script>
+        $.validator.setDefaults({
+            highlight: function (e) {
+                $(e).closest(".form-group").removeClass("has-success").addClass("has-error")
+            }, success: function (e) {
+                e.closest(".form-group").removeClass("has-error").addClass("has-success")
+            }, errorElement: "span", errorPlacement: function (e, r) {
+                e.appendTo(r.is(":radio") || r.is(":checkbox") ? r.parent().parent().parent() : r.parent())
+            }, errorClass: "help-block m-b-none", validClass: "help-block m-b-none"
+        });
+
+        window.loadIndex = 0;
+
+        $(function () {
+            // 异步提交表单
+            $("#btnSubmit").click(function () {
+
+                if (typeof getFormExtend == "function"){
+                    var res = getFormExtend();
+                    if (!res){
+                        return false;
+                    }
+                }
+
+                if(!$("#postForm").valid()){
+                    return false;
+                }
+                // return false;
+                window.loadIndex = layer.load(1, {
+                    shade: [0.1, '#fff']
+                });
+                // 自定义表单提交参数
+                var options = getFormOptions();
+                if (options.success && typeof options.success == "function") {
+                    var temp = options.success;
+                    options.success = function (result) {
+                        layer.close(window.loadIndex);
+                        temp(result);
+                    };
+                }
+
+
+                if (!!options) {
+                    var defaultOptions = {   // 默认配置
+                        target: "#div_hide",
+                        success: function (result) {  // 成功回调
+                            layer.close(window.loadIndex);
+                            if (result.code == 1) {
+                                // 成功后刷新父级页面
+                                layer.alert(result.msg, {icon: 1}, function () {
+                                    parent.location.reload();
+                                });
+                            } else {
+                                layer.alert(result.msg, {icon: 2});
+                            }
+                        }
+                    };
+
+                    var config = $.extend({}, defaultOptions, options);
+                    $("#postForm").ajaxForm(config);
+
+                } else {
+                    return false;
+                }
+
+            });
+
+            // 取消关闭弹出层
+            $("#btnCancel").click(function () {
+                parent.layer.closeAll('iframe');
+                return false;
+            });
+        });
+    </script>
+</head>
+
+<body class="">
+<div id="div_hide"></div>

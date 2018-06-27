@@ -1,0 +1,127 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="dz_code" type="text"
+                                               placeholder="读者证号">
+                                        <input class="form-control input-outline" id="barcode" type="text"
+                                               placeholder="图书条码">
+                                        <input class="form-control input-outline" id="real_name" type="text"
+                                               placeholder="读者姓名">
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="题名">
+                                        <input class="form-control input-outline" id="lend_reser_time" type="text"
+                                               placeholder="预借日期">
+                                        <select class="form-control" id="lend_reser_status">
+                                            <option value="">= 预借状态 =</option>
+                                            {%volist name="status_lists" key='key' id="value"%}
+                                            <option value="{%$key-1%}">
+                                                〖{%$value%}〗
+                                            </option>
+                                            {%/volist%}
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true" ></th>
+                                    <th data-field="dz_code" data-sortable="true">读者证号</th>
+                                    <th data-field="real_name" data-sortable="true">读者姓名</th>
+                                    <th data-field="title" data-sortable="true">题名</th>
+                                    <th data-field="barcode" data-sortable="true">图书条码</th>
+                                    <th data-field="lend_reser_status" data-formatter="stateFormatter" data-sortable="true">预借状态</th>
+                                    <th data-field="lend_reser_time" data-sortable="true">预借日期</th>
+                                    <th data-field="take_time" data-sortable="true">取书日期</th>
+                                    <th data-field="must_time" data-sortable="true">应取书日期</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 时间插件
+
+
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('LendReser/getJsonList')%}",
+            sortName: 'lend_reser_time',
+            clickToSelect: true
+        });
+
+        laydate.render({
+            elem: '#lend_reser_time' //指定元素
+        });
+
+    });
+
+    // 取消预借
+    function dropBtn(lend_reser_id) {
+        myConfirm("确定取消预借么？", 3, function () {
+            $.post("{%:url('LendReser/drop')%}", {reserve_id: lend_reser_id}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    /**
+     * 格式"预订批次状态"列
+     * @param value
+     * @returns {string}
+     */
+    function stateFormatter(value) {
+        switch (value) {
+            case 1:
+                return '<span class="label label-primary">预借中</span>';
+            case 2:
+                return '<span class="label label-danger">超时</span>';
+            case 3:
+                return '<span class="label label-default">取消预借</span>';
+            case 4:
+                return '<span class="label label-success">已取书</span>';
+        }
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        if (row.lend_reser_status !== 1){
+            return '-';
+        }
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="dropBtn(\'' + row.lend_reser_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 取消预借 </a>');
+        return btns.join("|");
+    }
+</script>
+
+</body>

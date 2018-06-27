@@ -1,0 +1,1118 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN'
+        'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+    <TITLE>{%$web_title%}</TITLE>
+    <link href="__static__/book/css/common.css" rel="stylesheet" media="screen">
+    <link href='__static__/book/js/SelectExpand/SelectExpand.css' rel='stylesheet' type='text/css' media='screen'/>
+    <link href='__static__/book/js/jquery.ui/themes/redmond/jquery.ui.css' rel='stylesheet' type='text/css'
+          media='screen'/>
+    <link href='__static__/book/js/mydialog/jquery.ui.css' rel='stylesheet' type='text/css' media='screen'/>
+
+    <script src="__static__/book/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+    <script src="__static__/js/plugins/layer/layer.min.js"></script>
+    <script src="__static__/book/js/common.js" type="text/javascript"></script>
+    <script type="text/javascript" src="__static__/book/js/jquery.funkyUI.js" id="dialog_js" charset="utf-8"></script>
+    <SCRIPT LANGUAGE='JavaScript'>
+        var isIE = !!window.ActiveXObject;
+        var isIE6 = isIE && !window.XMLHttpRequest;
+        $(function () {
+            if (isIE6) {
+                $.fx.off = true;
+            }
+        })
+    </SCRIPT>
+    <script src="__static__/js/jquery.form.js"></script>
+    <script src="__static__/book/js/SelectExpand/SelectExpand.js"></script>
+    <script src='__static__/book/js/jquery.ui/jquery.ui.js' type='text/javascript'></script>
+    <!--<script src='__static__/book/js/mydialog/mydialog.js' type='text/javascript'></script>-->
+</head>
+<body>
+
+<script type='text/javascript'>
+    var upload_id = "{%:input('upload_id/d')%}";
+    var form_obj = '';
+    var catalog_form_valid = '';
+    var zd_list = null;
+    var zd_map_list = null;    //字段映射列表
+    var data_sum = "{%$data_sum%}";        //数据总数量
+    var data_cnt = 0;        //数据总数量
+    var curr_pos = 1;        //当前预览位置
+    var addFnList = null;
+    var import_ok_cnt = 0;        //导入成功数量
+    var import_err_cnt = 0;        //导入失败数量
+
+    $(function () {
+        $('#tabs').tabs();
+
+        data_cnt = $('#all_data_cnt').html();
+        zd_list = new Array();        //获取字段列表
+        zd_map_list = new Array();        //获取字段列表
+        $('#field_select option').each(function (index, element) {
+            var zd = $(this).val();
+            if (zd != '') {
+                zd_list.push(zd);
+            }
+        });
+        $('#fields_table tbody td[zd]').not("#fields_table tbody td[zd='dz_type_code'],#fields_table tbody td[zd='dz_status']")
+            .html('<select class="field_select">' + $('#field_select').html() + '</select>');
+        $('#fields_table tbody .field_select').not("#fields_table tbody td[zd='dz_code'] .field_select,#fields_table tbody td[zd='real_name'] .field_select,#fields_table tbody td[zd='dz_type_code'] .field_select").SelectExpand();
+        $('.ext_tr').hide();
+
+        $('#sheet_name').change(function (e) {
+            var sheet_name = "{%:input('sheet_name')%}";
+            layer.msg('工作表更改需要重新加载页面,配置将丢失,是否加载页面', {icon: 0}, function () {
+                var url = "{%:url('Dzgl/import')%}?upload_id=" + upload_id + "&sheet_name=" + $(this).val();
+                location.href = url;
+            }, function () {
+                if (sheet_name) {
+                    $(this).val(sheet_name);
+                } else {
+                    $(this).find('option:selected').removeAttr('selected');
+                    $(this).find('option:eq(0)').attr('selected', 'selected');
+                }
+            });
+        });
+        $('#dz_type_code').change(function (e) {
+            up_dz_type_about();
+        });
+        previewShow();
+        up_dz_type_about();
+    });
+
+    function getZdval(zd_name) {
+        return $("#fields_table tbody td[zd='" + zd_name + "'] select.field_select").SelectExpandCmd('getInputValue');
+    }
+
+    //自动验证提交父表单
+    function submit_form(this_obj) {
+        var dz_code = $("#fields_table tbody td[zd='dz_code'] select.field_select").val();
+        if (!dz_code) {
+            layer.alert('读者证号不能为空!', {icon: 2});
+            return false;
+        }
+        var dz_type_code = $('#dz_type_code').val();
+        if (!dz_type_code) {
+            layer.alert('读者类型不能为空!', {icon: 2});
+            return false;
+        }
+        var dz_status = $('#dz_status').val();
+        if (!dz_status) {
+            layer.alert('状态不能为空!', {icon: 2});
+            return false;
+        }
+        var real_name = $("#fields_table tbody td[zd='real_name'] select.field_select").val();
+        if (!real_name) {
+            layer.alert('读者姓名不能为空!', {icon: 2});
+            return false;
+        }
+        var beg_time = getZdval('beg_time');
+        if (!beg_time) {
+            layer.alert('启用日期不能为空!', {icon: 2});
+            return false;
+        }
+        var end_time = getZdval('end_time');
+        if (!end_time) {
+            layer.alert('有效期不能为空!', {icon: 2});
+            return false;
+        }
+
+        layer.confirm('是否导入读者数据?', {icon: 0}, function () {
+
+            $('#field_map_block').hide();
+            $('#preview_fieldset').hide();
+            $('#dispatch_block').show();
+            $('#import_op_tr').hide();
+            $('#import_info_tr').show();
+
+            $('#import_all_cnt_label').html(data_sum);
+            $('#data_list_table tr.data_select').each(function (index, element) {
+                var tr_obj = this;
+                $('#catalog_form').queue('adddata_list', function () {
+                    addData($(tr_obj))
+                });
+            });
+            var zd_map_list = getZdmap();
+            var zd_data = {};
+            for (var i in zd_map_list) {
+                for (var i1 in zd_map_list[i]) {
+                    zd_data[i1 + '[' + i + ']'] = encodeURIComponent(zd_map_list[i][i1]);
+                }
+            }
+            var fee_type = $('#fee_type').val();
+
+            var loadIndex = layer.load(1, {
+                shade: [0.1, '#fff'] //0.1透明度的白色背景
+            });
+
+            var url = "{%:url('Dzgl/import')%}?upload_id=" + upload_id + "&sheet_name=" + $('#sheet_name').val() + "&fee_type=" + fee_type;
+            $.ajax({
+                url: url,
+                dataType: 'json',
+                data: zd_data,
+                async: true,
+                type: 'POST',
+                success: function (ret) {
+                    layer.close(loadIndex);
+                    layer.alert(ret.msg);
+                    if (ret.code) {
+                        if (ret.data.data_err_cnt > 0) {
+                            $('#down_err_btn').show();
+                        }
+                        $('#import_ok_cnt_label').html(ret.data.data_ok_cnt);
+                        $('#import_err_cnt_label').html(ret.data.data_err_cnt);
+                        var op_table = $('#dispatch_block table tbody');
+                        var errdata = ret.data.data_errmsg;
+                        for (var i in errdata) {
+                            var v = errdata[i];
+                            var td_arr = new Array();
+                            td_arr.push('<td>' + v['dz_code'] + '</td>');
+                            td_arr.push('<td>' + v['real_name'] + '</td>');
+                            td_arr.push('<td>' + v['status'] + '</td>');
+                            td_arr.push('<td>' + v['msg'] + '</td>');
+                            op_table.append('<tr>' + td_arr.join('') + '</tr>');
+                            this_obj.value = '已导入';
+                            this_obj.onclick = function () {
+                            };
+                        }
+                    }
+                    else {
+                        $('#field_map_block').show();
+                        $('#preview_fieldset').show();
+                        $('#dispatch_block').hide();
+                        $('#import_op_tr').show();
+                        $('#import_info_tr').hide();
+                    }
+                }
+            });
+        });
+
+        $('#import_show_tr').show();
+    }
+
+    //添加数据
+    function addData(trObj) {
+        var data = getRowData(trObj);
+        data = parseData(data);
+        var post_data = {};
+        for (var i in data) {
+            post_data[i] = data[i];
+        }
+        var op_table = $('#dispatch_block table tbody');
+        var td_arr = new Array();
+        td_arr.push('<td>' + data['dz_code'] + '</td>');
+        td_arr.push('<td>' + data['real_name'] + '</td>');
+        var url = "{%:url('Dzgl/add')%}";
+        $.ajax({
+            url: url,
+            data: post_data,
+            dataType: 'json',
+            async: false,
+            type: 'POST',
+            success: function (ret) {
+                td_arr.push('<td>' + (ret.code ? '成功' : '失败') + '</td>');
+                td_arr.push('<td>' + ret.msg + '</td>');
+                op_table.append('<tr>' + td_arr.join('') + '</tr>');
+                $('#catalog_form').dequeue('adddata_list');
+
+                if (ret.code) {
+                    import_ok_cnt++;
+                    $('#import_ok_cnt_label').html(import_ok_cnt);
+                } else {
+                    import_err_cnt++;
+                    $('#import_err_cnt_label').html(import_err_cnt);
+                }
+            }
+        });
+    }
+
+    //获取字段映射
+    function getZdmap() {
+        var zdmap = new Array();
+        $('#fields_table tbody td[zd]').each(function (index, element) {
+            var zd = $(this).attr('zd');
+            var zd_arr_ext = new Array('dz_code', 'dz_type_code', 'dz_status', 'real_name');
+
+            if (zd == 'dz_code' || zd == 'real_name') {
+                var field_map = $(this).find('select.field_select option:checked').attr('map');
+                var field_val = '';
+                var input_val = $(this).find('select.field_select').val();
+                if (input_val != '') {
+                    var map_item = new Array();
+                    map_item['is_zd'] = 1;
+                    map_item['zd_val'] = input_val;
+                    map_item['zd_map'] = field_map;
+                    map_item['zd'] = zd;
+                    zdmap.push(map_item);
+                }
+            } else if (zd == 'dz_type_code' || zd == 'dz_status') {
+                var field_map = '';
+                var field_val = '';
+                var input_val = $(this).find('#' + zd).val();
+                if (input_val != '') {
+                    var map_item = new Array();
+                    map_item['is_zd'] = 0;
+                    map_item['zd_val'] = input_val;
+                    map_item['zd_map'] = field_map;
+                    map_item['zd'] = zd;
+                    zdmap.push(map_item);
+                }
+            } else {
+                var field_map = $(this).find('select.field_select option:checked').attr('map');
+
+                var field_val = $(this).find('select.field_select option:checked').val();
+                var input_val = $(this).find('select.field_select').SelectExpandCmd('getInputValue');
+                if (input_val != '') {
+                    var map_item = new Array();
+                    map_item['is_zd'] = input_val == field_val ? 1 : 0;
+                    map_item['zd_val'] = input_val;
+                    map_item['zd_map'] = field_map ? field_map : '';
+                    map_item['zd'] = zd;
+                    zdmap.push(map_item);
+                }
+            }
+
+        });
+
+        return zdmap;
+    }
+
+    //根据select对象获取一行的对象
+    function getRowData(tr_obj) {
+        var data = new Array();
+        tr_obj.find('td').each(function (index, element) {
+            data[$(this).attr('k')] = $(this).html();
+        });
+        return data;
+    }
+
+    //解析一条数据
+    function parseData(data) {
+        var re_data = new Array();
+        if (zd_map_list != null) {
+            for (var i in zd_map_list) {
+                var map = zd_map_list[i];
+                val = map['is_zd'] == 1 ? data[map['zd_map']] : map['zd_val'];
+                re_data[map['zd']] = val;
+            }
+        }
+        return re_data;
+    }
+
+    //显示当前预览的数据
+    function previewShow() {
+        zd_map_list = getZdmap();
+        var data = getRowData($("#data_list_table tr.data_select[pos='" + curr_pos + "']"));
+
+        data = parseData(data);
+        for (var i in data) {
+            $("#preview_table tbody tr td[zd='" + i + "']").html(data[i]);
+        }
+        $('#curr_cnt_elem').html(curr_pos);
+    }
+
+    function next_preview() {
+        if (curr_pos >= data_cnt) {
+            return false;
+        }
+        if (curr_pos + 1 == data_cnt) {
+            $('#next_btn').attr('disabled', 'disabled');
+        }
+        if ($('#back_btn').attr('disabled') == 'disabled') {
+            $('#back_btn').removeAttr('disabled');
+        }
+        curr_pos++;
+        previewShow();
+    }
+
+    function back_preview() {
+        if (curr_pos <= 1) {
+            return false;
+        }
+        if (curr_pos == 2) {
+            $('#back_btn').attr('disabled', 'disabled');
+        }
+        if ($('#next_btn').attr('disabled') == 'disabled') {
+            $('#next_btn').removeAttr('disabled');
+        }
+        curr_pos--;
+        previewShow();
+    }
+
+    function toggle_ext_tr(this_obj) {
+        this_obj.value = this_obj.value == '显示全部字段' ? '隐藏部分字段' : '显示全部字段';
+        $('.ext_tr').toggle();
+    }
+
+    function down_file(upload_id) {
+        layer.confirm('确认下载错误信息文件吗?下载后将会从服务端删除!', {icon: 0}, function () {
+            $('#down_err_btn').hide();
+            var url = "{%:url('Dzgl/downerrfile')%}?upload_id=" + upload_id;
+            location.href = url;
+        });
+    }
+
+    function up_dz_type_about() {
+        var dz_type_code = $('#dz_type_code').val();
+        var url = "{%:url('Dzgl/get_dz_type_about')%}?dz_type_code=" + dz_type_code;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            async: false,
+            type: 'POST',
+            success: function (ret) {
+                if (ret.code) {
+                    $('#dz_type_about').html(ret.msg);
+                }
+            }
+        });
+    }
+</script>
+<style type='text/css'>
+    .formtable {
+        width: 800px;
+        margin: 0 auto;
+        margin-top: 10px;
+    }
+
+    #content fieldset {
+        margin-top: 10px;
+    }
+
+    #content {
+        width: 800px;
+    }
+
+    fieldset {
+        border: 0;
+        border-top: 1px dashed #D8D8DA;
+    }
+
+    #fields_table td, #fields_table th, #preview_table th, #preview_table td {
+        border: 1px solid #d8d8da;
+    }
+
+    #op_info_div table td, #op_info_div table th {
+        border: 1px solid #d8d8da;
+    }
+
+    .formtable table tr {
+        line-height: 24px;
+    }
+
+    .field_select {
+        width: 166px;
+    }
+
+    .ui-tabs .ui-tabs-panel {
+        padding: 2px;
+    }
+
+    #tabs-2, #op_info_div {
+        width: 790px;
+        height: 420px;
+        overflow: auto;
+    }
+
+    #import_info_tr {
+        display: none;
+    }
+</style>
+
+<?php
+echo "
+<div class='CurrentSite'>
+<img id='curlocal_logo' width='16' height='16' alt='weblib' src='__static__/img/StartLogo.png'/>
+<img class='SeparatorIcon' src='__static__/img/SeparatorIcon.gif'/>";
+
+if (is_array($_curlocal)) {
+$i = 0;
+$__LIST__ = $_curlocal;
+
+if (count($__LIST__) == 0) {
+echo "";
+} else {
+foreach ($__LIST__ as $key => $lnk) {
+$mod = $i % 2;
+++$i;
+
+if ($lnk["url"] != "") {
+echo "<a href='";
+                    echo $lnk["url"];
+                    echo "'>";
+    echo $lnk["text"];
+    echo "</a>
+";
+} else {
+echo " <span class='curlocal_item ";
+
+                    if ($i == count($_curlocal)) {
+                        echo "last_curlocal";
+                    }
+
+                    echo "'>";
+                    echo $lnk["text"];
+                    echo "</span>";
+}
+
+echo " ";
+
+if ($i < count($_curlocal)) {
+echo "<img class='SeparatorIcon' src='__static__/img/SeparatorIcon.gif'/>";
+}
+}
+}
+} else {
+echo "";
+}
+
+echo "</div>
+
+
+<div class='formtable'>
+    <div id='content'>
+        <select name='field_select' id='field_select' class='field_select' style='display:none;'>
+            <option value=''></option>
+            ";
+
+            if (is_array($data_head)) {
+            $i = 0;
+            $__LIST__ = $data_head;
+
+            if (count($__LIST__) == 0) {
+            echo "";
+            } else {
+            foreach ($__LIST__ as $key => $item) {
+            $mod = $i % 2;
+            ++$i;
+            echo "
+            <option value='";
+                echo $item;
+                echo "' map='";
+                echo $key;
+                echo "'>";
+                echo $item;
+                echo "
+            </option>
+            ";
+            }
+            }
+            } else {
+            echo "";
+            }
+
+            echo " </select>
+        <div id='tabs' class='ui-tabs ui-widget ui-widget-content ui-corner-all'>
+            <ul class='ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all'>
+                <li class='ui-state-default ui-corner-top ui-tabs-selected ui-state-active'><a href='#tabs-1'>读者数据导入</a>
+                </li>
+                <li class='ui-state-default ui-corner-top'><a href='#tabs-2'>Excel表格数据浏览</a></li>
+            </ul>
+            <div id='tabs-1'>
+                <form method='post' name='catalog_form' id='catalog_form'>
+                    <table width='100%' cellspacing='0' cellpadding='0' class='lib_table'>
+                        <tbody>
+                        <tr id='import_op_tr'>
+                            <td align='left'>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <label>选择工作表:</label><select name='sheet_name' id='sheet_name' style='width:100px;'>
+                                ";
+
+                                if (is_array($sheet_list)) {
+                                $i = 0;
+                                $__LIST__ = $sheet_list;
+
+                                if (count($__LIST__) == 0) {
+                                echo "";
+                                } else {
+                                foreach ($__LIST__ as $key => $item) {
+                                $mod = $i % 2;
+                                ++$i;
+                                echo "
+                                <option
+                                ";
+
+                                if ($_GET["sheet_name"] == $item) {
+                                echo "selected='selected'";
+                                }
+
+                                echo " value='";
+                                echo $item;
+                                echo "'>";
+                                echo $item;
+                                echo "</option>";
+                                }
+                                }
+                                } else {
+                                echo "";
+                                }
+
+                                echo "</select>
+                                <label>财务信息收费状态:</label><select name='fee_type' id='fee_type' style='width:80px;'>
+                                ";
+
+                                if (is_array($fee_type_list)) {
+                                $i = 0;
+                                $__LIST__ = $fee_type_list;
+
+                                if (count($__LIST__) == 0) {
+                                echo "";
+                                } else {
+                                foreach ($__LIST__ as $key => $item) {
+                                $mod = $i % 2;
+                                ++$i;
+                                echo "
+                                <option
+                                ";
+
+                                if ($finance_info["fee_type"] == $key) {
+                                echo "selected='selected'";
+                                }
+
+                                echo " value='";
+                                echo $key;
+                                echo "'>";
+                                echo $item;
+                                echo "</option>";
+                                }
+                                }
+                                } else {
+                                echo "";
+                                }
+
+                                echo "</select>
+                                <input name='button' class='btn_1' onclick='submit_form(this)' type='button'
+                                       value='开始导入'/>
+                            </td>
+                        </tr>
+                        <tr id='import_info_tr'>
+                            <td align='center'>
+                                <input name='button' style='width:100px; display:none;' id='down_err_btn' class='btn_1'
+                                       onclick='down_file(";
+                                       echo input(' upload_id/d');
+                                echo ")' type='button' value='导出错误数据'/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <fieldset id='field_map_block'>
+                        <legend align='center'>选择字段对应</legend>
+                        <table width='100%' cellspacing='0' cellpadding='0' class='lib_table' id='fields_table'>
+                            <thead>
+                            <tr>
+                                <th width='100'>数据库字段</th>
+                                <th width='166'>Excel表字段</th>
+                                <th width='100'>数据库字段</th>
+                                <th width='166'>Excel表字段</th>
+                                <th width='100'>数据库字段</th>
+                                <th width='166'>Excel表字段</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th align='right'><span class='red'>*</span>";
+                                    echo l("dz_code");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='dz_code'>&nbsp;</td>
+                                <th align='right'><span class='red'>*</span>";
+                                    echo l("dz_type_code");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='dz_type_code'><select name='dz_type_code' id='dz_type_code'
+                                                                               style='width:166px;'>
+                                    ";
+
+                                    if (is_array($dz_type_list)) {
+                                    $i = 0;
+                                    $__LIST__ = $dz_type_list;
+
+                                    if (count($__LIST__) == 0) {
+                                    echo "";
+                                    } else {
+                                    foreach ($__LIST__ as $key => $item) {
+                                    $mod = $i % 2;
+                                    ++$i;
+                                    echo "
+                                    <option value='";
+                echo $item["dz_type_code"];
+                echo "'>";
+                                        echo $item["dz_type_code"];
+                                        echo "|";
+                                        echo $item["dz_type_name"];
+                                        echo "
+                                    </option>
+                                    ";
+                                    }
+                                    }
+                                    } else {
+                                    echo "";
+                                    }
+
+                                    echo " </select></td>
+                                <th align='right'><span class='red'>*</span>";
+                                    echo l("dz_status");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='dz_status'><select name='dz_status' id='dz_status'
+                                                                            style='width:166px;'>
+                                    ";
+
+                                    if (is_array($dz_status_list)) {
+                                    $i = 0;
+                                    $__LIST__ = $dz_status_list;
+
+                                    if (count($__LIST__) == 0) {
+                                    echo "";
+                                    } else {
+                                    foreach ($__LIST__ as $key => $item) {
+                                    $mod = $i % 2;
+                                    ++$i;
+                                    echo "
+                                    <option value='";
+                echo $item;
+                echo "'>";
+                                        echo $item;
+                                        echo "
+                                    </option>
+                                    ";
+                                    }
+                                    }
+                                    } else {
+                                    echo "";
+                                    }
+
+                                    echo " </select></td>
+                            </tr>
+                            <tr>
+                                <th align='right'><span class='red'>*</span>";
+                                    echo l("real_name");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='real_name'>&nbsp;</td>
+                                <th align='right'><span class='red'>*</span>";
+                                    echo l("beg_time");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='beg_time'>&nbsp;</td>
+                                <th align='right'><span class='red'>*</span>";
+                                    echo l("end_time");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='end_time'>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <th align='right'>";
+                                    echo l("pwd");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='pwd'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("unit_name");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='unit_name'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("email");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='email'>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <th align='right'>";
+                                    echo l("dz_add_time");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='dz_add_time'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("phone_mob");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='phone_mob'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("phone_tel");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='phone_tel'>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <th align='right'>";
+                                    echo l("cred_type");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='cred_type'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("cred_num");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='cred_num'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("gender");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='gender'>&nbsp;</td>
+                            </tr>
+                            <tr class='ext_tr'>
+                                <th align='right'>";
+                                    echo l("reser_num");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='reser_num'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("zip_code");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='zip_code'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("address");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='address'>&nbsp;</td>
+                            </tr>
+                            <tr class='ext_tr'>
+                                <th align='right'>";
+                                    echo l("lend_num");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='lend_num'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("birthday");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='birthday'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("integral");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='integral'>&nbsp;</td>
+                            </tr>
+                            <tr class='ext_tr'>
+
+                                <th align='right'>";
+                                    echo l("renew_num");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='renew_num'>&nbsp;</td>
+                                <th align='right'>";
+                                    echo l("remark");
+                                    echo "：
+                                </th>
+                                <td class='field_td' zd='remark'>&nbsp;</td>
+                                <td colspan='2'>&nbsp;</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </fieldset>
+                    <div class='msg' id='dz_type_about'></div>
+                    <div style='text-align: center;'><input name='button' style='width:100px;' class='btn_1'
+                                                            onclick='toggle_ext_tr(this)' type='button' value='显示全部字段'/>
+                        <input name='button' class='btn_1' style='width:100px;' onclick='previewShow()' type='button'
+                               value='预览数据'/>
+                        <input name='btn' id='back_btn' style='width:100px;' type='button' class='btn_1'
+                               disabled='disabled' value='预览上条数据' onclick='back_preview()'/>
+                        <input name='btn' id='next_btn' style='width:100px;' type='button' class='btn_1' value='预览下条数据'
+                               onclick='next_preview()'/></div>
+                    <div id='preview_block'>
+                        <fieldset id='preview_fieldset'>
+                            <legend align='center'>总计(";
+                                echo $data_sum;
+                                echo ")条数据,预览前(<label id='all_data_cnt'>";
+                                    echo count($data_list);
+                                    echo "</label>)条数据,当前预览第(
+                                <label id='curr_cnt_elem'>1</label>
+                                )条数据
+                            </legend>
+                            <table width='100%' cellpadding='0' cellspacing='0' class='lib_table' id='preview_table'>
+                                <tbody>
+                                <tr>
+                                    <th width='98' align='right'><span class='red'>*</span>";
+                                        echo l("dz_code");
+                                        echo "：
+                                    </th>
+                                    <td width='166' class='field_td' zd='dz_code'>&nbsp;</td>
+                                    <th width='100' align='right'><span class='red'>*</span>";
+                                        echo l("dz_type_code");
+                                        echo "：
+                                    </th>
+                                    <td width='166' class='field_td' zd='dz_type_code'>&nbsp;</td>
+                                    <th width='100' align='right'><span class='red'>*</span>";
+                                        echo l("dz_status");
+                                        echo "：
+                                    </th>
+                                    <td width='166' class='field_td' zd='dz_status'>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <th align='right'><span class='red'>*</span>";
+                                        echo l("real_name");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='real_name'>&nbsp;</td>
+                                    <th align='right'><span class='red'>*</span>";
+                                        echo l("beg_time");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='beg_time'>&nbsp;</td>
+                                    <th align='right'><span class='red'>*</span>";
+                                        echo l("end_time");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='end_time'>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <th align='right'>";
+                                        echo l("pwd");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='pwd'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("unit_name");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='unit_name'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("email");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='email'>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <th align='right'>";
+                                        echo l("dz_add_time");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='dz_add_time'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("phone_mob");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='phone_mob'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("phone_tel");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='phone_tel'>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <th align='right'>";
+                                        echo l("cred_type");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='cred_type'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("cred_num");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='cred_num'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("gender");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='gender'>&nbsp;</td>
+                                </tr>
+                                <tr class='ext_tr'>
+                                    <th align='right'>";
+                                        echo l("reser_num");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='reser_num'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("zip_code");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='zip_code'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("address");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='address'>&nbsp;</td>
+                                </tr>
+                                <tr class='ext_tr'>
+                                    <th align='right'>";
+                                        echo l("lend_num");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='lend_num'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("birthday");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='birthday'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("integral");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='integral'>&nbsp;</td>
+                                </tr>
+                                <tr class='ext_tr'>
+                                    <th align='right'>";
+                                        echo l("renew_num");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='renew_num'>&nbsp;</td>
+                                    <th align='right'>";
+                                        echo l("remark");
+                                        echo "：
+                                    </th>
+                                    <td class='field_td' zd='remark'>&nbsp;</td>
+                                    <td colspan='2'>&nbsp;</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </fieldset>
+                        <fieldset id='dispatch_block' style='display:none;'>
+                            <legend align='center'>处理结果,数据总数量(<label id='import_all_cnt_label'>0</label>),导入成功数量(
+                                <label id='import_ok_cnt_label'>0</label>
+                                ),导入失败数量(
+                                <label id='import_err_cnt_label'>0</label>
+                                )
+                            </legend>
+                            <div id='op_info_div'>
+                                <table width='100%' cellspacing='0' cellpadding='0' class='lib_table'>
+                                    <thead>
+                                    <tr>
+                                        <th width='150'>读者证号</th>
+                                        <th width='100'>读者姓名</th>
+                                        <th width='65'>处理状态</th>
+                                        <th width='485'>处理提示</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </div>
+                </form>
+            </div>
+            <div id='tabs-2'>
+                <div id='datalist_view'>
+                    <fieldset>
+                        <legend>总计(";
+                            echo $data_sum;
+                            echo ")条数据,预览前(<label id='all_data_cnt'>";
+                                echo count($data_list);
+                                echo "</label>)条数据
+                        </legend>
+                        <table width='";
+
+    if (0 < count($data_list)) {
+        echo count($data_head) * 150;
+    } else {
+        echo "100%";
+    }
+
+    echo "' cellspacing='0' cellpadding='0' class='lib_table' id='fields_table'>
+                            ";
+
+                            if ($data_list) {
+                            echo "
+                            <thead>
+                            <tr>
+                                ";
+
+                                if (is_array($data_head)) {
+                                $i = 0;
+                                $__LIST__ = $data_head;
+
+                                if (count($__LIST__) == 0) {
+                                echo "";
+                                } else {
+                                foreach ($__LIST__ as $key => $item) {
+                                $mod = $i % 2;
+                                ++$i;
+                                echo "
+                                <th width='150'>";
+                                    echo $item;
+                                    echo "
+                                </th>
+                                ";
+                                }
+                                }
+                                } else {
+                                echo "";
+                                }
+
+                                echo "
+                            </tr>
+                            </thead>
+                            <tbody id='data_list_table'>
+
+                            ";
+
+                            if (is_array($data_list)) {
+                            $i = 0;
+                            $__LIST__ = $data_list;
+
+                            if (count($__LIST__) == 0) {
+                            echo "";
+                            } else {
+                            foreach ($__LIST__ as $key => $data_item) {
+                            $mod = $i % 2;
+                            ++$i;
+                            echo "
+                            <tr pos='";
+                    echo $key + 1;
+                    echo "' class='data_select'>
+                                ";
+
+                                if (is_array($data_item)) {
+                                $i = 0;
+                                $__LIST__ = $data_item;
+
+                                if (count($__LIST__) == 0) {
+                                echo "";
+                                } else {
+                                foreach ($__LIST__ as $key => $item) {
+                                $mod = $i % 2;
+                                ++$i;
+                                echo "
+                                <td k='";
+                                echo $key;
+                                echo "'>";
+                                    echo $item;
+                                    echo "
+                                </td>
+                                ";
+                                }
+                                }
+                                } else {
+                                echo "";
+                                }
+
+                                echo "
+                            </tr>
+                            ";
+                            }
+                            }
+                            } else {
+                            echo "";
+                            }
+
+                            echo "
+                            </tbody>
+                            ";
+                            } else {
+                            echo "
+                            <tr>
+                                <td align='center'>";
+                                    echo l("no_record");
+                                    echo "
+                                </td>
+                            </tr>
+                            ";
+                            }
+
+                            echo "
+                        </table>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>";
+
+?>

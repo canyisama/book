@@ -1,0 +1,212 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>{%$report_info.report_name%}</h5>
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal m-t" method="post"
+                      action="{%:url('Report/preview',['report_id'=>input('report_id')]);%}">
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">所属分馆：</label>
+                                <div class="col-sm-10">
+                                        <select name="tsg_code" class="form-control">
+                                            <option value="">所有分馆</option>
+                                            {%volist name='tsg_list' id='value'%}
+                                            <option value="{%$key%}">{%$value%}</option>
+                                            {%/volist%}
+                                        </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2  control-label">统计方式：</label>
+                                <div class="col-sm-4">
+                                <select class="form-control" name="tj_type">
+                                    <option value="clc">= 按分类号统计 =</option>
+                                    <option value="tsg_site_code">= 按馆藏地址统计 =</option>
+                                    <option value="ltype_code">= 按流通类型统计 =</option>
+                                    <option value="dz_type_code">= 按读者类型统计 =</option>
+                                    <option value="unit_name">= 按读者单位统计 =</option>
+                                    <option value="lend_status">= 按借阅状态统计 =</option>
+                                </select>
+                                </div>
+
+                                <label class="col-sm-2  control-label">读者证号：</label>
+                                <div class="col-sm-2">
+                                    <input name="dz_code_beg" class="form-control" placeholder="开始"/>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input name="dz_code_end" class="form-control" placeholder="结束"/>
+                                </div>
+
+
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2   control-label">图书条码：</label>
+                                <div class="col-sm-2">
+                                    <input name="barcode_beg" class="form-control" placeholder="开始"/>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input name="barcode_end" class="form-control" placeholder="结束"/>
+                                </div>
+
+                                <label class="col-sm-2  control-label">借出时间：</label>
+                                <div class="col-sm-2">
+                                    <input name="add_time_beg"  class="form-control time" placeholder="开始"/>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input name="add_time_end"  class="form-control time" placeholder="结束"/>
+                                </div>
+
+
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2   control-label">应还时间：</label>
+                                <div class="col-sm-2">
+                                    <input name="must_time_beg"  class="form-control time" placeholder="开始"/>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input name="must_time_end"  class="form-control time" placeholder="结束"/>
+                                </div>
+
+                                <label class="col-sm-2  control-label">归还时间：</label>
+                                <div class="col-sm-2">
+                                    <input name="end_time_beg" class="form-control time" placeholder="开始"/>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input name="end_time_end" class="form-control time" placeholder="结束"/>
+                                </div>
+
+
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">馆藏地址：</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control" multiple name="tsg_site_code[]" size="5">
+                                        <option value="">= 所有馆藏地址 =</option>
+                                        {%volist name="tsg_site_list" id="vo"%}
+                                        <option value="{%$vo.tsg_site_code%}">{%$vo.site_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                                <label class="col-sm-2 control-label">流通类型：</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control" multiple name="ltype_code[]" size="5">
+                                        <option value="">= 所有流通类型 =</option>
+                                        {%volist name="ltype_list" id="vo"%}
+                                        <option value="{%$vo.ltype_code%}">{%$vo.ltype_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">读者类型：</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control" multiple name="dz_type_code[]" size="5">
+                                        <option value="">= 所有读者类型 =</option>
+                                        {%volist name="dz_type_list" id="vo"%}
+                                        <option value="{%$vo.dz_type_code%}">{%$vo.dz_type_code%}|{%$vo.dz_type_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+
+                                <label class="col-sm-2 control-label">读者单位：</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control" multiple name="unit_name[]" size="5">
+                                        <option value="">= 所有读者单位 =</option>
+                                        {%volist name="unit_name_list" id="vo"%}
+                                        <option value="{%$vo.unit_name%}">{%$vo.unit_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">借阅状态：</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control" multiple name="lend_status[]" size="5">
+                                        <option value="">= 全部状态 =</option>
+                                        {%volist name="lend_status_list" id="vo"%}
+                                        <option value="{%$key%}">{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                                <label class="col-sm-2 control-label">操作人：</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control" multiple name="op_user[]" size="5">
+                                        <option value="">= 全部状态 =</option>
+                                        {%volist name="user_list" id="vo"%}
+                                        <option value="{%$vo.user_name%}">{%$vo.user_name%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">排序方式：</label>
+                                <div class="col-md-2">
+                                    <select class="form-control" name="order_type">
+                                        <option value="">= 排序列 =</option>
+                                        {%volist name="order_list" id="order"%}
+                                        <option value="{%$key%}">{%$order%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-control" name="order_seq">
+                                        <option value="">= 排序 =</option>
+                                        <option value="asc">升序</option>
+                                        <option value="desc">降序</option>
+                                    </select>
+                                </div>
+
+                                <label class="col-sm-2 control-label">报表格式：</label>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="report_gs_id">
+                                        {%volist name="report_gs_list" id="gs"%}
+                                        <option value="{%$gs.report_gs_id%}">{%$gs.gs_name%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                                <div class="col-md-1">
+                                    <button class="btn btn-primary"><i class="fa fa-cog"></i> 设置</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-6 control-label"> </label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <button class="btn btn-primary"><i class="fa fa-eye"></i> 报表预览</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    lay('.time').each(function(){
+        laydate.render({
+            elem: this
+            ,trigger: 'click'
+        });
+    });
+
+
+</script>
+</body>

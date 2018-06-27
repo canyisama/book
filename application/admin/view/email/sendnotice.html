@@ -1,0 +1,205 @@
+{%include file='public/header_form' %}
+
+<div class="">
+    <form class="form-horizontal m-sm" id="postForm" method="post">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">通知类型:</label>
+                <div class="col-sm-5">
+                    <p class="form-control-static">{%$notice_type_list[input('tpl_type')]%}</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">选择通知方式:</label>
+                <div class="col-sm-5">
+                    <div class="checkbox">
+                        <div class="col-sm-6">
+                            <label>
+                                <input type="checkbox"  checked name="tz_type" value="1"/>
+                                邮件通知</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <label>
+                                <input type="checkbox"  checked name="tz_type" value="2"/>
+                               短信通知</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-primary" type="submit" id="btnSubmit" disabled="disabled">发送通知</button>
+                    <button class="btn btn-danger" id="btnCan">返回</button>
+                </div>
+            </div>
+            <div id="content">
+            <hr>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{%:l('to_name')%}:</label>
+                    <div class="col-sm-6">
+                        <input id="to_name" name="to_name" class="form-control input-sm" type="text"
+                               placeholder="请输入收件人" value="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{%:l('to_email')%}:</label>
+                    <div class="col-sm-6">
+                        <input id="to_email" name="to_email" class="form-control input-sm" type="text"
+                                value="">
+                    </div>
+                    <div class="col-sm-2">
+                        <span style="color: red;font-size: large">*</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{%:l('subject')%}:</label>
+                    <div class="col-sm-6">
+                        <input id="subject" name="subject" class="form-control input-sm" type="text"
+                               placeholder="请输入邮件标题" value="">
+                    </div>
+                    <div class="col-sm-2">
+                        <span style="color: red;font-size: large">*</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{%:l('email_body')%}:</label>
+                    <div class="col-sm-6">
+                        <textarea id="email_body" name="email_body" class="form-control input-sm" style="height: 100px" ></textarea>
+                    </div>
+                    <div class="col-sm-2">
+                        <span style="color: red;font-size: large">*</span>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <div id="sendResult" style="display: none">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">邮件发送结果:</label>
+                    <div class="col-sm-5">
+                        <p class="form-control-static" id="msg"></p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+
+    var tpl_tpye = "{%:input('tpl_type')%}";
+    var pkey_id = "{%:input('pkey_id/d')%}";
+
+    $(function () {
+
+        if(!pkey_id){
+            layer.alert('通知信息错误',{icon:2},function () {
+                parent.layer.closeAll();
+                return false;
+            })
+        }
+
+        var url = "{%:url('Reser/getinfo')%}";
+        if (tpl_tpye == 2){
+            url = "{%:url('Lend/getinfo')%}";
+        }
+        $.get(url,{pkey_id:pkey_id},function (res) {
+                if (res.code == 1){
+                    if (!res.data.email){
+                        layer.alert('读者邮箱不存在',{icon:2},function () {
+                            parent.layer.closeAll();
+                        })
+                        return false;
+                    }
+                    $('#to_name').val(res.data.real_name);
+                    $('#to_email').val(res.data.email);
+                    $('#to_email').attr('readonly',true);
+                    $.get("{%:url('Email/loadtpl')%}",{email_tpl_id:"{%$email_tpl_id%}",data:res.data},function (result) {
+                        if (result.code == 1){
+                            $('#subject').val(result.data.tpl_subject);
+                            $('#email_body').val(result.data.tpl_body);
+                            $('#btnSubmit').removeAttr('disabled');
+                        }else{
+                            layer.alert(result.msg,{icon:2});
+                        }
+                    },'json');
+                }
+        });
+
+        // $('#btnSubmit').click(function () {
+        //     var tz_type = [];
+        //     $('input[name="tz_type"]:checked').each(function (index,element) {
+        //         tz_type.push($(this).val());
+        //     });
+        //
+        //     for (var i=0;i<tz_type.length;i++){
+        //         if (tz_type[i] == 1){
+        //
+        //         }
+        //     }
+        // });
+
+        $("#postForm").validate({
+            rules: {
+                to_email: {
+                    email: true,
+                    required: true,
+                },
+                subject: {
+                    required: true,
+                },
+                email_body: {
+                    required: true,
+                }
+            },
+            messages: {
+                to_email: {
+                    email: "不是有效的邮箱格式",
+                    required: "请输入收件人Email"
+                },
+                subject: {
+                    required: "请输入邮件标题",
+                },
+                email_body: {
+                    required: "请输入邮件内容",
+                }
+            }
+        });
+
+
+
+        // 取消关闭弹出层
+        $("#btnCan").click(function () {
+            parent.location.reload();
+            return false;
+        });
+
+
+    });
+
+    function getFormExtend() {
+
+        if(!$('input[name=tz_type]:checked').val()){
+            layer.msg('必须先选择通知类型');
+            return false;
+        }
+        return true;
+    }
+
+
+    function getFormOptions() {
+        var url = "{%:url('Email/sendmail')%}";
+        if (!!tpl_tpye && tpl_tpye == 1){
+            url = "{%:url('Email/sendmail')%}?reser_id="+pkey_id;
+        }
+        var options = {
+            url:url,
+            success: function (result) {
+                $('#content').hide();
+                $('#sendResult').show();
+                $('#msg').text(result.msg);
+                $('#btnSubmit').text('已发送');
+                $('#btnSubmit').attr('disabled',true);
+            }
+        };
+        return options;
+    }
+</script>

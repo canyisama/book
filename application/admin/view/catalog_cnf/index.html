@@ -1,0 +1,127 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="tsg_code" type="text"
+                                               placeholder="分馆代码">
+                                        <input class="form-control input-outline" id="cnf_val" type="text"
+                                               placeholder="值">
+                                        <input class="form-control input-outline" id="cnf_type" type="text"
+                                               placeholder="类型">
+                                        <!--<select class="form-control" id="cnf_type">-->
+                                            <!--<option value="">= 类型 =</option>-->
+                                            <!--{%volist name='type_list' id='vo'%}-->
+                                            <!--<option value="{%$vo%}">{%$vo%}</option>-->
+                                            <!--{%/volist%}-->
+                                        <!--</select>-->
+
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="tsg_code" data-sortable="true">分馆代码</th>
+                                    <th data-field="cnf_type" data-sortable="true">类型</th>
+                                    <th data-field="cnf_val" data-sortable="true">值</th>
+                                    <th data-field="remark" data-sortable="true">备注</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('CatalogCnf/getJsonList')%}",
+            sortName: 'jdbm_cnf_id',
+            sortOrder: "asc",
+//            clickToSelect: false
+            clickToSelect: true
+        });
+
+
+    });
+
+    function toEdit(jdbm_cnf_id) {
+        var url = "{%:url('CatalogCnf/add');%}";
+        if (jdbm_cnf_id)
+            url = "{%:url('CatalogCnf/edit');%}?jdbm_cnf_id=" + jdbm_cnf_id;
+
+        myOpen({
+            type: 2,
+            title: jdbm_cnf_id ? "编辑数据" : "添加数据",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+
+    function delData(id) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('CatalogCnf/drop')%}",{
+                jdbm_cnf_id : id
+            },function (result) {
+                myConfirm(result.msg,result.code,function () {
+                    if (result.code == 1){
+                        location.reload();
+                    }
+                },function () {
+
+                },['确定']);
+            })
+        });
+    }
+
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\''+row.jdbm_cnf_id+'\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.jdbm_cnf_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+
+    }
+
+</script>
+
+</body>
+</html>

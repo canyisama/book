@@ -1,0 +1,105 @@
+{%extend name='public/header' /%}
+
+{%block name='head'%}
+{__block__}
+<link href="__static__/css/login.min.css?v" rel="stylesheet">
+{%/block%}
+
+
+{%block name='content'%}
+<!--<div class="wrapper wrapper-content">-->
+    <div class="container signin" style="height: 93vh;width: 100%;">
+            <div class="signinpanel">
+                <div class="row loginBox">
+                    <div class="col-sm-5" style="margin-top: 15px">
+                        <form method="post" action="{%:url('login/index')%}" id="loginForm">
+                            <h1 class="no-margins">登录图书馆</h1>
+                            <p class="m-t-md"> </p>
+                            <input type="text" name="dz_code" id="dz_code" class="form-control uname" value="{%:input('dz_code')%}" placeholder="用户名" />
+                            <input type="password" name="pwd" id="pwd" class="form-control pword m-b" value="{%:input('pwd')%}" placeholder="密码" />
+
+                            <button type="submit" class="btn btn-success btn-block" id="login">登录</button>
+                            <button class="btn btn-success btn-block" type="button" id="ret">返回首页</button>
+                            <!-- 错误提示 -->
+                            <p id="outputP" class="text-center"  style="color: red;margin-top: 10px">{%$error%}</p>
+                        </form>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="signin-info">
+                            <div class="logopanel m-b">
+                                <h1> </h1>
+                            </div>
+                            <div class="m-b"></div>
+                            <h1> <strong>用户需知</strong></h1>
+                            <ul class="m-b" style="font-size: medium">
+                                <li ><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 用户名为读者证号，初始密码为办证时图书馆工作人员设置</li>
+                                <li ><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 必须持有读者证号才能登录</li>
+                                <li ><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 登录后可进行图书预约、预借、借阅信息查询等操作</li>
+                                <li ><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 如果只是一般图书查阅操作可以不用登录</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="signup-footer">
+                    <div class="pull-left">
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+<!--</div>-->
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+
+<script>
+    var dz_code = $('#dz_code'),
+        pwd = $('#pwd'),
+        outputP = $('#outputP');
+    setTimeout(function () {
+        dz_code.focus();
+        $('.loginBox').addClass('loginBox_norScale');
+    }, 900);
+    // 点击
+    $('#login').click(function () {
+        if (dz_code.val() == '') {
+            dz_code.focus();
+            outputP.addClass('am_jitter').html('请输入您的用户名！');
+            jitter(outputP);
+            return false;
+        }
+        else if (pwd.val() == '') {
+            pwd.focus();
+            pwd.addClass('am_jitter').html('请输入您的密码！');
+            jitter(outputP);
+            return false;
+        }
+    });
+    // // 失焦
+    dz_code.blur(function () {
+        if ($(this).val() != '') {
+            outputP.html('');
+        }
+    });
+    pwd.blur(function () {
+        if ($(this).val() != '') {
+            outputP.html('');
+        }
+    });
+
+    // // 抖动动画
+    function jitter(outputP) {
+        setTimeout(function () {
+            outputP.removeClass('am_jitter')
+        }, 300);
+    }
+
+    $('#ret').click(function () {
+        window.location.href = "{%:url('Index/index')%}";
+    })
+
+
+</script>
+{%/block%}

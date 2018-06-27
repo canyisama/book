@@ -1,0 +1,353 @@
+{%include file='public/header_form' %}
+<script src="__static__/js/bootstrap.min.js"></script>
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row m-b">
+        <div class="col-sm-12">
+            <form class="form-horizontal m-t" method="post" id="postForm">
+
+                <div class="row m-b">
+                    <label class="col-sm-3 control-label"></label>
+                    <div class="col-sm-8">
+                        <button class="btn btn-primary" type="submit" id="btnSubmit">保存参数</button>
+                        <button class="btn btn-danger" type="reset">重置</button>
+                    </div>
+                </div>
+
+                <div class="tabs-container">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true"> 全文检索索引配置</a>
+                        </li>
+                        <li><a data-toggle="tab" href="#tab-2" aria-expanded="false">OPAC网站配置</a></li>
+                        <li><a data-toggle="tab" href="#tab-3" aria-expanded="false">OPAC单点登录设置</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="tab-1" class="tab-pane active">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label"><span class="text-muted">*</span>
+                                            全文检索服务器IP</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="sphinx_host"
+                                                   required
+                                                   value="{%$sphinx_data.sphinx_host%}">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p class="form-control-static">默认IP为127.0.0.1</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label"><span class="text-muted">*</span>
+                                            全文检索服务器端口</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="sphinx_port"
+                                                   required
+                                                   value="{%$sphinx_data.sphinx_port%}">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p class="form-control-static">默认端口为9312</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label"><span class="text-muted">*</span>
+                                            全文检索服务路径</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="path" required
+                                                   value="{%$sphinx_data.sphinx_path%}">
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <p class="form-control-static">请输入完整软件安装路径</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label"><span class="text-muted">*</span>
+                                            全文检索服务检测间隔(秒)</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="check_time"
+                                                   required
+                                                   value="{%$sphinx_data.sphinx_check_time%}">
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <p class="form-control-static">根据设置的时间监测全文检索服务是否运行,如未运行则自动启动</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label"><span class="text-muted">*</span>
+                                            增量索引更新间隔(秒)</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="delta_time"
+                                                   required
+                                                   value="{%$sphinx_data.sphinx_delta_time%}">
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <p class="form-control-static">根据设置的时间间隔自动更新增量索引</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label"><span class="text-muted">*</span>
+                                            增量索引合并间隔(秒)</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="merge_time"
+                                                   required value="{%$sphinx_data.sphinx_merge_time%}">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p class="form-control-static">根据设置的时间间隔自动合并增量索引到主索引</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label"> 全文检索服务运行状态</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-static">{%$status_str%}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label"> 书目库数量</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-static">{%$cnt_list["book"]%}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label"> 主索引数量</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-static">{%$cnt_list["main"]%}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label"> 增量索引数量</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-static">{%$cnt_list["delta"]%}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3 m-b text-center">
+                                        <a class="btn btn-primary" onclick="init_index_func()">重建全文索引</a>
+                                        <p class="form-control-static">本操作将删除旧的索引文件，重新建立新索引；数据量大将需要更长时间。</p>
+                                    </div>
+                                    <div class="col-sm-3 m-b text-center">
+                                        <a class="btn btn-primary" onclick="delta_up_func()">更新增量索引</a>
+                                        <p class="form-control-static">本操作将更新新入库图书资料的索引，新书需要通过此操作才能查到。</p>
+                                    </div>
+                                    <div class="col-sm-3 m-b text-center">
+                                        <a class="btn btn-primary" onclick="start_sphinx()">启动全文检索服务</a>
+                                        <p class="form-control-static">全文检索未启动时需要使用本操手工启动。</p>
+                                    </div>
+                                    <div class="col-sm-3 m-b text-center">
+                                        <a class="btn btn-primary" onclick="repair_sphinx()">修复全文检索服务</a>
+                                        <p class="form-control-static">全文检索出现异常时，请使用本功能修复。</p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label">OPAC网站标题</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="web_title"
+                                                   value="{%$sphinx_data.web_title%}">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p class="form-control-static">OPAC全站的网页标题,如不设置则为授权单位名称+检索平</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label">OPAC首页标题</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="index_title"
+                                                   value="{%$sphinx_data.index_title%}">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p class="form-control-static">OPAC首页的标题,如不设置则为授权单位名称+检索平台</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-3" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label">单点登录开关</label>
+                                        <div class="col-sm-3">
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" name="cas_open" value="1" {%$sphinx_data.cas_open==1?'checked':''%}> 开启
+                                                </label>&nbsp;&nbsp;&nbsp;
+                                                <label>
+                                                    <input type="radio" name="cas_open" value="0" {%$sphinx_data.cas_open!=1?'checked':''%}> 关闭
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label">CAS版本</label>
+                                        <div class="col-sm-3">
+                                            <select class="form-control input-sm" name="cas_ver">
+                                                <option value="1.0" {%$sphinx_data.cas_ver=='1.0'?'selected':''%}>1.0</option>
+                                                <option value="2.0" {%$sphinx_data.cas_ver!='1.0'?'selected':''%}>2.0</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label">CAS服务器地址</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="cas_host"
+                                                   value="{%$sphinx_data.cas_host%}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label">CAS服务器端口</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="cas_port"
+                                                   value="{%$sphinx_data.cas_port%}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 m-b">
+                                        <label class="col-sm-3 control-label">CAS服务器URI</label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control input-outline input-sm" name="cas_uri"
+                                                   value="{%$sphinx_data.cas_uri%}">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+<script>
+    function init_index_func() {
+        if (confirm("是否重建全文索引?") == true) {
+            if (confirm("请确认,是否重建全文索引？") == true) {
+                showLoading();
+
+                var url = "{%:url('OpacCnf/init_index')%}";
+                $.ajax({
+                    url: url,
+                    dataType: "json",
+                    async: true,
+                    type: "POST",
+                    success: function (ret) {
+                        hideLoading();
+                        layer.msg(ret.msg);
+                        var tr_list = new Array();
+                        tr_list.push('<tr><td align="center">索引重建详情</td></tr>');
+                        tr_list.push('<tr><td align="left">主索引重建详情</td></tr>');
+                        for (var i in ret.data['main']) {
+                            tr_list.push('<tr><td align="left">' + ret.data['main'][i] + '</td></tr>');
+                        }
+                        tr_list.push('<tr><td align="left">增量索引重建详情</td></tr>');
+                        for (var i in ret.data['delta']) {
+                            tr_list.push('<tr><td align="left">' + ret.data['delta'][i] + '</td></tr>');
+                        }
+                        $("#task_info_div").html('<table class="task_info">' + tr_list.join("") + '</table>');
+                        $("#task_info_div").show();
+                    }
+                });
+            }
+        }
+    }
+
+
+    function delta_up_func() {
+        if (confirm("是否更新增量索引?") == true) {
+            if (confirm("此操作需再确认一遍,是否更新增量索引") == true) {
+                showLoading();
+                var url = "{%:url('OpacCnf/index_delta_up')%}";
+                $.ajax({
+                    url: url,
+                    dataType: "json",
+                    async: true,
+                    type: "POST",
+                    success: function (ret) {
+                        hideLoading();
+                        layer.msg(ret.msg);
+                        var tr_list = new Array();
+                        tr_list.push('<tr><td align="left">更新增量索引详情</td></tr>');
+                        for (var i in ret.data) {
+                            tr_list.push('<tr><td align="left">' + ret.data[i] + '</td></tr>');
+                        }
+                        $("#task_info_div").html('<table class="task_info">' + tr_list.join("") + '</table>');
+                        $("#task_info_div").show();
+                    }
+                });
+            }
+        }
+    }
+
+    function start_sphinx() {
+        var url = "{%:url('OpacCnf/start_sphinx')%}";
+        var time_id = setTimeout(function () {
+            layer.msg("启动全文检索服务未遇到错误,将刷新本页面");
+            location.reload();
+        }, 3000);
+
+        $.ajax({
+            url: url,
+            dataType: "json",
+            async: true,
+            type: "POST",
+            success: function (ret) {
+                clearTimeout(time_id);
+                hideLoading();
+                layer.msg(ret.msg);
+                if (!ret.code) {
+                    var tr_list = new Array();
+                    tr_list.push('<tr><td align="left">更新增量索引详情</td></tr>');
+                    for (var i in ret.data) {
+                        tr_list.push('<tr><td align="left">' + ret.data[i] + '</td></tr>');
+                    }
+                    $("#task_info_div").html('<table class="task_info">' + tr_list.join("") + '</table>');
+                    $("#task_info_div").show();
+                }
+            }
+        });
+    }
+
+
+    function repair_sphinx() {
+        if (confirm("修复全文检索将删除原来索引文件并重建索引！") == true) {
+            if (confirm("请确认,是否修复全文检索服务？") == true) {
+                showLoading();
+                var url = "{%:url('OpacCnf/repair_sphinx')%}";
+                $.ajax({
+                    url: url,
+                    dataType: "json",
+                    async: true,
+                    type: "POST",
+                    success: function (ret) {
+                        hideLoading();
+                        layer.msg(ret.msg);
+                    }
+                });
+            }
+        }
+    }
+
+    function getFormOptions() {
+        return {
+            url: "{%:url('OpacCnf/cnf')%}", success: function (result) {  // 成功回调
+                if (result.code == 1) {
+                    // 成功后刷新父级页面
+                    layer.msg(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.msg(result.msg, {icon: 2});
+                }
+            }
+        };
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>{%$report_info.report_name%}</h5>
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal m-t" method="post" action="{%:url('Report/preview',['report_id'=>input('report_id')]);%}">
+                    <div class="form-group">
+                        <div class="col-sm-6">
+
+                            <div class="form-group">
+                                <div class="col-sm-2 col-sm-offset-2">
+                                    <select name="tsg_type" id="tsg_type" class="form-control" style="width: 110px;">
+                                        <option value="tsg_code_has">所属分馆</option>
+                                        <option value="tsg_code">所在分馆</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <select name="tsg_code" class="form-control">
+                                        <option value="">所有分馆</option>
+                                        {%volist name='tsg_list' id='value'%}
+                                        <option value="{%$key%}">{%$value%}</option>
+                                        {%/volist%}
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2 col-sm-offset-2">
+                                <select name="search_field" id="search_field" class="form-control" style="width: 110px;">
+                                    <option value="title">题名</option>
+                                    <option value="isbn">ISBN</option>
+                                    <option value="firstauthor">责任者</option>
+                                    <option value="publisher">出版社</option>
+                                </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" class="form-control" id="search_field_val" placeholder="请输入" name="search_field_val">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2 col-sm-offset-2">
+                                    <select name="search_field1" id="search_field1" class="form-control" style="width: 110px;">
+                                        <option value="barcode">条码段</option>
+                                        <option value="clc">分类号</option>
+                                        <option value="calino">索书号</option>
+                                        <option value="add_time">入库时间段</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="row" id="time">
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="time_beg" name="search_beg" placeholder="开始范围">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="time_end" name="search_end" placeholder="结束范围">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">流通类型：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="lt_type[]" size="5">
+                                        <option value="">= 所有流通类型 =</option>
+                                        {%volist name="ltype_list" id="vo"%}
+                                        <option value="{%$vo.ltype_code%}">{%$vo.ltype_code%}|{%$vo.ltype_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">馆藏状态：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="status[]" size="5">
+                                        <option value="">= 全部批次 =</option>
+                                        {%volist name="status_list" id="vo"%}
+                                        <option value="{%$key%}">{%$key%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">馆藏地址：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="tsg_site_code[]" size="5">
+                                        <option value="">= 所有馆藏地址 =</option>
+                                        {%volist name="tsg_site_list" id="vo"%}
+                                        <option value="{%$vo.tsg_site_code%}">{%$vo.site_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">验收批次：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="batch_no[]" size="5">
+                                        <option value="">= 所有批次 =</option>
+                                        {%volist name="batch_list" id="vo"%}
+                                        <option value="{%$vo.batch_no%}">{%$vo.batch_no%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">排序方式：</label>
+                                <div class="col-sm-8">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="order_type">
+                                                <option value="">= 排序列 =</option>
+                                                {%volist name="order_list" id="order"%}
+                                                <option value="{%$key%}">{%$order%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="order_seq">
+                                                <option value="">= 排序 =</option>
+                                                <option value="asc">升序</option>
+                                                <option value="desc">降序</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">报表格式：</label>
+                                <div class="col-sm-8">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <select class="form-control" name="report_gs_id">
+                                                {%volist name="report_gs_list" id="gs"%}
+                                                <option value="{%$gs.report_gs_id%}">{%$gs.gs_name%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-primary"><i class="fa fa-cog"></i> 设置</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"> </label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <button class="btn btn-primary"><i class="fa fa-eye"></i> 报表预览</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+        $("#search_field1").change(function () {
+            if ($(this).val() == 'add_time') {
+                $("#time").html('<div class="col-md-6">\n' +
+                    '                                            <input type="text" class="form-control" id="time_beg" readonly name="find_val_beg"\n' +
+                    '                                                   placeholder="开始范围">\n' +
+                    '                                        </div>\n' +
+                    '                                        <div class="col-md-6">\n' +
+                    '                                            <input type="text" class="form-control" id="time_end" readonly name="find_val_end"\n' +
+                    '                                                   placeholder="结束范围">\n' +
+                    '                                        </div>');
+                laydate.render({
+                    elem: '#time_beg' //指定元素
+                });
+                laydate.render({
+                    elem: '#time_end' //指定元素
+                });
+            } else {
+                $("#time").html('<div class="col-md-6">\n' +
+                    '                                            <input type="text" class="form-control" id="search_beg" name="find_val_beg"\n' +
+                    '                                                   placeholder="开始范围">\n' +
+                    '                                        </div>\n' +
+                    '                                        <div class="col-md-6">\n' +
+                    '                                            <input type="text" class="form-control" id="search_end" name="find_val_end"\n' +
+                    '                                                   placeholder="结束范围">\n' +
+                    '                                        </div>');
+            }
+        });
+
+    });
+
+</script>

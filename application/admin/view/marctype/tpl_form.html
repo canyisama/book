@@ -1,0 +1,52 @@
+{%include file='public/header_form' %}
+
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="marc_tpl_id" value="{%$tpl_info.marc_tpl_id%}">
+            <input type="hidden" name="mt_id" value="{%$mt_info.mt_id%}">
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label"><span class="text-muted">*</span> MARC类型名称：</label>
+                <div class="col-sm-6">
+                    <p class="form-control-static"> {%$mt_info.mt_code%}</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label"> 模板名称：</label>
+
+                <div class="col-sm-6">
+                    <input type="text" id="tpl_name" name="tpl_name" class="form-control" value="{%$tpl_info.tpl_name%}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label"> 模板：</label>
+                <div class="col-sm-6">
+                    <textarea type="text" id="tpl" name="tpl" class="form-control" style="height: 300px">{%$tpl_info.tpl%}</textarea>
+                </div>
+            </div>
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function getFormOptions() {
+        var id = "{%$tpl_info.marc_tpl_id%}";
+        return {url: id ? "{%:url('Marctype/edit_tpl')%}" : "{%:url('Marctype/add_tpl')%}"};
+    }
+</script>
+</body>
+</html>

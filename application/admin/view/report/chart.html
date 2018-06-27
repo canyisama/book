@@ -1,0 +1,78 @@
+{%include file='public/header_simple'%}
+<script src="__static__/highcharts/code/highcharts.js"></script>
+<script src="__static__/highcharts/code/highcharts-3d.js"></script>
+<script src="__static__/highcharts/code/modules/exporting.js"></script>
+<script src="__static__/highcharts/code/modules/highcharts-zh_CN.js"></script>
+
+<body>
+<div class="col-sm-12">
+    <div class="col-sm-offset-1 col-sm-10">
+        <div id="container" style="width: 100%;height:100%;"></div>
+    </div>
+    <div class="col-sm-offset-3 col-sm-6">
+        <form class="form-horizontal m-b" >
+            <div class="form-group">
+
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">图表类型:</label>
+                <div class="col-sm-4">
+                    <select name="chart_type" id="chart_type" class="form-control">
+                        {%volist name='swf_list' id='vo'%}
+                        <option {%$key==$swf_default?'selected="selected"':''%} value="{%$key%}">{%$vo%}</option>
+                        {%/volist%}
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <button type="button" id="celBtn" class="btn btn-primary">返回</button>
+                </div>
+                <div class="col-sm-4">
+                    <span class="help-block text-warning font-bold">请点击上方按钮,切换想要统计的类型</span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="__static__/js/logic/chart/common_highcharts.js"></script>
+<script>
+
+    var chart = null;
+    var data = {%$list%};
+    $(function () {
+        //定义图表容器高度
+        $('#container').css('height',$(top.window).height()*0.7);
+
+        //获取公共图表对象
+         chart = new CommonHighCharts(data);
+
+        //初始化图表
+        chart.showChart();
+
+        //返回
+        $('#celBtn').click(function () {
+            // window.history.back();
+            window.location.href="{%:url('report/index',['report_id'=>$report_id]);%}";
+        });
+
+        //改变图表类型
+        $('#chart_type').change(function () {
+            var chart_type  = $(this).val();
+
+            chart.chartObj.destroy();
+
+            switch (chart_type){
+                case 'pie':
+                    chart.pie(data,chart_type);
+                    break;
+                default:
+                    chart.showChart({chart: {
+                            type:$(this).val()
+                        },});
+                    break;
+            }
+
+
+        });
+    });
+</script>
+</body>

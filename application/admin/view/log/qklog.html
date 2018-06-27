@@ -1,0 +1,78 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="db1" type="text"
+                                               placeholder="期刊ID">
+                                        <input class="form-control input-outline" id="op_time_start" type="text"
+                                               placeholder="操作时间-开始">
+                                        <input class="form-control input-outline" id="op_time_end" type="text"
+                                               placeholder="操作时间-结束">
+                                        <input class="form-control input-outline" id="op_user" type="text"
+                                               placeholder="操作人">
+                                        <input class="form-control input-outline" id="op_desc" type="text"
+                                               placeholder="操作描述">
+                                        <select class="form-control" id="op_type">
+                                            <option value="">= 操作类型 =</option>
+                                            {%volist name="status_lists" id="seller"%}
+                                            <option value="{%$key%}">
+                                                〖{%$seller%}〗
+                                            </option>
+                                            {%/volist%}
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true" ></th>
+                                    <th data-field="op_time" data-sortable="true">操作时间</th>
+                                    <th data-field="op_user" data-sortable="true">操作人</th>
+                                    <th data-field="op_desc" data-sortable="true">操作描述</th>
+                                    <th data-field="ip_addr" data-sortable="true">IP地址</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 时间插件
+
+
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Log/getJsonList',['source'=>'qk_log'])%}",
+            sortName: 'op_time',
+            clickToSelect: true
+        });
+
+        laydate.render({
+            elem: '#op_time_start' //指定元素
+        });
+        laydate.render({
+            elem: '#op_time_end' //指定元素
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="tsg_site_code" data-sortable="true">馆藏代号</th>
+                                    <th data-field="tsg_code" data-sortable="true">分馆代号</th>
+                                    <th data-field="site_name" data-sortable="true">馆藏名称</th>
+                                    <th data-field="site_remark" data-sortable="true">备注</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('TsgSite/getJsonList')%}",
+            sortName: 'tsg_site_code',
+            sortOrder: "asc",
+            clickToSelect: true,
+        });
+
+        $("#btnSetState").click(function () {
+
+            // 获取选中行
+            var rows = tableObject.bootstrapTable('getSelections');
+            if (rows.length == 0) {
+                layer.msg("没有选中行!");
+                return false;
+            }
+            var tsg_site_code = rows[0].tsg_site_code;
+            $.post("{%:url('TsgSite/setState');%}", {
+                tsg_site_code: tsg_site_code,
+                state: state
+            }, function (result) {
+                myConfirm(result.msg, result.code, function () {
+                    // 确定按钮事件
+                    if (result.code == 1) {
+                        location.reload();
+                    }
+                }, function () {
+                    // 取消按钮事件
+
+                }, ['确定']);
+            }, "json");
+        });
+    });
+
+    function toEdit(tsg_site_code) {
+        var url = "{%:url('TsgSite/add');%}";
+        if (tsg_site_code)
+            url = "{%:url('TsgSite/edit');%}?tsg_site_code=" + tsg_site_code;
+
+        myOpen({
+            type: 2,
+            title: tsg_site_code ? "编辑数据" : "添加数据",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function delData(tsg_site_code) {
+        myConfirm("确定要删除该条数据吗？", 2, function () {
+            $.post("{%:url('TsgSite/drop')%}", {tsg_site_code: tsg_site_code}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.tsg_site_code + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.tsg_site_code + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

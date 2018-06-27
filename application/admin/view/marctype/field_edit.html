@@ -1,0 +1,159 @@
+{%include file='public/header_form' %}
+
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="marc_field_id" value="{%$field_info.marc_field_id%}">
+            <input type="hidden" name="mt_id" value="{%$mt_info.mt_id%}">
+
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"> MARC类型名称：</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-static">{%$mt_info.mt_code%}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"><span class="text-muted">*</span> 字段标识符：</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="zd_name" maxlength="3" required
+                               value="{%$field_info.zd_name%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">字段含义全称：</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="zd_text" value="{%$field_info.zd_text%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">字段含义简称：</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="zd_text_jd" value="{%$field_info.zd_text_jd%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">子字段标识：</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="zzd_bs" value="{%$field_info.zzd_bs%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">指示符1：</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="zsf1" value="{%$field_info.zsf1%}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">指示符2：</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control input-sm" name="zsf2" value="{%$field_info.zsf2%}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">是否连接字段：</label>
+                    <div class="col-sm-8">
+                        <div class="radio form-control-static">
+                            <label>
+                                <input type="radio" name="is_union" value="1" {%$field_info.is_union==1?'checked':''%}> 是
+                            </label>&nbsp;&nbsp;&nbsp;
+                            <label>
+                                <input type="radio" name="is_union" value="0" {%$field_info.is_union!=1?'checked':''%}> 否
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">是否必备字段：</label>
+                    <div class="col-sm-8">
+                        <div class="radio form-control-static">
+                            <label>
+                                <input type="radio" name="is_must" value="1" {%$field_info.is_must==1?'checked':''%}> 是
+                            </label>&nbsp;&nbsp;&nbsp;
+                            <label>
+                                <input type="radio" name="is_must" value="0" {%$field_info.is_must!=1?'checked':''%}> 否
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">是否允许重复：</label>
+                    <div class="col-sm-8">
+                        <div class="radio form-control-static">
+                            <label>
+                                <input type="radio" name="is_repeat" value="1" {%$field_info.is_repeat==1?'checked':''%}> 是
+                            </label>&nbsp;&nbsp;&nbsp;
+                            <label>
+                                <input type="radio" name="is_repeat" value="0" {%$field_info.is_repeat!=1?'checked':''%}> 否
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">是否允许重复：</label>
+                    <div class="col-sm-8">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="is_del" value="1" {%$field_info.is_del==1?'checked':''%}> 是
+                            </label>&nbsp;&nbsp;&nbsp;
+                            <label>
+                                <input type="radio" name="is_del" value="0" {%$field_info.is_del!=1?'checked':''%}> 否
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">是否允许编辑：</label>
+                    <div class="col-sm-8">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="is_edit" value="1" {%$field_info.is_edit==1?'checked':''%}> 是
+                            </label>&nbsp;&nbsp;&nbsp;
+                            <label>
+                                <input type="radio" name="is_edit" value="0" {%$field_info.is_edit!=1?'checked':''%}> 否
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"> 字段固定长度：</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="len" class="form-control input-sm" value="{%$field_info.len%}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+            <div class="form-group">
+                <label class="col-sm-2 control-label"> 字段说明：</label>
+                <div class="col-sm-10">
+                    <textarea rows="10" class="form-control input-sm" name="zd_desc">{%$field_info.zd_desc%}</textarea>
+                </div>
+            </div>
+            </div>
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function getFormOptions() {
+        var id = "{%$field_info.marc_field_id%}";
+        return {url: id ? "{%:url('Marctype/edit_field')%}" : "{%:url('Marctype/add_field')%}"};
+    }
+</script>
+</body>
+</html>

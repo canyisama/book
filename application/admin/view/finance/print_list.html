@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <TITLE>{%$web_title%}</TITLE>
+    <link href="__static__/book/css/common.css" rel="stylesheet" media="screen">
+    <script src="__static__/book/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+    <script src="__static__/book/js/common.js" type="text/javascript"></script>
+    <script type="text/javascript" src="__static__/book/js/jquery.funkyUI.js" id="dialog_js" charset="utf-8"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+    var print_num = "{%$print_num%}";
+
+    $(function () {
+        print_num = parseInt(print_num);
+        if (print_num > 1) {
+            print_num = print_num - 1;
+
+            for (var i = 0; i < print_num; i++) {
+                var list_obj = $("#finance_form .finan_all_list:last");
+                list_obj.after(list_obj.clone());
+                list_obj.addClass("list_line");
+            }
+
+        }
+        window.print();
+    })
+</script>
+<style type="text/css">
+    body {
+        padding: 20px;
+    }
+
+    .field_select {
+        width: 153px;
+    }
+
+    table tr {
+        line-height: 28px;
+    }
+
+    .finan_info_table th, .finan_info_table td {
+        border: 1px solid #ccc;
+    }
+
+    .finan_info_table {
+        text-align: center;
+    }
+
+    .list_line {
+        border-bottom: 1px dashed #808080;
+    }
+</style>
+<div style="width:660px">
+    <form method="post" name="finance_form" id="finance_form">
+        <table width="{%$print_width%}%" cellspacing="0" cellpadding="0" class="finan_all_list">
+            <tr>
+                <th colspan="2" align="center"><h2>{%$_user_info.tsg_name%}读者收费清单</h2></th>
+            </tr>
+            <tr>
+                <td><h3>读者信息</h3></td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tbody>
+                        <tr>
+                            <td width="30">&nbsp;</td>
+                            <td>
+                                <table width="90%" cellpadding="0" cellspacing="0" class="dz_info_table">
+                                    <tbody>
+                                    <tr>
+                                        <td width="30%">读者证号:{%$finan_info.dz_code%}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>读者姓名:{%$finan_info.real_name%}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td><h3>收费信息</h3></td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tbody>
+                        <tr>
+                            <td width="30"></td>
+                            <td>
+                                <table width="100%" cellpadding="0" cellspacing="0" class="finan_info_table">
+                                    <thead>
+                                    <th width="40%">收费项目</th>
+                                    <th width="30%">收费时间</th>
+                                    <th width="30%">收费金额</th>
+                                    </thead>
+                                    <tbody>
+                                    {%volist name="$finance_list" id="finance"%}
+                                    <tr>
+                                        <td>{%$finance.fee_mode%}</td>
+                                        <td>{%$finance.add_time%}</td>
+                                        <td>{%$finance.fee_money%}元</td>
+                                    </tr>
+                                    {%/volist%}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tbody>
+                        <tr>
+                            <td><h3>合计收费</h3></td>
+                            <td align="right"><h2>{%$all_money%}元</h2></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr height="35" valign="bottom">
+                <td>
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tbody>
+                        <tr>
+                            <td width="40%">读者签名:</td>
+                            <td align="right">收费人:{%$_user_info.user_name%}({%$_user_info.real_name%})</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">打印日期:{%:date('Y年m月d日  H时i分s秒')%}</td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>

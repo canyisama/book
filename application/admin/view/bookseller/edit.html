@@ -1,0 +1,101 @@
+{%include file='public/header' %}
+
+<body>
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-horizontal m-t" id="postForm" method="post">
+            <input type="hidden" name="hide_code" value="{%$info.seller_code%}">
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span class="text-muted">*</span> 书商代码：</label>
+                <div class="col-sm-8">
+                    {%if $info %}
+                    <p class="form-control-static">
+                        {%$info.seller_code%}
+                    </p>
+                    {%else /%}
+                    <input id="seller_code" name="seller_code" class="form-control" type="text"
+                           required="required"
+                           placeholder="请输入书商代码" value="{%$info.seller_code%}">
+                    {%/if%}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">分馆代码：</label>
+                <div class="col-sm-8">
+                    <p class="form-control-static">
+                        {%$tsg_info.tsg_code%}〖{%$tsg_info.tsg_name%}〗
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span class="text-muted">*</span> 书商名称：</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="seller_name" name="seller_name" value="{%$info.seller_name%}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">联系人：</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="contact" name="contact" value="{%$info.contact%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">电话：</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="tel" name="tel" value="{%$info.tel%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">手机：</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="phone" name="phone" value="{%$info.phone%}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">电子邮箱：</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="email" name="email" value="{%$info.email%}">
+                </div>
+            </div>
+
+            <div class="form-group text-center">
+                <div class="col-sm-12">
+                    <button class="btn btn-outline btn-info" type="submit" id="btnSubmit">
+                        <i class="fa fa-check"></i> 保存
+                    </button>
+                    <a class="btn btn-outline btn-danger" id="btnCancel">
+                        <i class="fa fa-times"></i> 取消
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="div_hide"></div>
+<script>
+    $(function () {
+        // 异步提交表单
+        $("#btnSubmit").click(function () {
+            var options = {
+                url: "{%:url('Bookseller/edit')%}",
+                target: "#div_hide",
+                success: function (result) {
+                    if (result.code == 1) {
+                        layer.alert(result.msg, {icon: 1}, function () {
+                            parent.location.reload();
+                        });
+                    } else {
+                        layer.alert(result.msg, {icon: 2});
+                    }
+                }
+            };
+            $("#postForm").ajaxForm(options);
+        });
+
+        $("#btnCancel").click(function () {
+            parent.layer.closeAll('iframe');
+            return false;
+        });
+    });
+</script>

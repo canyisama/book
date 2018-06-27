@@ -1,0 +1,76 @@
+{%extend name='public/header' /%}
+{%block name='head'%}
+{__block__}
+<link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="__static__/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="__static__/js/indexpage.js"></script>
+{%/block%}
+
+{%block name='content'%}
+<div class="wrapper wrapper-content">
+    <div class="container">
+        <div class="row row-lg">
+            <div class="col-sm-12">
+                <div class="example-wrap">
+                    <div class="example">
+                        <div role="group">
+                                <h1 class="text-center">借阅超期通知({%:cookie('tsg_name')?:'所有分馆'%})</h1>
+                        </div>
+                        <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                            <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                <div class="form-group">
+                                    <input class="form-control input-outline" id="dz_code" type="text"
+                                           placeholder="读者证号">
+                                    <input class="form-control input-outline" id="barcode" type="text"
+                                           placeholder="图书条码">
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" id="searchBtn" class="btn btn-primary">搜索</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <table id="Table">
+                            <thead>
+                            <tr>
+                                <th data-radio="true" ></th>
+                                <th data-field="tsg_code" data-sortable="true">所属馆</th>
+                                <th data-field="dz_code" data-sortable="true">读者证号</th>
+                                <th data-field="title" data-formatter="titleOp" data-sortable="true">题名</th>
+                                <th data-field="barcode" data-sortable="true">图书条码</th>
+                                <th data-field="site_name" data-sortable="true">馆藏地址</th>
+                                <th data-field="add_time" data-sortable="true">借阅日期</th>
+                                <th data-field="must_time" data-sortable="true">应还日期</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+
+<script src="__static__/js/logic/opac/table.js" ></script>
+<script>
+
+    var source = 'lend_msg';
+    var sort_name = 'add_time';
+
+    // $(function () {
+    //     var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+    //         url: "{%:url('Top/getList')%}?source="+source,
+    //         sortName: sort_name,
+    //         clickToSelect: true
+    //     });
+    // });
+</script>
+
+
+{%/block%}

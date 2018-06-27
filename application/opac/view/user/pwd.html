@@ -1,0 +1,111 @@
+{%extend name='public/header' /%}
+
+{%block name='head'%}
+{__block__}
+<script src="__static__/js/jquery.form.js"></script>
+<script src="__static__/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="__static__/js/indexpage.js"></script>
+
+{%/block%}
+
+{%block name='content_user'%}
+{__block__}
+<dl class="contDl">
+    <dt>修改密码</dt>
+    <div class="clear user_info">
+        <div class="col-sm-12 ">
+            <form id="postForm" method="post" class="form-horizontal m-b">
+                <div class="form-group">
+                    <label class="control-label col-sm-offset-2 col-sm-2">旧密码:</label>
+                    <div class="col-sm-4">
+                        <input type="password" name="old_pwd" class="form-control" value="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-offset-2 col-sm-2">新密码:</label>
+                    <div class="col-sm-4">
+                        <input type="password" name="pwd" id="pwd" class="form-control" value="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-offset-2 col-sm-2">新密码确认:</label>
+                    <div class="col-sm-4">
+                        <input type="password" name="pwd2" class="form-control" value="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button type="submit" id="btnSubmit" class="btn btn-primary center-block" style="width: 100px">确认</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</dl>
+<div id="div_hide"></div>
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+
+<script>
+
+
+    $(function () {
+        $('#postForm').validate({
+            rules:{
+                old_pwd : {
+                    required: true
+                },
+                pwd : {
+                    required: true
+                },
+                pwd2 : {
+                    required:true,
+                    equalTo: "#pwd"
+                }
+            },
+
+            messages : {
+                old_pwd: {
+                    required : '请输入旧密码',
+                },
+                pwd: {
+                    required : '请输入新密码'
+                },
+                pwd2: {
+                    required : '请输入确认密码',
+                    equalTo : '请两次输入相同的密码'
+                }
+            }
+        });
+
+        // 异步提交表单
+        $("#btnSubmit").click(function () {
+
+            // 自定义表单提交参数
+            var options = {
+                url : "{%url('User/pwd')%}",
+                target: "#div_hide",
+                success: function (result) {  // 成功回调
+                    if (result.code == 1) {
+                        // 成功后刷新页面
+                        layer.alert(result.msg, {icon: 1}, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.alert(result.msg, {icon: 2});
+                    }
+                }
+            };
+
+            $("#postForm").ajaxForm(options);
+
+        });
+
+    });
+
+
+</script>
+
+{%/block%}

@@ -1,0 +1,173 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增">
+                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toImport()"
+                                           class="btn btn-outline btn-primary" title="导入种次号">
+                                            <i class="fa fa-sign-in" aria-hidden="true"></i>
+                                            导入种次号
+                                        </a>
+                                    </div>
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toExport()"
+                                           class="btn btn-outline btn-primary" title="导出种次号">
+                                            <i class="fa fa-share-square-o" aria-hidden="true"></i>
+                                            导出种次号
+                                        </a>
+                                    </div>
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toRenzch()"
+                                           class="btn btn-outline btn-primary" title="批量重建">
+                                            <i class="fa fa-align-justify" aria-hidden="true"></i>
+                                            批量重建
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="cl-sm-12 m-b">
+                                        <div class="form-group">
+                                            <select class="form-control" id="mt_id" name="mt_id">
+                                                {%volist name="mt_list" id="mt"%}
+                                                <option value="{%$mt.mt_id%}">{%$mt.mt_code%}</option>
+                                                {%/volist%}
+                                            </select>
+                                            <input class="form-control input-outline" id="clc" type="text"
+                                                   placeholder="分类号">
+                                            <input class="form-control input-outline" id="max_zch" type="text"
+                                                   placeholder="最大种次号">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" id="searchBtn" class="btn btn-primary">搜索</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="zch_max_id" data-visible="false">zch_max_id</th>
+                                    <th data-field="tsg_code" data-sortable="true">馆代码</th>
+                                    <th data-field="clc" data-sortable="true">分类号</th>
+                                    <th data-field="max_zch" data-sortable="true">最大种次号</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        laydate.render({
+            elem: '#add_time_beg' //指定元素
+        });
+        laydate.render({
+            elem: '#add_time_end' //指定元素
+        });
+
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Zchwh/getJsonList')%}",
+            sortName: 'zch_max_id',
+            sortOrder: 'asc',
+            clickToSelect: true
+        });
+    });
+
+    function toEdit(zch_max_id) {
+        var mt_id = $("#mt_id").val();
+        var url = "{%:url('Zchwh/add')%}?mt_id=" + mt_id;
+        if (zch_max_id) {
+            url = "{%:url('Zchwh/edit')%}?zch_max_id=" + zch_max_id + "&mt_id=" + mt_id;
+        }
+        myOpen({
+            type: 2,
+            title: "数据编辑",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function toImport() {
+        myOpen({
+            type: 2,
+            title: "导入种次号",
+            /*area: ['auto', 'auto'],*/
+            content: "{%:url('Zchwh/import_zch')%}?mt_id=" + $("#mt_id").val()
+        });
+    }
+
+    function toExport() {
+        var search = [],
+            url = "{%:url('Zchwh/getJsonList')%}?is_export=1",
+            sortName = $("#Table").bootstrapTable('getOptions').sortName,
+            sortOrder = $("#Table").bootstrapTable('getOptions').sortOrder;
+        $("#searchForm").find("select,input").each(function () {
+            if ($(this).val()) {
+                search.push({
+                    field: $(this).attr("id"),
+                    value: $(this).val()
+                })
+            }
+        });
+        if (search.length > 0) {
+            url += "&search=" + JSON.stringify(search);
+        }
+        window.open(url + "&sort=" + sortName + "&order=" + sortOrder)
+    }
+
+    function toRenzch() {
+        myConfirm("是否批量重建种次号?本操作将清空所有种次号,然后插入所有馆藏的最大种次号!", 0, function () {
+            location.href = "{%:url('Zchwh/renzch')%}?mt_id=" + $("#mt_id").val();
+        });
+    }
+
+    function delData(zch_max_id) {
+        myConfirm("是否删除此数据？", 2, function () {
+            $.post("{%:url('Zchwh/drop')%}", {zch_max_id: zch_max_id}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.zch_max_id + '\')" class="btn-sm"><i class="fa fa-edit"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.zch_max_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

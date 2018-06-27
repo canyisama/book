@@ -1,0 +1,82 @@
+{%include file='public/header_simple'%}
+<div class="space-15">
+<div class="col-sm-offset-2 col-sm-8">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form class="form-horizontal m-b">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <p class="form-control-static">
+                            <b>书目库</b>和<b>套录库</b>的元数据根据题名、标准编号、分类号等从MARC信息中提取设置的相关字段建立索引来供搜索
+                        </p>
+                        <p class="form-control-static">
+                            <b>索引修复操作</b>会删除不存在的书目数据索引,并为未建立索引的书目增加索引,修复速度较快
+                        </p>
+                        <p class="form-control-static">
+                            <b>索引重建即将原索引清空</b>,然后根据元数据重新生成索引
+                        </p>
+                        <p class="form-control-static">
+                            <b>索引重建过程中,管理系统内部的查询将失效,OPAC不受影响</b>,如果元数据变动较大,则索引重建后要将OPAC的索引重新生成
+                        </p>
+                        <p class="form-control-static">
+                            <b>索引重建需要较长时间,请谨慎操作</b>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary">书目索引修复</button>
+                        <button class="btn btn-success">书目索引重建</button>
+                        <button class="btn btn-info">套录库索引修复</button>
+                        <button class="btn btn-warning">套录库索引重建</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-6">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">书目库索引</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>索引类型</td>
+                                    <td>索引数量</td>
+                                </tr>
+                                {%volist name='book_sum' id='vo'%}
+                                <tr>
+                                    <td>{%$key%}</td>
+                                    <td>{%$vo%}</td>
+                                </tr>
+                                {%/volist%}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-sm-6" style="margin-left: -32px">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th colspan="2">套录库索引</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>索引类型</td>
+                                <td>索引数量</td>
+                            </tr>
+                            {%volist name='book_sum_share' id='vo'%}
+                            <tr>
+                                <td>{%$key%}</td>
+                                <td>{%$vo%}</td>
+                            </tr>
+                            {%/volist%}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>

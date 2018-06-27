@@ -1,0 +1,392 @@
+{%extend name='public/header' /%}
+{%block name='head'%}
+{__block__}
+<style>
+    .u-ico1-bd {
+        background-position: 0 0px;
+    }
+    .u-ico1-google {
+        background-position: 0 -104px;
+    }
+    .u-ico1-db {
+        background-position: 0 -52px;
+    }
+    .u-ico1-zw {
+        background-position: 0 -156px;
+    }
+    .u-ico1 {
+        float: left;
+        font-size: 18px;
+        padding-left: 25px;
+        line-height: 24px;
+        height: 24px;
+        background-image: url(/__static__/img/opac/about_icos.png?);
+        background-repeat: no-repeat;
+        cursor: pointer;
+        margin: 6px 6px 6px 0;
+    }
+</style>
+{%/block%}
+{%block name='content'%}
+<div class="wrapper-content">
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="col-sm-12">
+                        <div class="col-sm-12">
+                            <h1 style="color: #0d8ddb">{%$info.title_all%}</h1>
+                        </div>
+                        <div class="col-sm-2">
+                            <div style="height: 220px;width:160px;border: 1px" >
+                                <img class="book_img" data-isbn="{%$info.isbn%}" data-isbncode="{%$info.isbncode%}"
+                                     src="" alt="" height="100%" width="100%">
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <hr style="margin-top:0">
+                            <div class="col-sm-8">
+                                <div class="row">
+                                    <label class="control-label col-sm-4">标准编号:{%$info.isbn%}</label>
+                                    <label class="control-label col-sm-4">分类号:{%$info.clc%}</label>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-sm-12">主要著者:{%$info.firstauthor%}</label>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-sm-3">出版信息:{%$info.pubplace%}</label>
+                                    <label class="control-label col-sm-4">{%$info.publisher%}</label>
+                                    <label class="control-label col-sm-2">{%$info.pubdate%}</label>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-sm-4">载体形态:{%$info.pages%}&nbsp;&nbsp;&nbsp;:{%$info.size%}</label>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-sm-4">价格描述:{%$info.price_ms%}</label>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-sm-12">主题词:{%$info.subject%}</label>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-sm-2" style="margin-top: 10px">相关资源:</label>
+                                    <div class="col-sm-4" style="margin-left: -25px">
+                                        <a href="http://yuedu.baidu.com/search?ie=utf-8&word={%:urlencode($info.title)%}"
+                                           target="_blank" class="u-ico1 u-ico1-bd"  title="百度阅读"> </a>
+                                        <a href="https://www.google.com.hk/search?tbm=bks&hl=zh-CN&q={%:urlencode($info.title)%}"
+                                           target="_blank" class="u-ico1 u-ico1-google" title="Google图书"> </a>
+                                        <a href="http://book.douban.com/isbn/{%$info.isbn%}"
+                                           target="_blank" class="u-ico1 u-ico1-db" title="豆瓣图书"> </a>
+                                        <a href="http://search.cnki.net/Search.aspx?q={%$info.isbn%}"
+                                           target="_blank" class="u-ico1 u-ico1-zw" title="中国知网"> </a>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <hr style="margin-bottom: 0">
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="col-sm-2 row"><h4>内容摘要</h4></div>
+                                <div class="col-sm-12 row">
+                                    <p>{%$info.abstract%}</p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="col-sm-12" id="container">
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="tabs-container">
+                <div class="col-sm-12">
+                    <ul class="nav nav-tabs">
+                        <li data-id="1"  class="active"><a data-toggle="tab" aria-expanded="true">馆藏信息</a></li>
+                        <li data-id="2" ><a data-toggle="tab" aria-expanded="true">读者评价</a></li>
+                        <li data-id="3"><a data-toggle="tab" aria-expanded="true">电子图书</a></li>
+                        <li data-id="4" style="display: none" id="summary"><a data-toggle="tab" aria-expanded="true">内容简介</a></li>
+                        <li data-id="5" style="display: none" id="author_intro"><a data-toggle="tab" aria-expanded="true">作者详情</a></li>
+                    </ul>
+                    <div class="tab-content" id="tab-content">
+                        <div id="tab-1" class="tab-pane active">
+                            <input type="hidden" id="dz_code" value="{%$Think.session.dz_info.dz_code%}">
+                            <table id="dckTable">
+                                <thead>
+                                <tr>
+                                    <th data-checkbox="true"></th>
+                                    <th data-field="barcode" data-sortable="true">图书条码</th>
+                                    <th data-field="calino" data-sortable="true">索书号</th>
+                                    <th data-field="status" data-sortable="true">状态</th>
+                                    <th data-field="tsg_code_has_show" data-sortable="false">所属馆</th>
+                                    <th data-field="tsg_code" data-sortable="true">所在馆</th>
+                                    <th data-field="tsg_site_code" data-sortable="true">馆藏地址</th>
+                                    <th data-field="price" data-sortable="true">单价</th>
+                                    <th data-field="price_sum" data-sortable="true">套价</th>
+                                    <th data-field="add_time" data-sortable="true">入库日期</th>
+                                    <th data-formatter="dckTable.opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div id="tab-2" class="tab-pane">
+                            <!--<p>暂时没有读者评价这本书。</p>-->
+                        </div>
+                        <div id="tab-3" class="tab-pane">
+                            <!--<p>没有找到相关的电子图书资源！</p>-->
+                        </div>
+                        <div id="tab-4" class="tab-pane">
+
+                        </div>
+                        <div id="tab-5" class="tab-pane">
+
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%/block%}
+
+{%block name='js'%}
+{__block__}
+<link href="__static__/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+<script src="__static__/highcharts/code/highcharts.js"></script>
+
+<script src="__static__/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="__static__/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="__static__/js/indexpage.js"></script>
+<script src="__static__/js/logic/cf/common_table_op.js"></script>
+<script src="__static__/js/logic/chart/common_highcharts.js"></script>
+<script src="__static__/js/logic/opac/common.js"></script>
+<script>
+    var dckTable = null;
+    var dz_code = $('#dz_code').val();
+    var chart = null;
+    var chart_data = null;
+
+    $(function () {
+
+        //定义图表容器高度
+        $('#container').css('height',$(top.window).height()*0.3);
+
+
+        $('.nav-tabs li').click(function() {
+            // 当前添加类名并移除兄弟级
+            $(this).addClass('active').siblings().removeClass('active');
+            tab_id = $(this).attr('data-id');
+            $('.tab-pane').removeClass('active');
+            switch (tab_id){
+                case '1' :
+                    $('#tab-1').addClass('active');
+                    break;
+                case '2' :
+                    $('#tab-2').addClass('active');
+                    break;
+                case '3' :
+                    $('#tab-3').addClass('active');
+                    break;
+                case '4' :
+                    $('#tab-4').addClass('active');
+                    break;
+                case '5' :
+                    $('#tab-5').addClass('active');
+                    break;
+            }
+        });
+
+        var url = "{%:url('Index/getDckList',['book_id'=>input('book_id/d')]);%}";
+
+            dckTable =  new CommonTableObject("#dckTable", {
+                height: $(top.window).height()*0.3,
+                sortName: "add_time",
+                url:url,
+                onLoadSuccess:function (data) {
+                    if(!!data.data){
+                        chart_data = data.data;
+                    }
+                    //获取公共图表对象
+                    chart = new CommonHighCharts(chart_data);
+
+                    //初始化图表
+                    chart.showChart();
+                }
+            });
+
+            dckTable.showTable();
+
+            dckTable.opFormatter = function (value, row) {
+                var btns = [];
+                if (!dz_code){
+                    btns.push('<a href="/opac/login/index"><i class="fa fa-sign-in">登录</i></a>')
+                }else{
+                    btns.push('<a href="javascript:void(0);" onclick="reser(\'' + row.book_id +'\',\''+row.tsg_code_has+ '\')" class="btn-sm"><i class="fa fa-book"></i> 预约 </a>');
+                    btns.push('<a href="javascript:void(0);" onclick="lend_reser(\'' + row.dck_id + '\')" class="btn-sm text-info"><i class="fa fa-book"></i> 预借 </a>');
+                }
+                return btns.join("|");
+            };
+
+            //获取豆瓣信息
+            $(".book_img").each(function (index, element) {
+                var img_obj = $(this);
+                var default_img = "/__static__/img/opac/BookNoPicture.jpg";
+                var comment = $('#tab-2');
+                var e_book =  $('#tab-3');
+                // img_obj.attr("src", default_img);
+                if (img_obj.attr("data-isbn")) {
+
+                    var isbncode = img_obj.attr("data-isbncode");
+                    // var isbncode =  9787213086762;
+
+                    getComment(isbncode, function (ret) {
+                        if (ret && ret['entry'] && ret.entry.length > 0) {
+                            var li_arr = [];
+                            for (var i in ret.entry) {
+                                var comm = ret.entry[i];
+                                var comm_time = convDate(comm.updated.$t);
+                                var link_val = comm.link[1]['@href'];
+                                link_val = link_val.replace("www.douban.com", "book.douban.com");
+
+                                var li_html = '<li class="list-group-item">' +
+                                    '<a target="_blank"  href="' + link_val + '">' + comm.title.$t + '</a>' + '&nbsp;&nbsp;&nbsp;&nbsp;' +
+                                    '<span class="t">' + comm_time + '</span>&nbsp;&nbsp;&nbsp;&nbsp;' +
+                                    '<span class="text-info">来自于:</span>&nbsp;&nbsp;&nbsp;&nbsp;' +
+                                    '<a target="_blank"  href="' + comm.author.link[1]['@href'] + '">' + comm.author.name.$t + '</a>' +
+                                    '<p>' + comm.summary.$t + '</p>' +
+                                    '</li>';
+                                li_arr.push(li_html);
+                            }
+                            comment.append("<ul class='list-group'>" + li_arr.join("") + "</ul>");
+                        }else{
+                            comment.append("<p>暂时没有读者评价这本书。</p>");
+                        }
+                    });
+
+                    getImg(isbncode, function (ret) {
+                        if (ret.image) {
+                            var img_href = getImages(ret.image);
+                            img_href = img_href.replace("mpic", "lpic");
+                            img_obj.attr("src", img_href);
+                            if (ret.summary) {
+                                $('#summary').show();
+                                $('#tab-4').append('<div class="col-sm-10">' + ret.summary + "</div>");
+                            }
+                            if (ret.author_intro) {
+                                $('#author_intro').show();
+                                $('#tab-5').append('<div class="col-sm-10">' + ret.author_intro + "</div>");
+                            }
+                        }
+                        else {
+                            img_obj.attr("src", default_img);
+                        }
+
+                        if (ret.ebook_url) {
+                            e_book.append('<div class="col-sm-10" style="margin-top: 10px">' +
+                                '<a target="_blank" href="'+ ret.ebook_url +'" >'+ret.ebook_url+'</a></div>');
+                        }
+                        else{
+                            e_book.append('<p>没有找到相关的电子图书资源！</p>');
+                        }
+
+                    });
+                }else{
+                    img_obj.attr("src", default_img);
+                    comment.append("<p>暂时没有读者评价这本书。</p>");
+                    e_book.append('<p>没有找到相关的电子图书资源！</p>');
+                }
+            });
+
+    });
+
+    function reser(id,tsg_code_has) {
+        $.post("{%:url('Book/reser')%}",{dz_code:dz_code,book_id:id,tsg_code:tsg_code_has},function (result) {
+           if (result.code == 1){
+               layer.alert(result.msg,{icon:1},function () {
+                   location.reload();
+               })
+           }else{
+               layer.alert(result.msg,{icon:2});
+           }
+
+        });
+    }
+
+    function lend_reser(id) {
+        $.post("{%:url('Book/lend_reser')%}",{dz_code:dz_code,dck_id:id},function (result) {
+            if (result.code == 1){
+                layer.alert(result.msg,{icon:1},function () {
+                    location.reload();
+                })
+            }else{
+                layer.alert(result.msg,{icon:2});
+            }
+
+        });
+    }
+
+    function getComment(isbn,callback_func)
+    {
+        var url='http://api.douban.com/book/subject/isbn/'+isbn+'/reviews?orderby=time&start-index=0&max-results=5&alt=json&callback=?';
+        $.ajax({
+            url:url,
+            dataType:"jsonp",
+            async:true,
+            type:"POST",
+            success: function(ret){
+                callback_func(ret);
+            },
+            error:function () {
+                var ret = [];
+                callback_func(ret);
+            }
+        });
+    }
+
+    function convDate(str)
+    {
+        var i1=str.lastIndexOf('+');
+        if(i1!=-1)
+        {
+            str=str.substr(0,i1);
+            str=str.replace(/-/g,'/');
+            str=str.replace('T',' ');
+        }
+        var now=new Date(str);
+        var year=now.getFullYear();
+        var month=now.getMonth()+1;
+        var day=now.getDate();
+        var hours=now.getHours();
+        hours=hours.toString().length==1?"0"+hours.toString():hours;
+        var minutes=now.getMinutes();
+        minutes=minutes.toString().length==1?"0"+minutes.toString():minutes;
+        var seconds=now.getSeconds();
+        seconds=seconds.toString().length==1?"0"+seconds.toString():seconds;
+        date_str=""+year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds+"";
+        return date_str;
+    }
+
+    function getEbookInfo(ebook_url,isbn,callback)
+    {
+        var url=ebook_url+'/Api/book/isbn/'+encodeURI(isbn);
+        $.ajax({
+            url:url,
+            dataType:"jsonp",
+            async:true,
+            type:"POST",
+            success: function(ret){
+                if(callback && ret)
+                {
+                    callback(ret);
+                }
+
+            }});
+    }
+
+
+</script>
+{%/block%}

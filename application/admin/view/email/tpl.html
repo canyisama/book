@@ -1,0 +1,114 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div role="group">
+                                <form class="form-inline" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <a href="javascript:void(0)" onclick="toEdit()"
+                                           class="btn btn-outline btn-default" title="新增数据">
+                                            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                                            新增
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <input class="form-control input-outline" id="tpl_name" type="text"
+                                               placeholder="模板名称">
+                                        <input class="form-control input-outline" id="tpl_subject" type="text"
+                                               placeholder="邮件标题">
+                                        <input class="form-control input-outline" id="tpl_body" type="text"
+                                               placeholder="邮件内容">
+                                        <select class="form-control" id="tpl_type">
+                                            <option value="">所有模板类型</option>
+                                            {%volist name='status_lists' id='vo'%}
+                                            <option value="{%$key%}">{%$vo%}</option>
+                                            {%/volist%}
+                                        </select>
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+
+                            <table id="Table" data-row-style="fnSetStyle">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="tpl_name" data-sortable="true">模板名称</th>
+                                    <th data-field="tpl_subject" data-sortable="true">邮件标题</th>
+                                    <th data-field="tpl_body" data-sortable="true">邮件内容</th>
+                                    <th data-field="tpl_type" data-sortable="true">模板类型</th>
+                                    <th data-formatter="opFormatter" data-align="center">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var tableObject = myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Email/getList',['source'=>'email_tpl'])%}",
+            sortName: 'email_tpl_id',
+            clickToSelect: true
+        });
+    });
+
+    function toEdit(id) {
+        var url = "{%:url('Email/addtpl');%}";
+        if (id)
+            url = "{%:url('Email/edittpl');%}?email_tpl_id=" + id;
+
+        myOpen({
+            type: 2,
+            title: id ? "编辑数据" : "添加数据",
+            /*area: ['auto', 'auto'],*/
+            content: url
+        });
+    }
+
+    function delData(id) {
+        myConfirm("确定要删除此模板吗？", 2, function () {
+            $.post("{%:url('Email/droptpl')%}", {email_tpl_id: id}, function (result) {
+                if (result.code == 1) {
+                    layer.alert(result.msg, {icon: 1}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.alert(result.msg, {icon: 2});
+                }
+            }, "json");
+        });
+    }
+
+    /**
+     * 格式化输出 "操作" 列
+     * @param value
+     * @param row
+     * @param index
+     * @returns {string}
+     */
+    function opFormatter(value, row, index) {
+        var btns = [];
+        btns.push('<a href="javascript:void(0);" onclick="toEdit(\'' + row.email_tpl_id + '\')" class="btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>');
+        btns.push('<a href="javascript:void(0);" onclick="delData(\'' + row.email_tpl_id + '\')" class="btn-sm text-danger"><i class="fa fa-times"></i> 删除 </a>');
+        return btns.join("|");
+    }
+
+</script>
+
+</body>
+</html>

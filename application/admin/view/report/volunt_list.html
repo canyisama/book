@@ -1,0 +1,147 @@
+{%include file='public/header' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>{%$report_info.report_name%}</h5>
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal m-t" method="post" action="{%:url('Report/preview',['report_id'=>input('report_id')]);%}">
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">读者证号：</label>
+                                <div class="col-sm-6">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input name="dz_code_beg" class="form-control" placeholder="读者证号开头"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input name="dz_code_end" class="form-control" placeholder="读者证号结尾"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">签到时间：</label>
+                                <div class="col-sm-6">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input type="text" placeholder="开始时间" value="{%:date('Y-m-d',strtotime('-1 month'))%}"
+                                                   class="form-control" id="time_beg" name="time_beg"  readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" placeholder="结束时间" value="{%:date('Y-m-d',time())%}"
+                                                   class="form-control" id="time_end" name="time_end" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">读者类型：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="dz_type_code[]" size="5">
+                                        <option value="">= 所有读者类型 =</option>
+                                        {%volist name="dz_type_list" id="vo"%}
+                                        <option value="{%$vo.dz_type_code%}">{%$vo.dz_type_code%}|{%$vo.dz_type_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">读者单位：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="unit_name[]" size="5">
+                                        <option value="">= 所有读者单位 =</option>
+                                        {%volist name="unit_name_list" id="vo"%}
+                                        <option value="{%$vo.unit_name%}">{%$vo.unit_name%}
+                                        </option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">出勤状态：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" multiple name="lt_status[]" size="5">
+                                        <option value="">= 全部状态 =</option>
+                                        {%volist name="lt_status_list" id="vo"%}
+                                        <option value="{%$key%}">{%$vo%}</option>
+                                        {%/volist%}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">排序方式：</label>
+                                <div class="col-sm-8">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="order_type">
+                                                <option value="">= 排序列 =</option>
+                                                {%volist name="order_list" id="order"%}
+                                                <option value="{%$key%}">{%$order%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="order_seq">
+                                                <option value="">= 排序 =</option>
+                                                <option value="asc">升序</option>
+                                                <option value="desc">降序</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">报表格式：</label>
+                                <div class="col-sm-8">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <select class="form-control" name="report_gs_id">
+                                                {%volist name="report_gs_list" id="gs"%}
+                                                <option value="{%$gs.report_gs_id%}">{%$gs.gs_name%}</option>
+                                                {%/volist%}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-primary"><i class="fa fa-cog"></i> 设置</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"> </label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <button class="btn btn-primary"><i class="fa fa-eye"></i> 报表预览</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+           laydate.render({
+               elem: '#time_beg'//指定元素.
+               // value : new Date()
+           });
+           laydate.render({
+               elem: '#time_end' //指定元素
+               // value : new Date().setDate(new Date())
+           });
+
+
+</script>

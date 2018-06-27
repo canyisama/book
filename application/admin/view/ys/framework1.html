@@ -1,0 +1,110 @@
+{%include file='public/header_list' %}
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-content">
+
+            <div class="row row-lg">
+                <div class="col-sm-12">
+                    <div class="example-wrap">
+                        <div class="example">
+                            <div class="btn-group hidden-xs" id="Toolbar" role="group" style="margin-top: 10px;">
+                                <form class="form-inline" id="searchForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <select class="form-control" id="destine_batch_code">
+                                            <option value="">= 预订批次号 =</option>
+                                            {%volist name="destine_batch_list" id="batch"%}
+                                            <option value="{%$batch.destine_batch_code%}" {%$destine_batch_curr==$batch.destine_batch_code?'selected':''%}>
+                                                {%$batch.destine_batch_code%}
+                                            </option>
+                                            {%/volist%}
+                                        </select>
+                                        <input class="form-control input-outline" id="title" type="text"
+                                               placeholder="题名">
+                                        <input class="form-control input-outline" id="clc" type="text"
+                                               placeholder="分类号">
+                                        <input class="form-control input-outline" id="publisher" type="text"
+                                               placeholder="出版社">
+                                        <input class="form-control input-outline" id="order_no" type="text"
+                                               placeholder="订购号">
+                                    <button type="button" id="searchBtn" class="btn btn-primary btn-sm">搜索</button>                                    </div>
+                                </form>
+                            </div>
+                            <table id="Table">
+                                <thead>
+                                <tr>
+                                    <th data-radio="true"></th>
+                                    <th data-field="destine_id" data-visible="false">destine_id</th>
+                                    <th data-field="book_id" data-visible="false">book_id</th>
+                                    <th data-field="title">题名</th>
+                                    <th data-field="clc">分类号</th>
+                                    <th data-field="publisher">出版社</th>
+                                    <th data-field="pubdate">出版日期</th>
+                                    <th data-field="order_no" data-sortable="true">订购号</th>
+                                    <th data-field="ori_price" data-sortable="true">原价</th>
+                                    <th data-field="discount" data-sortable="true">折扣</th>
+                                    <th data-field="price" data-sortable="true">折后价</th>
+                                    <th data-field="book_cnt" data-sortable="true">复本数</th>
+                                    <th data-field="remark" data-sortable="true">备注</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="table_panel" style="display: none;">
+                {%include file='public/dck_ys_destine_common' %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    window.book_id = 0; // 选中行ID
+    window.ys_type = 1; // 验收类型,1预订验收,2直接验收
+    window.destine_id = 0; // 预订ID
+    var height = ($(top.window).height() - 160) * 0.6;  // 父表高度
+
+    // 查询回调,清空子表
+    window.searchCallBack = function () {
+        if (window.book_id && window.destine_id) {
+            $("#table_panel").hide();
+            window.book_id = 0;
+            window.destine_id = 0;
+            var url = "{%:url('Ys/getYsList');%}?book_id=0&destine_id=0&ys_type=" + window.ys_type;
+            ysTable.refreshTable({url: url});
+        }
+    };
+
+    $(function () {
+        myBootstrapTable.initBootstrapTable("#Table", {
+            url: "{%:url('Ys/destine_ys')%}",
+            sortName: 'book_id',
+            sortOrder: 'asc',
+            pageSize: 10,
+            pageList: [10, 20, 50, 100],
+            height: height,
+            maintainSelected: true,
+            clickToSelect: true,
+
+            // 单击行事件
+            onClickRow: function (row) {
+                $("#table_panel").show();
+                window.book_id = row.book_id;
+                window.destine_id = row.destine_id;
+
+                $(".nav-tabs li a[href='#tab_ys']").click();
+                /*var url = "{%:url('Ys/getYsList');%}?book_id=" + window.book_id + "&destine_id=" + window.destine_id + "&ys_type=" + window.ys_type;
+                ysTable.showTable({url: url});*/
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>
